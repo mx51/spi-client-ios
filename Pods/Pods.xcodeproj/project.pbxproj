@@ -1,0 +1,820 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		06C0090E60A16EC981B312B137D8B20A /* Pods-Tests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E13D63431422569CF3437AC3F90E8A3 /* Pods-Tests-dummy.m */; };
+		32118FC35A0882CFDA1F8F8AF901C8D2 /* RNEncryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C075791C70AC193EFCD09E91B07BEE6 /* RNEncryptor.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		385C076D7745FAD6C955919AEFAF2B02 /* RNCryptor-objc-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B3EC440302C7E5A648451503808CF24 /* RNCryptor-objc-dummy.m */; };
+		413AD0A3CE44B72A20CCD74F85114CE4 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50F6DD994291AA39A94BEECAFAF0D785 /* Security.framework */; };
+		503394883E3348369E9E439AFEBE9D06 /* RNCryptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B30817D83893D5F4EF01C0E040C2B9F /* RNCryptor.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		596EE562561BE4C8BA4DF70A094C5D88 /* SRWebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = CECD153B31094D3DACDD5569FF308F2E /* SRWebSocket.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		5C510DEC79A7711298B3550B14BAF0E1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E3725257C79D0C80F87B9E2B291C17A /* Foundation.framework */; };
+		6440D1934BDFE9965579414C37756E93 /* RNEncryptor.h in Headers */ = {isa = PBXBuildFile; fileRef = ADA170ECA95938F25863D30730AD4B39 /* RNEncryptor.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		6945ACD1B358EA80FD8E2068377CC579 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E3725257C79D0C80F87B9E2B291C17A /* Foundation.framework */; };
+		7414A668708159C2C60AA95AA20AF5DC /* RNCryptorEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = 020EE64481612AED237C909F5641F89A /* RNCryptorEngine.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8A79D2211EF11D2934FFFC1D77D21C05 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A847C3B26F9C9E99A5ACEACF501F86DD /* CFNetwork.framework */; };
+		95BE0D86D521E243BB3C1216F8B05798 /* SRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 3612A2EB3DF7BA9CA9984CF0AF714253 /* SRWebSocket.m */; settings = {COMPILER_FLAGS = "-w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9672ACBCDAEC2C8974099E53D3B90F34 /* RNCryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 287B428346316813C1B40F04C4C6BEE6 /* RNCryptor.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		9FBB219450C11FC1415EFF8906134EEB /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E3725257C79D0C80F87B9E2B291C17A /* Foundation.framework */; };
+		A333E31318504DBADAF3DB3E821A5EF6 /* Pods-SPIClient-iOS-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F947E84AD21594E59BE3EDE1B4F62362 /* Pods-SPIClient-iOS-dummy.m */; };
+		AF84CFCC713614B58DBF8CDB33944492 /* SocketRocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 621A667CD2AC8B71E08AE6A57ADA9B62 /* SocketRocket.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		B936EBEC868C9937214DE347666BEB4A /* RNDecryptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 35BAA521CD1A654A19B50A880F7AB656 /* RNDecryptor.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		C1E7BFF85895881B499A72EA7628F9C6 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50F6DD994291AA39A94BEECAFAF0D785 /* Security.framework */; };
+		C2128454755E35BF6F56C66DB040ED66 /* SocketRocket-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = AA341B894AC2D054C6DE3D7009496EFE /* SocketRocket-dummy.m */; };
+		CC50AAC4486F9CC60E36A180B65B1CD5 /* RNCryptorEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 08283D4ED04EE72C22446642A20E5A02 /* RNCryptorEngine.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		D308D738C73B5523154949AEEC14BDC8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E3725257C79D0C80F87B9E2B291C17A /* Foundation.framework */; };
+		D7F93B3B0703C87862DB26ADE98BF5AC /* RNDecryptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 5692E880D3064D45A69AB857FE0F5DF4 /* RNDecryptor.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0 -w -Xanalyzer -analyzer-disable-all-checks"; }; };
+		FF47DFAA64D8D14DDB2F7BC48E3E399A /* RNCryptor+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 4403F7236064209C1C2E75503BF7D482 /* RNCryptor+Private.h */; settings = {ATTRIBUTES = (Project, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		028089B76D9E0EE75E732ACEF4FE8197 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8CB8B1D122E0957F07F35B64B6E82166;
+			remoteInfo = SocketRocket;
+		};
+		088AD56D015D8D364B6A8BB55CDBF01F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8CB8B1D122E0957F07F35B64B6E82166;
+			remoteInfo = SocketRocket;
+		};
+		A69DBDF8FDD4C1B4BF5607DAFBC1012D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3A86B98C2855C842551EF032B06D9D52;
+			remoteInfo = "RNCryptor-objc";
+		};
+		CAE8359D67FA0481D06A7B7130BC6076 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3A86B98C2855C842551EF032B06D9D52;
+			remoteInfo = "RNCryptor-objc";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		020EE64481612AED237C909F5641F89A /* RNCryptorEngine.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCryptorEngine.h; path = RNCryptor/RNCryptorEngine.h; sourceTree = "<group>"; };
+		0242C76AD299AED5FF4CC6135DCA305E /* Pods-Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		08283D4ED04EE72C22446642A20E5A02 /* RNCryptorEngine.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCryptorEngine.m; path = RNCryptor/RNCryptorEngine.m; sourceTree = "<group>"; };
+		145D412A9D4ED2E6DBF98BCB9E2851B2 /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libPods-Tests.a"; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1FAAAB3A6BFB16A436039A1F9C5C42D1 /* Pods-Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Tests.release.xcconfig"; sourceTree = "<group>"; };
+		287B428346316813C1B40F04C4C6BEE6 /* RNCryptor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNCryptor.m; path = RNCryptor/RNCryptor.m; sourceTree = "<group>"; };
+		35BAA521CD1A654A19B50A880F7AB656 /* RNDecryptor.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNDecryptor.h; path = RNCryptor/RNDecryptor.h; sourceTree = "<group>"; };
+		3612A2EB3DF7BA9CA9984CF0AF714253 /* SRWebSocket.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SRWebSocket.m; path = SocketRocket/SRWebSocket.m; sourceTree = "<group>"; };
+		3D300D3D3A4ADA3A6B5D1190994A0061 /* Pods-Tests-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-Tests-resources.sh"; sourceTree = "<group>"; };
+		4403F7236064209C1C2E75503BF7D482 /* RNCryptor+Private.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "RNCryptor+Private.h"; path = "RNCryptor/RNCryptor+Private.h"; sourceTree = "<group>"; };
+		4B3EC440302C7E5A648451503808CF24 /* RNCryptor-objc-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "RNCryptor-objc-dummy.m"; sourceTree = "<group>"; };
+		4E13D63431422569CF3437AC3F90E8A3 /* Pods-Tests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-Tests-dummy.m"; sourceTree = "<group>"; };
+		50F6DD994291AA39A94BEECAFAF0D785 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.3.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
+		51F451154E0FAD7B5E7BFBB29E4D78F7 /* RNCryptor-objc-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RNCryptor-objc-prefix.pch"; sourceTree = "<group>"; };
+		5692E880D3064D45A69AB857FE0F5DF4 /* RNDecryptor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNDecryptor.m; path = RNCryptor/RNDecryptor.m; sourceTree = "<group>"; };
+		621A667CD2AC8B71E08AE6A57ADA9B62 /* SocketRocket.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SocketRocket.h; path = SocketRocket/SocketRocket.h; sourceTree = "<group>"; };
+		67C54C9C565D6443FCCDED3D3212A382 /* Pods-SPIClient-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SPIClient-iOS.debug.xcconfig"; sourceTree = "<group>"; };
+		6D73AB677AD1055AA02D68D8028E292F /* SocketRocket.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SocketRocket.xcconfig; sourceTree = "<group>"; };
+		7239AAA5EC1D82BA86F569A6EDF9AF2C /* Pods-SPIClient-iOS-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-SPIClient-iOS-acknowledgements.markdown"; sourceTree = "<group>"; };
+		793450118A959398D229294AF2E42E15 /* Pods-SPIClient-iOS-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-SPIClient-iOS-acknowledgements.plist"; sourceTree = "<group>"; };
+		83BCD577B8073235B7629AC5AA9564C4 /* Pods-SPIClient-iOS-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-SPIClient-iOS-resources.sh"; sourceTree = "<group>"; };
+		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9B30817D83893D5F4EF01C0E040C2B9F /* RNCryptor.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNCryptor.h; path = RNCryptor/RNCryptor.h; sourceTree = "<group>"; };
+		9BDA92A954272162B82CA464ABC1D74D /* libPods-SPIClient-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libPods-SPIClient-iOS.a"; path = "libPods-SPIClient-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9C075791C70AC193EFCD09E91B07BEE6 /* RNEncryptor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = RNEncryptor.m; path = RNCryptor/RNEncryptor.m; sourceTree = "<group>"; };
+		9E3725257C79D0C80F87B9E2B291C17A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.3.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		A379D24DC18D328D257A21623AD57F26 /* Pods-SPIClient-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SPIClient-iOS.release.xcconfig"; sourceTree = "<group>"; };
+		A39C44817F26161AF9279824DBAA2FE6 /* Pods-Tests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-Tests-acknowledgements.markdown"; sourceTree = "<group>"; };
+		A847C3B26F9C9E99A5ACEACF501F86DD /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.3.sdk/System/Library/Frameworks/CFNetwork.framework; sourceTree = DEVELOPER_DIR; };
+		AA341B894AC2D054C6DE3D7009496EFE /* SocketRocket-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SocketRocket-dummy.m"; sourceTree = "<group>"; };
+		ADA170ECA95938F25863D30730AD4B39 /* RNEncryptor.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = RNEncryptor.h; path = RNCryptor/RNEncryptor.h; sourceTree = "<group>"; };
+		B7FF51AFD3D078D997AE6B25DCCB6CEA /* libRNCryptor-objc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libRNCryptor-objc.a"; path = "libRNCryptor-objc.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C26DAC41FFB4C0EF6E8CF2EC795BEF84 /* Pods-Tests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-Tests-acknowledgements.plist"; sourceTree = "<group>"; };
+		CECD153B31094D3DACDD5569FF308F2E /* SRWebSocket.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SRWebSocket.h; path = SocketRocket/SRWebSocket.h; sourceTree = "<group>"; };
+		CEF4B18D72F0DF484CCE40F8D5C0249D /* libSocketRocket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libSocketRocket.a; path = libSocketRocket.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D905E7158A3196620A1DBA9CE325F3AE /* RNCryptor-objc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "RNCryptor-objc.xcconfig"; sourceTree = "<group>"; };
+		E9483D505464298DA8D0C08BBA9B270A /* SocketRocket-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SocketRocket-prefix.pch"; sourceTree = "<group>"; };
+		EF57458E82C0865C2BF4E3213231F5D6 /* Pods-Tests-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-Tests-frameworks.sh"; sourceTree = "<group>"; };
+		F947E84AD21594E59BE3EDE1B4F62362 /* Pods-SPIClient-iOS-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-SPIClient-iOS-dummy.m"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		29D715C2C634A54F31D7AFE0ECD23F5A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6945ACD1B358EA80FD8E2068377CC579 /* Foundation.framework in Frameworks */,
+				C1E7BFF85895881B499A72EA7628F9C6 /* Security.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		82BF79CCF963F43BCB9833E3C9E63882 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8A79D2211EF11D2934FFFC1D77D21C05 /* CFNetwork.framework in Frameworks */,
+				5C510DEC79A7711298B3550B14BAF0E1 /* Foundation.framework in Frameworks */,
+				413AD0A3CE44B72A20CCD74F85114CE4 /* Security.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		92263672E8F77C9569B8AB5F1158103D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9FBB219450C11FC1415EFF8906134EEB /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D52BE9978538187CA8441F958720FDBB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D308D738C73B5523154949AEEC14BDC8 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		01B035F756FBC8F6A97F1E9C77ADDC1B /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				D905E7158A3196620A1DBA9CE325F3AE /* RNCryptor-objc.xcconfig */,
+				4B3EC440302C7E5A648451503808CF24 /* RNCryptor-objc-dummy.m */,
+				51F451154E0FAD7B5E7BFBB29E4D78F7 /* RNCryptor-objc-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/RNCryptor-objc";
+			sourceTree = "<group>";
+		};
+		122DA2E5084A4393C29BE363C764795C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D6D888213905F34217EF1880BE2758BA /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		275398624E269DE64CBF2DDB2C81EF11 /* Pods-SPIClient-iOS */ = {
+			isa = PBXGroup;
+			children = (
+				7239AAA5EC1D82BA86F569A6EDF9AF2C /* Pods-SPIClient-iOS-acknowledgements.markdown */,
+				793450118A959398D229294AF2E42E15 /* Pods-SPIClient-iOS-acknowledgements.plist */,
+				F947E84AD21594E59BE3EDE1B4F62362 /* Pods-SPIClient-iOS-dummy.m */,
+				83BCD577B8073235B7629AC5AA9564C4 /* Pods-SPIClient-iOS-resources.sh */,
+				67C54C9C565D6443FCCDED3D3212A382 /* Pods-SPIClient-iOS.debug.xcconfig */,
+				A379D24DC18D328D257A21623AD57F26 /* Pods-SPIClient-iOS.release.xcconfig */,
+			);
+			name = "Pods-SPIClient-iOS";
+			path = "Target Support Files/Pods-SPIClient-iOS";
+			sourceTree = "<group>";
+		};
+		5A42526D82636D952B16A72F2C475128 /* Targets Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				275398624E269DE64CBF2DDB2C81EF11 /* Pods-SPIClient-iOS */,
+				67802651C7A1AE968183C5E146B548FD /* Pods-Tests */,
+			);
+			name = "Targets Support Files";
+			sourceTree = "<group>";
+		};
+		67802651C7A1AE968183C5E146B548FD /* Pods-Tests */ = {
+			isa = PBXGroup;
+			children = (
+				A39C44817F26161AF9279824DBAA2FE6 /* Pods-Tests-acknowledgements.markdown */,
+				C26DAC41FFB4C0EF6E8CF2EC795BEF84 /* Pods-Tests-acknowledgements.plist */,
+				4E13D63431422569CF3437AC3F90E8A3 /* Pods-Tests-dummy.m */,
+				EF57458E82C0865C2BF4E3213231F5D6 /* Pods-Tests-frameworks.sh */,
+				3D300D3D3A4ADA3A6B5D1190994A0061 /* Pods-Tests-resources.sh */,
+				0242C76AD299AED5FF4CC6135DCA305E /* Pods-Tests.debug.xcconfig */,
+				1FAAAB3A6BFB16A436039A1F9C5C42D1 /* Pods-Tests.release.xcconfig */,
+			);
+			name = "Pods-Tests";
+			path = "Target Support Files/Pods-Tests";
+			sourceTree = "<group>";
+		};
+		6C9CD420A8AAE91C0801E4CC61171981 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9BDA92A954272162B82CA464ABC1D74D /* libPods-SPIClient-iOS.a */,
+				145D412A9D4ED2E6DBF98BCB9E2851B2 /* libPods-Tests.a */,
+				B7FF51AFD3D078D997AE6B25DCCB6CEA /* libRNCryptor-objc.a */,
+				CEF4B18D72F0DF484CCE40F8D5C0249D /* libSocketRocket.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7DB346D0F39D3F0E887471402A8071AB = {
+			isa = PBXGroup;
+			children = (
+				93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */,
+				122DA2E5084A4393C29BE363C764795C /* Frameworks */,
+				DD197F9AC873359E8A1054F7D0E7697C /* Pods */,
+				6C9CD420A8AAE91C0801E4CC61171981 /* Products */,
+				5A42526D82636D952B16A72F2C475128 /* Targets Support Files */,
+			);
+			sourceTree = "<group>";
+		};
+		86D34603AB61B775DC31D8ACE3F3B25B /* SocketRocket */ = {
+			isa = PBXGroup;
+			children = (
+				621A667CD2AC8B71E08AE6A57ADA9B62 /* SocketRocket.h */,
+				CECD153B31094D3DACDD5569FF308F2E /* SRWebSocket.h */,
+				3612A2EB3DF7BA9CA9984CF0AF714253 /* SRWebSocket.m */,
+				FFABE1C56216A37611134D71EC61A34D /* Support Files */,
+			);
+			name = SocketRocket;
+			path = SocketRocket;
+			sourceTree = "<group>";
+		};
+		D6D888213905F34217EF1880BE2758BA /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				A847C3B26F9C9E99A5ACEACF501F86DD /* CFNetwork.framework */,
+				9E3725257C79D0C80F87B9E2B291C17A /* Foundation.framework */,
+				50F6DD994291AA39A94BEECAFAF0D785 /* Security.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		DD197F9AC873359E8A1054F7D0E7697C /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				FA2D51430B7DDFAC8DB6F9F4104A7ECA /* RNCryptor-objc */,
+				86D34603AB61B775DC31D8ACE3F3B25B /* SocketRocket */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		FA2D51430B7DDFAC8DB6F9F4104A7ECA /* RNCryptor-objc */ = {
+			isa = PBXGroup;
+			children = (
+				9B30817D83893D5F4EF01C0E040C2B9F /* RNCryptor.h */,
+				287B428346316813C1B40F04C4C6BEE6 /* RNCryptor.m */,
+				4403F7236064209C1C2E75503BF7D482 /* RNCryptor+Private.h */,
+				020EE64481612AED237C909F5641F89A /* RNCryptorEngine.h */,
+				08283D4ED04EE72C22446642A20E5A02 /* RNCryptorEngine.m */,
+				35BAA521CD1A654A19B50A880F7AB656 /* RNDecryptor.h */,
+				5692E880D3064D45A69AB857FE0F5DF4 /* RNDecryptor.m */,
+				ADA170ECA95938F25863D30730AD4B39 /* RNEncryptor.h */,
+				9C075791C70AC193EFCD09E91B07BEE6 /* RNEncryptor.m */,
+				01B035F756FBC8F6A97F1E9C77ADDC1B /* Support Files */,
+			);
+			name = "RNCryptor-objc";
+			path = "RNCryptor-objc";
+			sourceTree = "<group>";
+		};
+		FFABE1C56216A37611134D71EC61A34D /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				6D73AB677AD1055AA02D68D8028E292F /* SocketRocket.xcconfig */,
+				AA341B894AC2D054C6DE3D7009496EFE /* SocketRocket-dummy.m */,
+				E9483D505464298DA8D0C08BBA9B270A /* SocketRocket-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/SocketRocket";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		469205E39620A37DAC744D56E4B0433B /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF47DFAA64D8D14DDB2F7BC48E3E399A /* RNCryptor+Private.h in Headers */,
+				503394883E3348369E9E439AFEBE9D06 /* RNCryptor.h in Headers */,
+				7414A668708159C2C60AA95AA20AF5DC /* RNCryptorEngine.h in Headers */,
+				B936EBEC868C9937214DE347666BEB4A /* RNDecryptor.h in Headers */,
+				6440D1934BDFE9965579414C37756E93 /* RNEncryptor.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C3ABAE7EC206A65301C0F77D5F7CA551 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AF84CFCC713614B58DBF8CDB33944492 /* SocketRocket.h in Headers */,
+				596EE562561BE4C8BA4DF70A094C5D88 /* SRWebSocket.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		02436D6AE57056AECE29C63A62DDC877 /* Pods-SPIClient-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9EE2DB7F09C8B29EF8DC05AE6A28BCAD /* Build configuration list for PBXNativeTarget "Pods-SPIClient-iOS" */;
+			buildPhases = (
+				7DA6857EFDB4C3597F21ECA6525EA1AF /* Sources */,
+				92263672E8F77C9569B8AB5F1158103D /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				29630C03FC6CEA79340021702F1FA9C5 /* PBXTargetDependency */,
+				855F278DFBC80DE5AAC606031C90607F /* PBXTargetDependency */,
+			);
+			name = "Pods-SPIClient-iOS";
+			productName = "Pods-SPIClient-iOS";
+			productReference = 9BDA92A954272162B82CA464ABC1D74D /* libPods-SPIClient-iOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		3A86B98C2855C842551EF032B06D9D52 /* RNCryptor-objc */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1EBE4D865FF4FAA4F3C7C71993826AE9 /* Build configuration list for PBXNativeTarget "RNCryptor-objc" */;
+			buildPhases = (
+				708173F410A279826F17C14EA104BF36 /* Sources */,
+				29D715C2C634A54F31D7AFE0ECD23F5A /* Frameworks */,
+				469205E39620A37DAC744D56E4B0433B /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "RNCryptor-objc";
+			productName = "RNCryptor-objc";
+			productReference = B7FF51AFD3D078D997AE6B25DCCB6CEA /* libRNCryptor-objc.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		8CB8B1D122E0957F07F35B64B6E82166 /* SocketRocket */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D3A38B7A4C7EB47789BF38920392C32C /* Build configuration list for PBXNativeTarget "SocketRocket" */;
+			buildPhases = (
+				CFF2F5064244FF0FE930104DB555E67E /* Sources */,
+				82BF79CCF963F43BCB9833E3C9E63882 /* Frameworks */,
+				C3ABAE7EC206A65301C0F77D5F7CA551 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SocketRocket;
+			productName = SocketRocket;
+			productReference = CEF4B18D72F0DF484CCE40F8D5C0249D /* libSocketRocket.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		951AD6C9327E9D173EB6D61EF8DD919D /* Pods-Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 94C6F41A5A7B7ECF0FB4D43E10C17A1D /* Build configuration list for PBXNativeTarget "Pods-Tests" */;
+			buildPhases = (
+				419F0E350B2AF059F666926DF56F62FA /* Sources */,
+				D52BE9978538187CA8441F958720FDBB /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AC8F4BC4E3520698496171299D74850E /* PBXTargetDependency */,
+				0CA54106C842CFA7523CD1881384B9E1 /* PBXTargetDependency */,
+			);
+			name = "Pods-Tests";
+			productName = "Pods-Tests";
+			productReference = 145D412A9D4ED2E6DBF98BCB9E2851B2 /* libPods-Tests.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D41D8CD98F00B204E9800998ECF8427E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0930;
+				LastUpgradeCheck = 0930;
+			};
+			buildConfigurationList = 2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7DB346D0F39D3F0E887471402A8071AB;
+			productRefGroup = 6C9CD420A8AAE91C0801E4CC61171981 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				02436D6AE57056AECE29C63A62DDC877 /* Pods-SPIClient-iOS */,
+				951AD6C9327E9D173EB6D61EF8DD919D /* Pods-Tests */,
+				3A86B98C2855C842551EF032B06D9D52 /* RNCryptor-objc */,
+				8CB8B1D122E0957F07F35B64B6E82166 /* SocketRocket */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		419F0E350B2AF059F666926DF56F62FA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				06C0090E60A16EC981B312B137D8B20A /* Pods-Tests-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		708173F410A279826F17C14EA104BF36 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				385C076D7745FAD6C955919AEFAF2B02 /* RNCryptor-objc-dummy.m in Sources */,
+				9672ACBCDAEC2C8974099E53D3B90F34 /* RNCryptor.m in Sources */,
+				CC50AAC4486F9CC60E36A180B65B1CD5 /* RNCryptorEngine.m in Sources */,
+				D7F93B3B0703C87862DB26ADE98BF5AC /* RNDecryptor.m in Sources */,
+				32118FC35A0882CFDA1F8F8AF901C8D2 /* RNEncryptor.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7DA6857EFDB4C3597F21ECA6525EA1AF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A333E31318504DBADAF3DB3E821A5EF6 /* Pods-SPIClient-iOS-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CFF2F5064244FF0FE930104DB555E67E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C2128454755E35BF6F56C66DB040ED66 /* SocketRocket-dummy.m in Sources */,
+				95BE0D86D521E243BB3C1216F8B05798 /* SRWebSocket.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0CA54106C842CFA7523CD1881384B9E1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SocketRocket;
+			target = 8CB8B1D122E0957F07F35B64B6E82166 /* SocketRocket */;
+			targetProxy = 028089B76D9E0EE75E732ACEF4FE8197 /* PBXContainerItemProxy */;
+		};
+		29630C03FC6CEA79340021702F1FA9C5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "RNCryptor-objc";
+			target = 3A86B98C2855C842551EF032B06D9D52 /* RNCryptor-objc */;
+			targetProxy = A69DBDF8FDD4C1B4BF5607DAFBC1012D /* PBXContainerItemProxy */;
+		};
+		855F278DFBC80DE5AAC606031C90607F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SocketRocket;
+			target = 8CB8B1D122E0957F07F35B64B6E82166 /* SocketRocket */;
+			targetProxy = 088AD56D015D8D364B6A8BB55CDBF01F /* PBXContainerItemProxy */;
+		};
+		AC8F4BC4E3520698496171299D74850E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "RNCryptor-objc";
+			target = 3A86B98C2855C842551EF032B06D9D52 /* RNCryptor-objc */;
+			targetProxy = CAE8359D67FA0481D06A7B7130BC6076 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0C4991EB0AD0B3B592432DF29C4E5D64 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1FAAAB3A6BFB16A436039A1F9C5C42D1 /* Pods-Tests.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MACH_O_TYPE = staticlib;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		130CD7770FFC2E2991233F78EA1FAFD0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6D73AB677AD1055AA02D68D8028E292F /* SocketRocket.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/SocketRocket/SocketRocket-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		26C7E4F0A780B6B8173000D37F135ADF /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A379D24DC18D328D257A21623AD57F26 /* Pods-SPIClient-iOS.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MACH_O_TYPE = staticlib;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		2CB1ED5C6537CDE78EF95200B6DF560E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6D73AB677AD1055AA02D68D8028E292F /* SocketRocket.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/SocketRocket/SocketRocket-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		411737FA4F0379BFC7E2FDCD05231922 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D905E7158A3196620A1DBA9CE325F3AE /* RNCryptor-objc.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/RNCryptor-objc/RNCryptor-objc-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		5332CB07BABF6FD1861694CA494E35DC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D905E7158A3196620A1DBA9CE325F3AE /* RNCryptor-objc.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				GCC_PREFIX_HEADER = "Target Support Files/RNCryptor-objc/RNCryptor-objc-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PUBLIC_HEADERS_FOLDER_PATH = "";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7587D26A735A298ACF3D211C0A2893EF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 67C54C9C565D6443FCCDED3D3212A382 /* Pods-SPIClient-iOS.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MACH_O_TYPE = staticlib;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C3E37FB098AE76440E29106ADBF00CEB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = NO_SIGNING/;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		DA03565BE765DB55C6448FB363A44481 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_REQUIRED = NO;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = NO_SIGNING/;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		DDC0735FF0B2D041B01F2BF24DFBB694 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0242C76AD299AED5FF4CC6135DCA305E /* Pods-Tests.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MACH_O_TYPE = staticlib;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1EBE4D865FF4FAA4F3C7C71993826AE9 /* Build configuration list for PBXNativeTarget "RNCryptor-objc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5332CB07BABF6FD1861694CA494E35DC /* Debug */,
+				411737FA4F0379BFC7E2FDCD05231922 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C3E37FB098AE76440E29106ADBF00CEB /* Debug */,
+				DA03565BE765DB55C6448FB363A44481 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		94C6F41A5A7B7ECF0FB4D43E10C17A1D /* Build configuration list for PBXNativeTarget "Pods-Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DDC0735FF0B2D041B01F2BF24DFBB694 /* Debug */,
+				0C4991EB0AD0B3B592432DF29C4E5D64 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9EE2DB7F09C8B29EF8DC05AE6A28BCAD /* Build configuration list for PBXNativeTarget "Pods-SPIClient-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7587D26A735A298ACF3D211C0A2893EF /* Debug */,
+				26C7E4F0A780B6B8173000D37F135ADF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D3A38B7A4C7EB47789BF38920392C32C /* Build configuration list for PBXNativeTarget "SocketRocket" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2CB1ED5C6537CDE78EF95200B6DF560E /* Debug */,
+				130CD7770FFC2E2991233F78EA1FAFD0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+}
