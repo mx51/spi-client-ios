@@ -401,6 +401,33 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     });
 }
 
+- (void)initiateGetLastTxWithCompletion:(SPICompletionTxResult)completion {
+    __weak __typeof(& *self) weakSelf = self;
+    
+    dispatch_async(self.queue, ^{
+        if (weakSelf.state.status == SPIStatusUnpaired) return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
+        
+        if (weakSelf.state.flow != SPIFlowIdle) return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not idle"]);
+        
+        SPIGetLastTransactionRequest *gltRequest = [SPIGetLastTransactionRequest new];
+        
+        weakSelf.state.flow = SPIFlowTransaction;
+        SPIMessage *gltMessage = [gltRequest toMessage];
+        weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:gltMessage.mid
+                                                                             type:SPITransactionTypeGetLastTransaction
+                                                                      amountCents:0
+                                                                          message:gltMessage
+                                                                              msg:@"Waiting for EFTPOS connection to make a get last transaction request"];
+        
+        if ([weakSelf send:gltMessage]) {
+            [weakSelf.state.txFlowState sent:@"Asked EFTPOS to get last transaction."];
+        }
+        
+        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state.copy];
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Get last transaction initiated"]);
+    });
+}
+
 - (void)canceltransactionMonitoringTimer {
     [self.transactionMonitoringTimer cancel];
 }
@@ -1039,19 +1066,6 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
  */
 - (void)callGetLastTransaction {
     [self send:[[SPIGetLastTransactionRequest new] toMessage]];
-}
-
-/**
- *
- * Ask the PIN pad to tell us what the Most Recent Transaction was
- */
-- (void)getLastTransaction {
-    NSLog(@"getLastTransaction");
-    
-    // Create a GetLastTransactionRequest.
-    SPIGetLastTransactionRequest *gltRequest = [SPIGetLastTransactionRequest new];
-    SPILog(@"\nAsking EFTPOS to tell me what the most recent transaction was...");
-    [self.connection send:[[gltRequest toMessage] toJson:self.spiMessageStamp]]; // Send it to the PIN pad server
 }
 
 /**

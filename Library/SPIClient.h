@@ -164,4 +164,11 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
  */
 - (void)initiateSettleTx:(NSString *)pid completion:(SPICompletionTxResult)completion;
 
+/**
+ * Initiates a get last transaction operation.
+ * Use this when you want to retrieve the most recent transaction that was processed by the EFTPOS.
+ * Be subscribed to TxFlowStateChanged to get updates on the process.
+ */
+- (void)initiateGetLastTxWithCompletion:(SPICompletionTxResult)completion;
+
 @end
