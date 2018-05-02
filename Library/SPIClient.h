@@ -171,4 +171,21 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
  */
 - (void)initiateGetLastTxWithCompletion:(SPICompletionTxResult)completion;
 
+/**
+ * Attempts to conclude whether a gltResponse matches an expected transaction and returns the outcome.
+ * If Success/Failed is returned, it means that the GTL response did match, and that transaction was successful/failed.
+ * If Unknown is returned, it means that the gltResponse does not match the expected transaction.
+ *
+ * @param gltResponse    The gltResponse message to check.
+ * @param expectedType   The expected type (e.g. Purchase, Refund).
+ * @param expectedAmount The expected amount in cents.
+ * @param requestDate    The time you made your request.
+ * @param posRefId       The reference ID that you passed in with the original request. Currently not used.
+ */
+- (SPIMessageSuccessState)gltMatch:(SPIGetLastTransactionResponse *)gltResponse
+                      expectedType:(SPITransactionType)expectedType
+                    expectedAmount:(NSInteger)expectedAmount
+                       requestDate:(NSDate *)requestDate
+                          posRefId:(NSString *)posRefId;
+
 @end
