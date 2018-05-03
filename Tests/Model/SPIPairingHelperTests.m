@@ -36,8 +36,8 @@
     XCTAssertEqualObjects(@"62", keyResponse.requestId);
 
     SPIMessage *msgToSend = [keyResponse toMessage];
-    NSString  *enc       = ((NSDictionary *)msgToSend.data[@"enc"])[@"B"];
-    NSString  *hmac      = ((NSDictionary *)msgToSend.data[@"hmac"])[@"B"];
+    NSString  *enc       = [msgToSend getDataDictionaryValue:@"enc"][@"B"];
+    NSString  *hmac      = [msgToSend getDataDictionaryValue:@"hmac"][@"B"];
 
     XCTAssertNotNil(enc);
     XCTAssertNotNil(hmac);

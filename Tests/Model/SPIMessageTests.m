@@ -22,7 +22,7 @@
     SPIMessage *m          = [SPIMessage fromJson:msgJsonStr secrets:nil];
 
     XCTAssertEqualObjects(@"event_x", m.eventName);
-    XCTAssertEqualObjects(@"value1",  m.data[@"param1"]);
+    XCTAssertEqualObjects(@"value1", [m getDataStringValue:@"param1"]);
 }
 
 - (void)testIncomingMessageEncrypted {
