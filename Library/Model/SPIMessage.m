@@ -185,11 +185,15 @@ NSString * const SPIEventError           = @"error";
 }
 
 - (NSInteger)getDataIntegerValue:(NSString *)attribute {
-    return [self getDataStringValue:attribute].integerValue;
+    NSObject *v = self.data[attribute];
+    if (v != [NSNull null]) return ((NSString *)v).integerValue;
+    return 0;
 }
 
 - (BOOL)getDataBoolValue:(NSString *)attribute {
-    return [self getDataStringValue:attribute].boolValue;
+    NSObject *v = self.data[attribute];
+    if (v != [NSNull null]) return ((NSString *)v).boolValue;
+    return false;
 }
 
 - (NSDictionary *)getDataDictionaryValue:(NSString *)attribute {
