@@ -8,29 +8,45 @@
 
 #import "SPIPurchase.h"
 #import "SPIMessage.h"
+#import "SPIClient.h"
 #import "SPIRequestIdHelper.h"
 #import "NSDateFormatter+Util.h"
 
 @implementation SPIPurchaseRequest : NSObject
 
-- (instancetype)initWithPurchaseId:(NSString *)purchaseId
-                       amountCents:(NSInteger)amountCents {
+- (instancetype)initWithAmountCents:(NSInteger)amountCents
+                           posRefId:(NSString *)posRefId{
     self = [super init];
     
     if (self) {
-        _purchaseId  = [purchaseId copy];
+        _posRefId  = posRefId;
+        _purchaseAmount = amountCents;
+        
+        // Library Backwards Compatibility
+        _purchaseId = posRefId;
         _amountCents = amountCents;
     }
     
     return self;
     
 }
-
 - (SPIMessage *)toMessage {
-    return [[SPIMessage alloc] initWithMessageId:self.purchaseId
+    NSDictionary *originalData = @{@"purchase_amount":@(self.purchaseAmount),
+                                  @"tip_amount":@(self.tipAmount),
+                                  @"cash_amount":@(self.cashoutAmount),
+                                  @"prompt_for_cashout":@(self.promptForCashout)
+                                  };
+    NSMutableDictionary *data = [[NSMutableDictionary alloc] initWithDictionary:originalData];
+    [_config addReceiptConfig:data];
+    SPIMessage *message = [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"prchs"]
                                        eventName:SPIPurchaseRequestKey
-                                            data:@{@"amount_purchase":@(self.amountCents)}
+                                            data:data
                                  needsEncryption:true];
+    return message;
+    
+}
+-(NSString *)amountSummary{
+    return [NSString stringWithFormat:@"Purchase: %.2f; Tip: %.2f; Cashout: %.2f;",((float)_purchaseAmount/100.0),((float)_tipAmount/100.0),((float)_cashoutAmount/100.0)];
 }
 
 @end
@@ -43,7 +59,9 @@
         _message       = message;
         _requestid     = message.mid;
         _schemeName    = [message getDataStringValue:@"scheme_name"];
+        _posRefId      = [message getDataStringValue:@"pos_ref_id"];
         _isSuccess     = message.successState == SPIMessageSuccessStateSuccess;
+        
     }
     
     return self;
@@ -68,6 +86,23 @@
 
 - (NSString *)hostResponseText {
     return [self.message getDataStringValue:@"host_response_text"];
+}
+- (NSInteger)getPurchaseAmount{
+    return [self.message getDataIntegerValue:@"purchase_amount"];
+}
+- (NSInteger)getTipAmount{
+    return [self.message getDataIntegerValue:@"tip_amount"];
+}
+- (NSInteger)getCashoutAmount{
+    return [self.message getDataIntegerValue:@"cash_amount"];
+}
+
+- (NSInteger)getBankNonCashAmount{
+    return [self.message getDataIntegerValue:@"bank_noncash_amount"];
+}
+
+- (NSInteger)getBankCashAmount{
+    return [self.message getDataIntegerValue:@"bank_cash_amount"];
 }
 
 @end
@@ -124,6 +159,10 @@
     return [self.message getDataStringValue:@"transaction_type"];
 }
 
+- (NSString *)getPosRefId{
+    return [self.message getDataStringValue:@"pos_ref_id"];
+}
+
 - (NSString *)getSchemeName {
     return [self.message getDataStringValue:@"scheme_name"];
 }
@@ -159,6 +198,10 @@
     return [[NSDateFormatter dateNoTimeZoneFormatter] dateFromString:bankDateTimeString];
 }
 
+-(BOOL) isStillInProgress:(NSString *) posRefId{
+    return ([self wasOperationInProgressError] && [[self getPosRefId] isEqualToString:posRefId]);
+}
+
 - (SPIMessageSuccessState)successState {
     return self.message.successState;
 }
@@ -184,12 +227,13 @@
 
 @implementation SPIRefundRequest : NSObject
 
-- (instancetype)initWithRefundId:(NSString *)refundId amountCents:(NSInteger)amountCents {
+- (instancetype)initWithPosRefId:(NSString *)posRefId amountCents:(NSInteger)amountCents {
     
     self = [super init];
     
     if (self) {
-        _refundId    = [refundId copy];
+        _refundId    = [SPIRequestIdHelper idForString:@"refund"];
+        _posRefId = posRefId;
         _amountCents = amountCents;
     }
     
@@ -197,9 +241,11 @@
 }
 
 - (SPIMessage *)toMessage {
-    return [[SPIMessage alloc] initWithMessageId:self.refundId
+    return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"refund"]
                                        eventName:SPIRefundRequestKey
-                                            data:@{@"amount_purchase":@(self.amountCents)}
+                                            data:@{@"refund_amount":@(self.amountCents),
+                                                   @"pos_ref_id":self.posRefId
+                                                   }
                                  needsEncryption:true];
 }
 
@@ -310,4 +356,71 @@
     
 }
 
+@end
+@implementation SPIMotoPurchaseRequest:NSObject
+- (id)init:(NSInteger)amountCents posRefId:(NSString *)posRefId{
+    _config = [[SPIConfig alloc] init];
+    _purchaseAmount = amountCents;
+    _posRefId = posRefId;
+    return  self;
+}
+- (SPIMessage *)toMessage{
+    NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
+    [data setValue:_posRefId forKey:@"pos_ref_id"];
+    [data setValue:[NSNumber numberWithInteger:_purchaseAmount] forKey:@"purchase_amount"];
+    [_config addReceiptConfig:data];
+    SPIMessage *message = [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"moto"] eventName:SPIMotoPurchaseRequestKey data:data needsEncryption:true];
+    return message;
+}
+@end
+@implementation SPIMotoPurchaseResponse:NSObject
+- (instancetype)initWithMessage:(SPIMessage *)message{
+    _purchaseResponse = [[SPIPurchaseResponse alloc] initWithMessage:message];
+    _posRefId = _purchaseResponse.posRefId;
+    return self;
+}
+@end
+@interface SPIPhoneForAuthRequired(){
+    NSString *_phoneNumber;
+    NSString *_merchantId;
+}
+@end
+@implementation SPIPhoneForAuthRequired:NSObject
+
+- (instancetype)initWithMessage:(SPIMessage *)message{
+    _requestId = message.mid;
+    _posRefId = [message getDataStringValue:@"pos_ref_id"];
+    _phoneNumber = [message getDataStringValue:@"auth_centre_phone_number"];
+    _merchantId = [message getDataStringValue:@"merchant_id"];
+    return self;
+}
+- (id)init:(NSString *)posRefId requestId:(NSString *)requestId phoneNumber:(NSString *)phoneNumber merchantId:(NSString *)merchantId{
+    _requestId = requestId;
+    _posRefId = posRefId;
+    _phoneNumber = phoneNumber;
+    _merchantId = merchantId;
+    return self;
+}
+-(NSString *)getPhoneNumber{
+    return _phoneNumber;
+}
+-(NSString *)getMerchantId{
+    return _merchantId;
+}
+
+@end
+@implementation SPIAuthCodeAdvice:NSObject
+- (id)init:(NSString *)posRefId authCode:(NSString *)authCode{
+    _posRefId = posRefId;
+    _authCode = authCode;
+    return self;
+}
+- (SPIMessage *)toMessage{
+    NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
+    [data setValue:_posRefId forKey:@"pos_ref_id"];
+    [data setValue:_authCode forKey:@"auth_code"];
+
+    SPIMessage *message = [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"authad"] eventName:SPIAuthCodeAdviceKey data:data needsEncryption:true];
+    return message;
+}
 @end

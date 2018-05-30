@@ -40,8 +40,13 @@ typedef NS_ENUM (NSUInteger, SPIFlow) {
 typedef NS_ENUM (NSUInteger, SPITransactionType) {
     SPITransactionTypePurchase,
     SPITransactionTypeRefund,
+    SPITransactionTypeCashoutOnly,
+    SPITransactionTypeMOTO,
     SPITransactionTypeSettle,
+    SPITransactionTypeSettleEnquiry,
     SPITransactionTypeGetLastTransaction,
+    SPITransactionTypePreAuth,
+    SPITransactionTypeAccountVerify,
 };
 
 /**
@@ -174,8 +179,6 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 - (void)completed:(SPIMessageSuccessState)state response:(SPIMessage *)response msg:(NSString *)msg;
 
 - (void)unknownCompleted:(NSString *)msg;
-
-+ (NSString *)txTypeString:(SPITransactionType)txType;
 
 @end
 

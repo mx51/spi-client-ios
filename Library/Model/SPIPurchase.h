@@ -10,21 +10,29 @@
 #import "SPIMessage.h"
 
 @class SPIMessage;
-
+@class SPIConfig;
 @interface SPIPurchaseRequest : NSObject
-@property (nonatomic, readonly, copy) NSString *purchaseId;
-@property (nonatomic, readonly) NSInteger      amountCents;
+@property (nonatomic, readonly, copy) NSString *purchaseId DEPRECATED_ATTRIBUTE;
+@property (nonatomic, readonly, copy) NSString *posRefId;
+@property (nonatomic, readonly) NSInteger      amountCents DEPRECATED_ATTRIBUTE;
+@property (nonatomic, readonly) NSInteger      purchaseAmount;
+@property (nonatomic) NSInteger                tipAmount;
+@property (nonatomic) NSInteger                cashoutAmount;
+@property (nonatomic) BOOL                     promptForCashout;
+@property(nonatomic,retain)  SPIConfig *config;
 
-- (instancetype)initWithPurchaseId:(NSString *)purchaseId
-                       amountCents:(NSInteger)amountCents;
-
+- (instancetype)initWithAmountCents:(NSInteger)amountCents
+                       posRefId:(NSString *)posRefId;
 - (SPIMessage *)toMessage;
+- (NSString *)amountSummary;
 @end
+
 
 @interface SPIPurchaseResponse : NSObject
 @property (nonatomic, readonly) BOOL               isSuccess;
 @property (nonatomic, readonly, copy) NSString     *requestid;
 @property (nonatomic, readonly, copy) NSString     *schemeName;
+@property (nonatomic,retain) NSString              *posRefId;
 @property (nonatomic, readonly, strong) SPIMessage *message;
 
 - (instancetype)initWithMessage:(SPIMessage *)message;
@@ -33,11 +41,22 @@
 
 - (NSString *)getCustomerReceipt;
 
+- (NSInteger)getPurchaseAmount;
+
+- (NSInteger)getTipAmount;
+
+- (NSInteger)getCashoutAmount;
+
+- (NSInteger)getBankNonCashAmount;
+
+- (NSInteger)getBankCashAmount;
+
 - (NSString *)getResponseText;
 
 - (NSString *)getResponseValueWithAttribute:(NSString *)attribute;
 
 - (NSString *)hostResponseText;
+
 
 @end
 
@@ -64,6 +83,8 @@
 
 - (NSString *)getTxType;
 
+- (NSString *)getPosRefId;
+
 - (NSString *)getSchemeName;
 
 - (NSInteger)getAmount;
@@ -72,6 +93,8 @@
 
 - (NSString *)getRRN;
 
+-(BOOL)isStillInProgress:(NSString *) posRefId;
+
 - (NSString *)getResponseValue:(NSString *)attribute;
 
 - (void)copyMerchantReceiptToCustomerReceipt;
@@ -79,10 +102,12 @@
 @end
 
 @interface SPIRefundRequest : NSObject
-@property (nonatomic, readonly, copy) NSString *refundId;
+@property (nonatomic, readonly, copy) NSString *refundId DEPRECATED_ATTRIBUTE;
 @property (nonatomic, readonly) NSInteger      amountCents;
+@property (nonatomic, readonly, copy) NSString *posRefId;
+@property (nonatomic, retain) SPIConfig *config;
 
-- (instancetype)initWithRefundId:(NSString *)refundId amountCents:(NSInteger)amountCents;
+- (instancetype)initWithPosRefId:(NSString *)posRefId amountCents:(NSInteger)amountCents;
 
 - (SPIMessage *)toMessage;
 @end
@@ -126,4 +151,35 @@
 - (instancetype)initWithSignatureRequiredRequestId:(NSString *)signatureRequiredRequestId;
 
 - (SPIMessage *)toMessage;
+@end
+@interface SPIMotoPurchaseRequest:NSObject
+-init:(NSInteger)amountCents posRefId:(NSString *)posRefId;
+
+@property (nonatomic, readonly) NSInteger          purchaseAmount;
+@property (nonatomic, readonly, copy) NSString     *posRefId;
+@property(nonatomic,retain)  SPIConfig *config;
+- (SPIMessage *) toMessage;
+
+@end
+
+@interface SPIMotoPurchaseResponse:NSObject
+- (instancetype)initWithMessage:(SPIMessage *)message;
+@property (nonatomic, readonly, copy) NSString                *posRefId;
+@property (nonatomic, readonly, copy) SPIPurchaseResponse     *purchaseResponse;
+@end
+
+@interface SPIPhoneForAuthRequired:NSObject
+- (instancetype)initWithMessage:(SPIMessage *)message;
+-init:(NSString *)posRefId requestId:(NSString *)requestId phoneNumber:(NSString *)phoneNumber merchantId:(NSString *)merchantId;
+@property (nonatomic, readonly, copy) NSString     *requestId;
+@property (nonatomic, readonly, copy) NSString     *posRefId;
+-(NSString *)getPhoneNumber;
+-(NSString *)getMerchantId;
+@end
+
+@interface SPIAuthCodeAdvice:NSObject
+-init:(NSString *)posRefId authCode:(NSString *)authCode;
+@property (nonatomic, readonly, copy) NSString     *authCode;
+@property (nonatomic, readonly, copy) NSString     *posRefId;
+- (SPIMessage *) toMessage;
 @end

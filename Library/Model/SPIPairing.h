@@ -67,3 +67,8 @@
 @property (nonatomic, readonly, copy) SPIKeyResponse *keyResponse;
 - (instancetype)initWithSecrets:(SPISecrets *)secrets keyResponse:(SPIKeyResponse *)keyResponse;
 @end
+
+@interface SPIDropKeysRequest : NSObject
+-(SPIMessage *)toMessage;
+@end
+

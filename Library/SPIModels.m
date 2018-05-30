@@ -74,22 +74,6 @@
     return self;
 }
 
-+ (NSString *)txTypeString:(SPITransactionType)txType {
-    switch (txType) {
-        case SPITransactionTypePurchase:
-            return @"PURCHASE";
-            
-        case SPITransactionTypeRefund:
-            return @"REFUND";
-            
-        case SPITransactionTypeSettle:
-            return @"SETTLE";
-            
-        case SPITransactionTypeGetLastTransaction:
-            return @"GET_LAST_TRANSACTION";
-    }
-}
-
 - (void)sent:(NSString *)msg {
     self.isRequestSent        = YES;
     self.requestDate          = [NSDate date];

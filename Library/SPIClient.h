@@ -9,12 +9,17 @@
 #import <Foundation/Foundation.h>
 
 #import "SPIPurchase.h"
-#import "SPISettleRequest.h"
+#import "SPISettlement.h"
 #import "SPIConnection.h"
 #import "SPIModels.h"
 
 @class SPIClient;
+@interface SPIConfig:NSObject
+@property (nonatomic) BOOL promptForCustomerCopyOnEftpos;
+@property (nonatomic) BOOL signatureFlowOnEftpos;
+-(void)addReceiptConfig:(NSMutableDictionary*) data;
 
+@end
 typedef void (^SPICompletionTxResult)(SPIInitiateTxResult *result);
 
 /**
@@ -70,12 +75,18 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
 
 @property (nonatomic, weak) id <SPIDelegate> delegate;
 
+@property(nonatomic,readonly)  SPIConfig *config;;
 /**
  * If you provide secrets, it will start in PairedConnecting status; Otherwise it will start in Unpaired status.
  *
  * @return BOOL, YES if needs to pair, else NO
  */
 - (BOOL)start;
+
+/**
+ * returns the SDK version
+ */
+- (NSString *)getVersion;
 
 /**
  * Set the pairing secrets encKey and hmacKey
@@ -164,6 +175,7 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
  */
 - (void)initiateSettleTx:(NSString *)pid completion:(SPICompletionTxResult)completion;
 
+- (void)initiateSettlementEnquiry:(NSString *)posRefId completion:(SPICompletionTxResult)completion;
 /**
  * Initiates a get last transaction operation.
  * Use this when you want to retrieve the most recent transaction that was processed by the EFTPOS.
@@ -171,6 +183,17 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
  */
 - (void)initiateGetLastTxWithCompletion:(SPICompletionTxResult)completion;
 
+/**
+* This is useful to recover from your POS crashing in the middle of a transaction.
+* When you restart your POS, if you had saved enough state, you can call this method to recover the client library state.
+* You need to have the posRefId that you passed in with the original transaction, and the transaction type.
+* This method will return immediately whether recovery has started or not.
+* If recovery has started, you need to bring up the transaction modal to your user a be listening to TxFlowStateChanged.
+*
+* @param posRefId     The is that you had assigned to the transaction that you are trying to recover.
+* @param txType       The transaction type.
+*/
+-(void)initiateRecovery:(NSString *)posRefId transactionType:(SPITransactionType) txType completion:(SPICompletionTxResult)completion;
 /**
  * Attempts to conclude whether a gltResponse matches an expected transaction and returns the outcome.
  * If Success/Failed is returned, it means that the GTL response did match, and that transaction was successful/failed.
@@ -189,3 +212,4 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
                           posRefId:(NSString *)posRefId;
 
 @end
+

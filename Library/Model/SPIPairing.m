@@ -82,7 +82,7 @@
     self = [super init];
     
     if (self) {
-        _isSuccess = [message getDataBoolValue:@"success"];
+        _isSuccess = [message getDataBoolValue:@"success" defaultIfNotFound:false];
     }
     
     return self;
@@ -104,4 +104,9 @@
     
 }
 
+@end
+@implementation SPIDropKeysRequest
+-(SPIMessage *)toMessage{
+    return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"drpkys"] eventName:SPIDropKeysAdviceKey data:nil needsEncryption:true];
+}
 @end

@@ -18,6 +18,7 @@ NSString * const SPIKeyRequestKey   = @"key_request";
 NSString * const SPIKeyResponseKey  = @"key_response";
 NSString * const SPIKeyCheckKey     = @"key_check";
 NSString * const SPIPairResponseKey = @"pair_response";
+NSString * const SPIDropKeysAdviceKey  = @"drop_keys";
 
 NSString * const SPILoginRequestKey  = @"login_request";
 NSString * const SPILoginResponseKey = @"login_response";
@@ -37,8 +38,19 @@ NSString * const SPISignatureRequiredKey = @"signature_required";
 NSString * const SPISignatureDeclinedKey = @"signature_decline";
 NSString * const SPISignatureAcceptedKey = @"signature_accept";
 
+NSString * const SPIAuthCodeRequiredKey = @"authorisation_code_required";
+NSString * const SPIAuthCodeAdviceKey = @"authorisation_code_advice";
+
+NSString * const SPICashoutOnlyRequestKey = @"cash";
+NSString * const SPICashoutOnlyResponseKey = @"cash_response";
+
+NSString * const SPIMotoPurchaseRequestKey = @"moto_purchase";
+NSString * const SPIMotoPurchaseResponseKey = @"moto_purchase_response";
+
 NSString * const SPISettleRequestKey  = @"settle";
 NSString * const SPISettleResponseKey = @"settle_response";
+NSString * const SPISettlementEnquiryRequestKey = @"settlement_enquiry";
+NSString * const SPISettlementEnquiryResponseKey = @"settlement_enquiry_response";
 
 NSString * const SPIKeyRollRequestKey  = @"request_use_next_keys";
 NSString * const SPIKeyRollResponseKey = @"response_use_next_keys";
@@ -46,6 +58,12 @@ NSString * const SPIKeyRollResponseKey = @"response_use_next_keys";
 NSString * const SPIInvalidMessageId     = @"_";
 NSString * const SPIInvalidHmacSignature = @"_INVALID_SIGNATURE_";
 NSString * const SPIEventError           = @"error";
+
+NSString * const SPIPayAtTableGetTableConfigKey = @"get_table_config"; // incoming. When eftpos wants to ask us for P@T configuration.
+NSString * const SPIPayAtTableSetTableConfigKey = @"set_table_config"; // outgoing. When we want to instruct eftpos with the P@T configuration.
+NSString * const SPIPayAtTableGetBillDetailsKey = @"get_bill_details"; // incoming. When eftpos wants to aretrieve the bill for a table.
+NSString * const SPIPayAtTableBillDetailsKey = @"bill_details";        // outgoing. We reply with this when eftpos requests to us get_bill_details.
+NSString * const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incoming. When the eftpos advices
 
 @implementation SPIMessageStamp
 
@@ -99,7 +117,7 @@ NSString * const SPIEventError           = @"error";
 }
 
 - (BOOL)isSuccess {
-    return [self getDataBoolValue:@"success"];
+    return [self getDataBoolValue:@"success" defaultIfNotFound:false];
 }
 
 - (NSString *)error {
@@ -117,7 +135,7 @@ NSString * const SPIEventError           = @"error";
         if (!self.data) {
             _successState = SPIMessageSuccessStateUnknown;
         } else {
-            _successState = [self getDataBoolValue:@"success"] ? SPIMessageSuccessStateSuccess : SPIMessageSuccessStateFailed;
+            _successState = [self getDataBoolValue:@"success" defaultIfNotFound:false] ? SPIMessageSuccessStateSuccess : SPIMessageSuccessStateFailed;
         }
     }
     
@@ -190,10 +208,10 @@ NSString * const SPIEventError           = @"error";
     return 0;
 }
 
-- (BOOL)getDataBoolValue:(NSString *)attribute {
+- (BOOL)getDataBoolValue:(NSString *)attribute defaultIfNotFound:(BOOL)defaultIfNotFound{
     NSObject *v = self.data[attribute];
     if (v != [NSNull null]) return ((NSString *)v).boolValue;
-    return false;
+    return defaultIfNotFound;
 }
 
 - (NSDictionary *)getDataDictionaryValue:(NSString *)attribute {
