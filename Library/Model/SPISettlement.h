@@ -31,3 +31,8 @@
 - (NSString *)getReceipt;
 
 @end
+@interface SPISettlementEnquiryRequest:NSObject
+@property (nonatomic, readonly, copy) NSString     *requestId;
+- (instancetype)initWithRequestId:(NSString *)requestId;
+- (SPIMessage *)toMessage;
+@end

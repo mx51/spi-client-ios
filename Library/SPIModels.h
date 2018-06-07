@@ -40,8 +40,13 @@ typedef NS_ENUM (NSUInteger, SPIFlow) {
 typedef NS_ENUM (NSUInteger, SPITransactionType) {
     SPITransactionTypePurchase,
     SPITransactionTypeRefund,
+    SPITransactionTypeCashoutOnly,
+    SPITransactionTypeMOTO,
     SPITransactionTypeSettle,
+    SPITransactionTypeSettleEnquiry,
     SPITransactionTypeGetLastTransaction,
+    SPITransactionTypePreAuth,
+    SPITransactionTypeAccountVerify,
 };
 
 /**
@@ -91,16 +96,27 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 
 @end
 
+@interface SPISubmitAuthCodeResult:NSObject
+@property (nonatomic, assign) BOOL isValidFormat;
+// Text that gives reason for Invalidity
+@property (nonatomic, copy) NSString *message;
+
+- (instancetype)initWithValidFormat:(BOOL)isValidFormat
+                                msg:(NSString *)message;
+@end
 /**
  * Represents the State during a TransactionFlow
  */
 @interface SPITransactionFlowState : NSObject <NSCopying>
 
 //  The id given to this transaction
-@property (nonatomic, copy) NSString *tid;
+@property (nonatomic, copy) NSString *tid __deprecated_msg("Use posRefId instead.");
+
+@property (nonatomic, copy) NSString *posRefId;
 
 // Purchase/Refund/Settle/...
 @property (nonatomic, assign) SPITransactionType type;
+@property (nonatomic,readonly) NSString* typeString;
 
 // A text message to display on your Transaction Flow Screen
 @property (nonatomic, copy) NSString *displayMessage;
@@ -126,6 +142,8 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 // transaction flow screen.
 @property (nonatomic, assign) BOOL isAwaitingSignatureCheck;
 
+@property (nonatomic, assign) BOOL isAwaitingPhoneForAuth;
+
 // Whether this transaction flow is over or not.
 @property (nonatomic, assign) BOOL isFinished;
 
@@ -141,6 +159,9 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 
 // The message the we received from EFTPOS that told us that signature is required.
 @property (nonatomic, strong) SPISignatureRequired *signatureRequiredMessage;
+
+// The message the we received from EFTPOS that told us that Phone For Auth is required.
+@property (nonatomic, strong) SPIPhoneForAuthRequired *phoneForAuthRequiredMessage;
 
 // The time when the cancel attempt was made.
 @property (nonatomic, strong) NSDate *cancelAttemptTime;
@@ -171,12 +192,13 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 
 - (void)signatureResponded:(NSString *)msg;
 
+- (void)phoneForAuthRequired:(SPIPhoneForAuthRequired *) spiMessage msg:(NSString *)msg;
+
+- (void)authCodeSent:(NSString *) msg;
+
 - (void)completed:(SPIMessageSuccessState)state response:(SPIMessage *)response msg:(NSString *)msg;
 
 - (void)unknownCompleted:(NSString *)msg;
-
-+ (NSString *)txTypeString:(SPITransactionType)txType;
-
 @end
 
 /**

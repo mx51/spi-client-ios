@@ -6,7 +6,7 @@
 //  Copyright © 2017 Assembly Payments. All rights reserved.
 //
 
-#import "SPISettleRequest.h"
+#import "SPISettlement.h"
 #import "SPIMessage.h"
 #import "SPIRequestIdHelper.h"
 
@@ -51,4 +51,14 @@
     return [self.message getDataStringValue:@"merchant_receipt"];
 }
 
+@end
+
+@implementation SPISettlementEnquiryRequest
+- (instancetype)initWithRequestId:(NSString *)requestId{
+    _requestId = requestId;
+    return self;
+}
+- (SPIMessage *)toMessage{
+    return [[SPIMessage alloc] initWithMessageId:_requestId eventName:SPISettlementEnquiryRequestKey data:nil needsEncryption:true];
+}
 @end

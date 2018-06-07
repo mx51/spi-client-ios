@@ -7,16 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
-
 #import "SPISecrets.h"
 
-// Events statically declares the various event names in messages.
 
+// Events statically declares the various event names in messages.
 extern NSString * const SPIPairRequestKey;
 extern NSString * const SPIKeyRequestKey;
 extern NSString * const SPIKeyResponseKey;
 extern NSString * const SPIKeyCheckKey;
 extern NSString * const SPIPairResponseKey;
+extern NSString * const SPIDropKeysAdviceKey;
 
 extern NSString * const SPILoginRequestKey;
 extern NSString * const SPILoginResponseKey;
@@ -36,8 +36,19 @@ extern NSString * const SPISignatureRequiredKey;
 extern NSString * const SPISignatureDeclinedKey;
 extern NSString * const SPISignatureAcceptedKey;
 
+extern NSString * const SPIAuthCodeRequiredKey;
+extern NSString * const SPIAuthCodeAdviceKey;
+
+extern NSString * const SPICashoutOnlyRequestKey;
+extern NSString * const SPICashoutOnlyResponseKey;
+
+extern NSString * const SPIMotoPurchaseRequestKey;
+extern NSString * const SPIMotoPurchaseResponseKey;
+
 extern NSString * const SPISettleRequestKey;
 extern NSString * const SPISettleResponseKey;
+extern NSString * const SPISettlementEnquiryRequestKey;
+extern NSString * const SPISettlementEnquiryResponseKey;
 
 extern NSString * const SPIKeyRollRequestKey;
 extern NSString * const SPIKeyRollResponseKey;
@@ -46,6 +57,12 @@ extern NSString * const SPIInvalidMessageId;
 extern NSString * const SPIInvalidHmacSignature;
 
 extern NSString * const SPIEventError;
+
+extern NSString * const SPIPayAtTableGetTableConfigKey; // incoming. When eftpos wants to ask us for P@T configuration.
+extern NSString * const SPIPayAtTableSetTableConfigKey; // outgoing. When we want to instruct eftpos with the P@T configuration.
+extern NSString * const SPIPayAtTableGetBillDetailsKey; // incoming. When eftpos wants to aretrieve the bill for a table.
+extern NSString * const SPIPayAtTableBillDetailsKey;    // outgoing. We reply with this when eftpos requests to us get_bill_details.
+extern NSString * const SPIPayAtTableBillPaymentKey;    // incoming. When the eftpos advices
 
 typedef NS_ENUM (NSInteger, SPIMessageSuccessState) {
     SPIMessageSuccessStateUnknown,
@@ -113,7 +130,7 @@ typedef NS_ENUM (NSInteger, SPIMessageSuccessState) {
 
 - (NSInteger)getDataIntegerValue:(NSString *)attribute;
 
-- (BOOL)getDataBoolValue:(NSString *)attribute;
+- (BOOL)getDataBoolValue:(NSString *)attribute defaultIfNotFound:(BOOL)defaultIfNotFound;
 
 - (NSDictionary *)getDataDictionaryValue:(NSString *)attribute;
 
