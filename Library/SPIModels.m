@@ -48,10 +48,18 @@
 }
 
 @end
+@implementation SPISubmitAuthCodeResult
+- (instancetype)initWithValidFormat:(BOOL)isValidFormat
+                                msg:(NSString *)message{
+    _isValidFormat = isValidFormat;
+    _message = message;
+    return self;
+}
+@end
 
 @implementation SPITransactionFlowState
 
-- (instancetype)initWithTid:(NSString *)tid
+- (instancetype)initWithTid:(NSString *)posRefId
                        type:(SPITransactionType)type
                 amountCents:(NSInteger)amountCents
                     message:(SPIMessage *)message
@@ -60,7 +68,8 @@
     self = [super init];
     
     if (self) {
-        self.tid                      = tid;
+        self.tid                      = posRefId;
+        self.posRefId                 = posRefId;
         self.type                     = type;
         self.amountCents              = amountCents;
         self.isRequestSent            = NO;
@@ -73,7 +82,36 @@
     
     return self;
 }
-
+- (NSString *)txTypeString {
+    switch (self.type) {
+        case SPITransactionTypePurchase:
+            return @"PURCHASE";
+            
+        case SPITransactionTypeRefund:
+            return @"REFUND";
+            
+        case SPITransactionTypeCashoutOnly:
+            return @"CASHOUT ONLY";
+            break;
+        case SPITransactionTypeMOTO:
+            return @"MOTO";
+            break;
+        case SPITransactionTypeSettle:
+            return @"SETTLE";
+            
+        case SPITransactionTypeSettleEnquiry:
+            return @"SETTLE ENQUIRY";
+            break;
+        case SPITransactionTypeGetLastTransaction:
+            return @"GET_LAST_TRANSACTION";
+        case SPITransactionTypePreAuth:
+            return @"PRE AUTH";
+            break;
+        case SPITransactionTypeAccountVerify:
+            return @"ACCOUNT VERIFY";
+            break;
+    }
+}
 - (void)sent:(NSString *)msg {
     self.isRequestSent        = YES;
     self.requestDate          = [NSDate date];
@@ -121,6 +159,7 @@
     self.isAttemptingToCancel     = NO;
     self.isAwaitingGltResponse    = NO;
     self.isAwaitingSignatureCheck = NO;
+    self.isAwaitingPhoneForAuth   = NO;
     self.displayMessage           = msg;
 }
 
@@ -131,6 +170,7 @@
     self.isAttemptingToCancel     = NO;
     self.isAwaitingGltResponse    = NO;
     self.isAwaitingSignatureCheck = NO;
+    self.isAwaitingPhoneForAuth   = NO;
     self.displayMessage           = msg;
 }
 
@@ -154,6 +194,16 @@
     state.isAwaitingGltResponse    = self.isAwaitingGltResponse;
     
     return state;
+}
+-(void)phoneForAuthRequired:(SPIPhoneForAuthRequired *) spiMessage msg:(NSString *)msg{
+    _phoneForAuthRequiredMessage = spiMessage;
+    _isAwaitingGltResponse    = true;
+    _isAwaitingPhoneForAuth   = true;
+    _displayMessage = msg;
+}
+-(void)authCodeSent:(NSString *) msg{
+    _isAwaitingPhoneForAuth = false;
+    _displayMessage = msg;
 }
 
 - (NSString *)description {

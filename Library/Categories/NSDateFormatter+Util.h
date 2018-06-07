@@ -24,4 +24,11 @@
  */
 + (NSDateFormatter *)dateNoTimeZoneFormatter;
 
+/**
+ * Formats date time string in format: ddMMyyyy
+ *
+ * @return NSDateFormatter
+ */
++ (NSDateFormatter *)bankSettleMentFormat;
+
 @end

@@ -9,17 +9,17 @@
 #import "SPIPurchaseHelper.h"
 
 @implementation SPIPurchaseHelper
-+(SPIPurchaseRequest *) createPurchaseRequest:(int)amountCents purchaseId:(NSString *)purchaseId{
++(SPIPurchaseRequest *) createPurchaseRequest:(NSInteger)amountCents purchaseId:(NSString *)purchaseId{
     return [[SPIPurchaseRequest alloc] initWithAmountCents:amountCents posRefId:purchaseId];
 }
-+(SPIPurchaseRequest *) createPurchaseRequestV2:(NSString *)posRefId purchaseAmount:(int)purchaseAmount tipAmount:(int)tipAmount cashAmount:(int)cashAmount promptForCashout:(BOOL)promptForCashout{
++(SPIPurchaseRequest *) createPurchaseRequestV2:(NSString *)posRefId purchaseAmount:(NSInteger)purchaseAmount tipAmount:(NSInteger)tipAmount cashAmount:(NSInteger)cashAmount promptForCashout:(BOOL)promptForCashout{
     SPIPurchaseRequest *request = [[SPIPurchaseRequest alloc] initWithAmountCents:purchaseAmount posRefId:posRefId];
     request.cashoutAmount = cashAmount;
     request.tipAmount = tipAmount;
     request.promptForCashout = promptForCashout;
     return  request;
 }
-+(SPIRefundRequest *)createRefundRequest:(int)amountCents purchaseId:(NSString *)purchaseId{
++(SPIRefundRequest *)createRefundRequest:(NSInteger)amountCents purchaseId:(NSString *)purchaseId{
     return [[SPIRefundRequest alloc] initWithPosRefId:purchaseId amountCents:amountCents];
 }
 

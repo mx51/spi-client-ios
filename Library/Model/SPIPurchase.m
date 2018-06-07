@@ -19,6 +19,7 @@
     self = [super init];
     
     if (self) {
+        _config = [[SPIConfig alloc] init];
         _posRefId  = posRefId;
         _purchaseAmount = amountCents;
         
@@ -31,7 +32,8 @@
     
 }
 - (SPIMessage *)toMessage {
-    NSDictionary *originalData = @{@"purchase_amount":@(self.purchaseAmount),
+    NSDictionary *originalData = @{@"pos_ref_id": self.posRefId,
+                                   @"purchase_amount":@(self.purchaseAmount),
                                   @"tip_amount":@(self.tipAmount),
                                   @"cash_amount":@(self.cashoutAmount),
                                   @"prompt_for_cashout":@(self.promptForCashout)
@@ -80,6 +82,47 @@
     return [self.message getDataStringValue:@"host_response_text"];
 }
 
+- (NSString *)getResponseCode{
+    return [self.message getDataStringValue:@"host_response_code"];
+}
+
+- (NSString *)getTerminalReferenceId{
+    return [self.message getDataStringValue:@"terminal_ref_id"];
+}
+- (NSString *)getCardEntry{
+    return [self.message getDataStringValue:@"card_entry"];
+}
+- (NSString *)getAccountType{
+    return [self.message getDataStringValue:@"terminal_ref_id"];
+}
+- (NSString *)getAuthCode{
+    return [self.message getDataStringValue:@"auth_code"];
+}
+- (NSString *)getBankDate{
+    return [self.message getDataStringValue:@"bank_date"];
+}
+- (NSString *)getBankTime{
+    return [self.message getDataStringValue:@"bank_time"];
+}
+- (NSString *)getMaskedPan{
+    return [self.message getDataStringValue:@"masked_pan"];
+}
+- (NSString *)getTerminalId{
+    return [self.message getDataStringValue:@"terminal_id"];
+}
+- (BOOL)wasMerchantReceiptPrinted{
+    return [self.message getDataBoolValue:@"merchant_receipt_printed" defaultIfNotFound:false];
+}
+- (BOOL)wasCustomerReceiptPrinted{
+    return [self.message getDataBoolValue:@"customer_receipt_printed" defaultIfNotFound:false];
+}
+-(NSDate *)getSettlementDate{
+    NSString *dateStr = [_message getDataStringValue:@"bank_settlement_date"];
+    if (dateStr.length == 0){
+        return nil;
+    }
+    return [[NSDateFormatter bankSettleMentFormat] dateFromString:dateStr];
+}
 - (NSString *)getResponseValueWithAttribute:(NSString *)attribute {
     return [self.message getDataStringValue:attribute];
 }
@@ -87,12 +130,15 @@
 - (NSString *)hostResponseText {
     return [self.message getDataStringValue:@"host_response_text"];
 }
+
 - (NSInteger)getPurchaseAmount{
     return [self.message getDataIntegerValue:@"purchase_amount"];
 }
+
 - (NSInteger)getTipAmount{
     return [self.message getDataIntegerValue:@"tip_amount"];
 }
+
 - (NSInteger)getCashoutAmount{
     return [self.message getDataIntegerValue:@"cash_amount"];
 }
@@ -104,6 +150,26 @@
 - (NSInteger)getBankCashAmount{
     return [self.message getDataIntegerValue:@"bank_cash_amount"];
 }
+
+- (NSDictionary *)toPaymentSummary{
+    return @{
+             @"account_type": [self getAccountType],
+             @"auth_code": [self getAuthCode],
+             @"bank_date": [self getBankDate],
+             @"bank_time": [self getBankTime],
+             @"host_response_code": [self getResponseCode],
+             @"host_response_text": [self getResponseText],
+             @"masked_pan": [self getMaskedPan],
+             @"purchase_amount": [NSNumber numberWithInteger:[self getPurchaseAmount]],
+             @"rrn": [self getRRN],
+             @"scheme_name": _schemeName,
+             @"terminal_id": [self getTerminalId],
+             @"terminal_ref_id": [self getTerminalReferenceId],
+             @"tip_amount": [NSNumber numberWithInteger:[self getTipAmount]]
+             
+             };
+}
+
 
 @end
 
@@ -143,12 +209,32 @@
 }
 
 - (BOOL)wasRetrievedSuccessfully {
-    NSString *rrn = [self getRRN];
-    return rrn != nil && ![rrn isEqualToString:@""];
+    // We can't rely on checking "success" flag or "error" fields here,
+    // as retrieval may be successful, but the retrieved transaction was a fail.
+    // So we check if we got back an ResponseCode.
+    // (as opposed to say an operation_in_progress_error)
+    NSString *code = [self getResponseCode];
+    return code == nil || code.length == 0;
 }
 
 - (BOOL)wasOperationInProgressError {
     return [self.message.error isEqualToString:@"OPERATION_IN_PROGRESS"];
+}
+
+- (BOOL)isWaitingForSignatureResponse {
+    return [self.message.error isEqualToString:@"OPERATION_IN_PROGRESS_AWAITING_SIGNATURE"];
+}
+
+- (BOOL)isWaitingForAuthCode {
+    return [[_message error] hasPrefix:@"OPERATION_IN_PROGRESS_AWAITING_PHONE_AUTH_CODE"];
+}
+
+- (BOOL)isStillInProgress:(NSString *)posRefId{
+    return ([self wasOperationInProgressError] && [posRefId isEqualToString:[self getPosRefId]]);
+}
+
+- (SPIMessageSuccessState)successState{
+    return [_message successState];
 }
 
 - (BOOL)wasSuccessfulTx {
@@ -163,6 +249,10 @@
     return [self.message getDataStringValue:@"pos_ref_id"];
 }
 
+- (NSString *)getSchemeApp{
+    return [self.message getDataStringValue:@"scheme_name"];
+}
+
 - (NSString *)getSchemeName {
     return [self.message getDataStringValue:@"scheme_name"];
 }
@@ -173,10 +263,6 @@
 
 - (NSInteger)getTransactionAmount {
     return [self.message getDataIntegerValue:@"amount_transaction_type"];
-}
-
-- (NSString *)getRRN {
-    return [self.message getDataStringValue:@"rrn"];
 }
 
 - (NSString *)getBankDateTimeString {
@@ -190,26 +276,22 @@
     return [NSString stringWithFormat:@"%@%@", date, time];
 }
 
+- (NSString *)getRRN {
+    return [self.message getDataStringValue:@"rrn"];
+}
+
+- (NSString *)getResponseText{
+    return [self.message getDataStringValue:@"host_response_text"];
+}
+
+- (NSString *)getResponseCode{
+    return [self.message getDataStringValue:@"host_response_code"];
+}
+
 - (NSDate *)bankDate {
     NSString *bankDateTimeString = self.getBankDateTimeString;
-    
     if (!bankDateTimeString) return nil;
-    
     return [[NSDateFormatter dateNoTimeZoneFormatter] dateFromString:bankDateTimeString];
-}
-
--(BOOL) isStillInProgress:(NSString *) posRefId{
-    return ([self wasOperationInProgressError] && [[self getPosRefId] isEqualToString:posRefId]);
-}
-
-- (SPIMessageSuccessState)successState {
-    return self.message.successState;
-}
-
-- (NSString *)getResponseValue:(NSString *)attribute {
-    if (!attribute) return @"";
-    
-    return (NSString *)self.message.data[attribute] ?: @"";
 }
 
 - (void)copyMerchantReceiptToCustomerReceipt {
@@ -289,10 +371,21 @@
     
     return (NSString *)self.message.data[attribute] ?: @"";
 }
-
+-(NSDate *)getSettlementDate{
+    NSString *dateStr = [_message getDataStringValue:@"bank_settlement_date"];
+    if (dateStr.length == 0){
+        return nil;
+    }
+    return [[NSDateFormatter dateNoTimeZoneFormatter] dateFromString:dateStr];
+    
+}
 @end
 
-@implementation SPISignatureRequired : NSObject
+@interface SPISignatureRequired(){
+   NSString  *_receiptToSign;
+}
+@end
+@implementation SPISignatureRequired
 
 - (instancetype)initWithMessage:(SPIMessage *)message {
     
@@ -300,15 +393,22 @@
     
     if (self) {
         _requestId = message.mid;
-        _message   = message;
+        _posRefId =  [message getDataStringValue:@"pos_ref_id"];
+        _receiptToSign = [message getDataStringValue:@"merchant_receipt"];
     }
-    
     return self;
     
 }
-
+- (instancetype)initWithPosRefId:(NSString *)posRefId
+                       requestId:(NSString *)requestId
+                   receiptToSign:(NSString *)receiptToSign{
+    _posRefId = posRefId;
+    _requestId = requestId;
+    _receiptToSign = receiptToSign;
+    return self;
+}
 - (NSString *)getMerchantReceipt {
-    return [self.message getDataStringValue:@"merchant_receipt"];
+    return _receiptToSign;
 }
 
 @end
@@ -358,7 +458,7 @@
 
 @end
 @implementation SPIMotoPurchaseRequest:NSObject
-- (id)init:(NSInteger)amountCents posRefId:(NSString *)posRefId{
+- (instancetype)initWithAmountCents:(NSInteger)amountCents posRefId:(NSString *)posRefId{
     _config = [[SPIConfig alloc] init];
     _purchaseAmount = amountCents;
     _posRefId = posRefId;
@@ -394,7 +494,7 @@
     _merchantId = [message getDataStringValue:@"merchant_id"];
     return self;
 }
-- (id)init:(NSString *)posRefId requestId:(NSString *)requestId phoneNumber:(NSString *)phoneNumber merchantId:(NSString *)merchantId{
+- (instancetype)initWithPosRefId:(NSString *)posRefId requestId:(NSString *)requestId phoneNumber:(NSString *)phoneNumber merchantId:(NSString *)merchantId{
     _requestId = requestId;
     _posRefId = posRefId;
     _phoneNumber = phoneNumber;
@@ -410,7 +510,7 @@
 
 @end
 @implementation SPIAuthCodeAdvice:NSObject
-- (id)init:(NSString *)posRefId authCode:(NSString *)authCode{
+- (instancetype)initWithPosRefId:(NSString *)posRefId authCode:(NSString *)authCode{
     _posRefId = posRefId;
     _authCode = authCode;
     return self;

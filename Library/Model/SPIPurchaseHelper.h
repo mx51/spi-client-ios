@@ -11,8 +11,8 @@
 
 @interface SPIPurchaseHelper : NSObject
 
-+(SPIPurchaseRequest *) createPurchaseRequest:(int)amountCents purchaseId:(NSString *)purchaseId;
-+(SPIPurchaseRequest *) createPurchaseRequestV2:(NSString *)posRefId purchaseAmount:(int)purchaseAmount tipAmount:(int)tipAmount cashAmount:(int)cashAmount promptForCashout:(BOOL)promptForCashout;
-+(SPIRefundRequest *)createRefundRequest:(int)amountCents purchaseId:(NSString *)purchaseId;
++(SPIPurchaseRequest *) createPurchaseRequest:(NSInteger)amountCents purchaseId:(NSString *)purchaseId;
++(SPIPurchaseRequest *) createPurchaseRequestV2:(NSString *)posRefId purchaseAmount:(NSInteger)purchaseAmount tipAmount:(NSInteger)tipAmount cashAmount:(NSInteger)cashAmount promptForCashout:(BOOL)promptForCashout;
++(SPIRefundRequest *)createRefundRequest:(NSInteger)amountCents purchaseId:(NSString *)purchaseId;
 
 @end

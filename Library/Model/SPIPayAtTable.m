@@ -8,6 +8,8 @@
 
 #import "SPIPayAtTable.h"
 #import "NSString+Util.h"
+#import "SPILogger.h"
+
 @implementation SPIBillStatusResponse
 - (NSArray<SPIPaymentHistoryEntry *> *)getBillPaymentHistory{
     if (_billData == nil || [_billData isEqualToString:@""]){
@@ -33,20 +35,6 @@
         [paymentHistory addObject:historyItem];
     }
     return [paymentHistory copy];
-    
-    //internal List<PaymentHistoryEntry> getBillPaymentHistory()
-    //{
-    //    if (string.IsNullOrWhiteSpace(BillData))
-    //    {
-    //        return new List<PaymentHistoryEntry>();
-    //    }
-    //
-    //    var bdArray = Convert.FromBase64String(BillData);
-    //    var bdStr = Encoding.UTF8.GetString(bdArray);
-    //    var jsonSerializerSettings = new JsonSerializerSettings() {DateParseHandling = DateParseHandling.None};
-    //    return JsonConvert.DeserializeObject<List<PaymentHistoryEntry>>(bdStr, jsonSerializerSettings);
-    //}
-    //
 }
 + (NSString *)toBillData:(NSArray<SPIPaymentHistoryEntry *> *)ph{
     if (ph.count < 1){
@@ -134,12 +122,12 @@ SPIMessage* _incomingAdvice;
     _operatorId = [_incomingAdvice getDataStringValue:@"operator_id"];
   
     
-    NSInteger paymentType = [_incomingAdvice getDataIntegerValue:@"payment_type"];
-    if (paymentType == PaymentTypeCard){
-        _paymentType = PaymentTypeCard;
-    }else if (paymentType == PaymentTypeCash)
+    NSString *paymentType = [_incomingAdvice getDataStringValue:@"payment_type"];
+    if ([paymentType isEqualToString:[SPIBillPayment paymentTypeString:SPIPaymentTypeCard]]){
+        _paymentType = SPIPaymentTypeCard;
+    }else if ([paymentType isEqualToString:[SPIBillPayment paymentTypeString:SPIPaymentTypeCash]])
     {
-        _paymentType = PaymentTypeCard;
+        _paymentType = SPIPaymentTypeCash;
     }
     NSDictionary<NSString *,NSObject *> *data = (NSDictionary *)[message.data valueForKey:@"payment_details"];
     
@@ -152,6 +140,15 @@ SPIMessage* _incomingAdvice;
     
     _TipAmount =  [_purchaseResponse getTipAmount];
     return self;
+}
++ (NSString *)paymentTypeString:(SPIPaymentType)ptype{
+    if (ptype == SPIPaymentTypeCard){
+        return @"CARD";
+    }
+    else if (ptype == SPIPaymentTypeCash){
+        return @"CASH";
+    }
+    return nil;
 }
 @end
 @implementation SPIPayAtTableConfig
@@ -178,3 +175,79 @@ SPIMessage* _incomingAdvice;
     return message;
 }
 @end
+@class SPIClient;
+@interface SPIPayAtTable(){
+    SPIClient * _spi;
+}
+@end
+@implementation SPIPayAtTable
+- (instancetype)initWithClient:(SPIClient *)spi{
+    _spi = spi;
+    return self;
+}
+-(void)PushPayAtTableConfig{
+    
+}
+-(void)handleGetBillDetailsRequest:(SPIMessage *)message{
+    NSString * operatorId = [message getDataStringValue:@"operator_id"];
+    NSString * tableId = [message getDataStringValue:@"table_id"];
+    
+    // Ask POS for Bill Details for this tableId, inluding encoded PaymentData
+    SPIBillStatusResponse *billStatus = [_delegate payAtTableGetBillStatus:nil tableId:tableId operatorId:operatorId];
+    billStatus.tableId = tableId;
+    if (billStatus.totalAmount <= 0){
+        SPILog(@"Table has 0 total amount. not sending it to eftpos.");
+        billStatus.result = BillRetrievalResultInvalidTableId;
+    }
+    [_spi send:[billStatus toMessage:message.mid]];
+}
+-(void)handleBillPaymentAdvice:(SPIMessage *)message{
+    SPIBillPayment *billPayment = [[SPIBillPayment alloc] initWithMessage:message];
+    
+    // Ask POS for Bill Details, inluding encoded PaymentData
+    SPIBillStatusResponse *existingBillStatus = [_delegate payAtTableGetBillStatus:billPayment.billId tableId:billPayment.tableId operatorId:billPayment.operatorId];
+    if (existingBillStatus.result != BillRetrievalResultSuccess){
+        SPILog(@"Could not retrieve Bill Status for Payment Advice. Sending Error to Eftpos.");
+        [_spi send:[existingBillStatus toMessage:message.mid]];
+    }
+    NSArray *existingHistory = existingBillStatus.getBillPaymentHistory;
+    for (SPIPaymentHistoryEntry *response in existingHistory) {
+        if ([response.getTerminalRefId isEqualToString:billPayment.purchaseResponse.getTerminalReferenceId]){
+            // We have already processed this payment.
+            // perhaps Eftpos did get our acknowledgement.
+            // Let's update Eftpos.
+            SPILog(@"Had already received this bill_paymemnt advice from eftpos. Ignoring.");
+            [_spi send:[existingBillStatus toMessage:message.mid]];
+            return;
+        }
+    }
+    // Let's add the new entry to the history
+    NSMutableArray<SPIPaymentHistoryEntry*> *updatedHistoryEntries = [[NSMutableArray alloc] initWithArray:existingHistory];
+    SPIPaymentHistoryEntry *newPaymentEntry = [[SPIPaymentHistoryEntry alloc] init];
+    newPaymentEntry.paymentType = [SPIBillPayment paymentTypeString:billPayment.paymentType];
+    newPaymentEntry.paymentSummary = [billPayment.purchaseResponse toPaymentSummary];
+    [updatedHistoryEntries addObject:newPaymentEntry];
+    
+    NSString *updatedBillData = [SPIBillStatusResponse toBillData:[updatedHistoryEntries copy]];
+    
+    // Advise POS of new payment against this bill, and the updated BillData to Save.
+    SPIBillStatusResponse *updatedBillStatus = [_delegate PayAtTableBillPaymentReceived:billPayment updatedBillData:updatedBillData];
+    
+    // Just in case client forgot to set these:
+    updatedBillStatus.billId = billPayment.billId;
+    updatedBillStatus.tableId = billPayment.tableId;
+    
+    if (updatedBillStatus.result != BillRetrievalResultSuccess){
+        SPILog(@"POS Errored when being Advised of Payment. Letting EFTPOS know, and sending existing bill data.");
+        updatedBillStatus.billData = existingBillStatus.billData;
+    }else{
+        updatedBillStatus.billData = updatedBillData;
+    }
+    
+    [_spi send:[updatedBillStatus toMessage:message.mid]];
+}
+-(void)handleGetTableConfig:(SPIMessage *)message{
+    [_spi send:[_config toMessage:message.mid]];
+}
+@end
+

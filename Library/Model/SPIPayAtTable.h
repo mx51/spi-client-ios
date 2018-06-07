@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "SPIMessage.h"
 #import "SPIPurchase.h"
+#import "SPIClient.h"
 
 typedef NS_ENUM (NSUInteger, SPIBillRetrievalResult) {
     BillRetrievalResultSuccess,
@@ -17,21 +18,19 @@ typedef NS_ENUM (NSUInteger, SPIBillRetrievalResult) {
     BillRetrievalResultInvalidOperatorId,
 };
 typedef NS_ENUM (NSUInteger, SPIPaymentType) {
-    PaymentTypeCard,
-    PaymentTypeCash,
+    SPIPaymentTypeCard,
+    SPIPaymentTypeCash,
 };
 
+
 @interface SPIPaymentHistoryEntry:NSObject
-@property (nonatomic,readonly) NSString* paymentType;
-@property (nonatomic,readonly) NSDictionary* paymentSummary;
+@property (nonatomic,retain) NSString* paymentType;
+@property (nonatomic,retain) NSDictionary* paymentSummary;
 - init:(NSDictionary *) fromJson;
 - (NSDictionary *)toJsonObject;
 - (NSString *)getTerminalRefId;
 @end
 
-
-@interface SPIPayAtTable : NSObject
-@end
 /**
  * This class represents the BillDetails that the POS will be asked for throughout a PayAtTable flow.
  */
@@ -41,23 +40,23 @@ typedef NS_ENUM (NSUInteger, SPIPaymentType) {
 @property (nonatomic) SPIBillRetrievalResult result;
 
 //This is a unique identifier that you assign to each bill. It migt be for example, the timestamp of when the cover was opened.
-@property (nonatomic, readonly, copy) NSString *billId;
+@property (nonatomic, retain) NSString *billId;
 
 // This is the table id that this bill was for.
 // The waiter will enter it on the Eftpos at the start of the PayAtTable flow and the Eftpos will
 // retrieve the bill using the table id.
-@property (nonatomic, readonly, copy) NSString *tableId; //
+@property (nonatomic,retain) NSString *tableId; //
 
 // Your POS is required to persist some state on behalf of the Eftpos so the Eftpos can recover state.
 // It is just a piece of string that you save against your billId.
 // WHenever you're asked for BillDetails, make sure you return this piece of data if you have it.
-@property (nonatomic, readonly, copy) NSString *billData;
+@property (nonatomic, retain) NSString *billData;
 
 // The Total Amount on this bill, in cents.
-@property (nonatomic,readonly) NSInteger totalAmount;
+@property (nonatomic) NSInteger totalAmount;
 
 // The currently outsanding amount on this bill, in cents.
-@property (nonatomic,readonly) NSInteger outstandingAmount;
+@property (nonatomic) NSInteger outstandingAmount;
 - (NSArray<SPIPaymentHistoryEntry *> *)getBillPaymentHistory;
 + (NSString *)toBillData:(NSArray<SPIPaymentHistoryEntry *>*) ph;
 - (SPIMessage *)toMessage:(NSString *)messageId;
@@ -77,6 +76,7 @@ typedef NS_ENUM (NSUInteger, SPIPaymentType) {
 
 @property (nonatomic, readonly, copy) SPIPurchaseResponse *purchaseResponse;
 
++ (NSString *)paymentTypeString:(SPIPaymentType)ptype;
 @end
 
 @interface SPIPayAtTableConfig:NSObject
@@ -90,5 +90,24 @@ typedef NS_ENUM (NSUInteger, SPIPaymentType) {
 @property (nonatomic,readonly,copy) NSString *labelTableId;
 @property (nonatomic,readonly,copy) NSArray<NSString *> *allowedOperatorIds;
 - (SPIMessage *)toMessage:(NSString *)messageId;
+
+
 + (SPIMessage *)featureDisableMessage:(NSString *)messageId;
+
+@end
+
+@protocol SPIPayAtTableDelegate <NSObject>
+-(SPIBillStatusResponse *)payAtTableGetBillStatus:(NSString *)billId tableId:(NSString *)tableId operatorId:(NSString *)operatorId;
+-(SPIBillStatusResponse *)PayAtTableBillPaymentReceived:(SPIBillPayment *)billPayment updatedBillData:(NSString *)updatedBillData;
+
+@end
+@interface SPIPayAtTable:NSObject
+@property (nonatomic,readonly,copy) SPIPayAtTableConfig *config;
+@property (nonatomic, weak) id <SPIPayAtTableDelegate> delegate;
+- (instancetype)initWithClient:(SPIClient *)spi;
+-(void)PushPayAtTableConfig;
+-(void)handleGetTableConfig:(SPIMessage *)message;
+-(void)handleGetBillDetailsRequest:(SPIMessage *)message;
+-(void)handleBillPaymentAdvice:(SPIMessage *)message;
+
 @end

@@ -14,6 +14,8 @@
 #import "SPIModels.h"
 
 @class SPIClient;
+@class SPIPreAuth;
+@class SPIPayAtTable;
 @interface SPIConfig:NSObject
 @property (nonatomic) BOOL promptForCustomerCopyOnEftpos;
 @property (nonatomic) BOOL signatureFlowOnEftpos;
@@ -21,6 +23,7 @@
 
 @end
 typedef void (^SPICompletionTxResult)(SPIInitiateTxResult *result);
+typedef void (^SPIAuthCodeSubmitCompletionResult)(SPISubmitAuthCodeResult *result);
 
 /**
  * Completion handler
@@ -144,6 +147,20 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
 - (void)initiatePurchaseTx:(NSString *)pid amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion;
 
 /**
+ * Tip and cashout are not allowed simultaneously.
+ * Initiates a purchase transaction. Be subscribed to TxFlowStateChanged event to get updates on the process.
+ *
+ * @param posRefId An Unique Identifier for your Order/Purchase
+ * @param purchaseAmount The Purchase Amount in Cents
+ * @param tipAmount The Tip Amount in Cents
+ * @param cashoutAmount The Cashout Amount in Cents
+ * @param promptForCashout Whether to prompt your customer for cashout on the Eftpos
+ * @param completion SPICompletionTxResult
+ */
+- (void)initiatePurchaseTxV2:(NSString *)posRefId purchaseAmount:(NSInteger)purchaseAmount tipAmount:(NSInteger)tipAmount cashoutAmount:(NSInteger)cashoutAmount promptForCashout:(BOOL)promptForCashout completion:(SPICompletionTxResult)completion;
+
+
+/**
  * Initiates a refund transaction. Be subscribed to TxFlowStateChanged event to get updates on the process.
  *
  * @param pid Unique ID
@@ -152,12 +169,50 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
  */
 - (void)initiateRefundTx:(NSString *)pid amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion;
 
+
+/**
+ * Initiates a Mail Order / Telephone Order Purchase Transaction
+ *
+ * @param posRefId Alphanumeric Identifier for your transaction.
+ * @param amountCents NSInteger
+ * @param completion SPICompletionTxResult
+ */
+-(void)initiateMotoPurchaseTx:(NSString *)posRefId amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion;
+
+/**
+ * Initiates a cashout only transaction. Be subscribed to TxFlowStateChanged event to get updates on the process.
+ *
+ * @param posRefId Alphanumeric Identifier for your transaction.
+ * @param amountCents NSInteger
+ * @param completion SPICompletionTxResult
+ */
+-(void)initiateCashoutOnlyTx:(NSString *)posRefId amountCents:(NSInteger)amountCents completion:(SPICompletionTxResult)completion;
+
+/**
+ * Initiates a Mail Order / Telephone Order Purchase Transaction
+ *
+ * @param posRefId Unique ID
+ * @param completion SPICompletionTxResult
+ */
+- (void)initiateSettlementEnquiry:(NSString *)posRefId completion:(SPICompletionTxResult)completion;
 /**
  * Let the EFTPOS know whether merchant accepted or declined the signature
  *
  * @param accepted YES if merchant accepted the signature from customer or else NO
  */
 - (void)acceptSignature:(BOOL)accepted;
+
+/**
+ *
+ * Submit the Code obtained by your user when phoning for auth.
+ * It will return immediately to tell you whether the code has a valid format or not.
+ * If valid==true is returned, no need to do anything else. Expect updates via standard callback.
+ * If valid==false is returned, you can show your user the accompanying message, and invite them to enter another code.
+ *
+ * @param authCode The code obtained by your user from the merchant call centre. It should be a 6-character alpha-numeric value.
+ * @param completion Whether code has a valid format or not.
+ */
+- (void)submitAuthCode:(NSString *)authCode completion:(SPIAuthCodeSubmitCompletionResult)completion;
 
 /**
  * Attempts to cancel a Transaction.
@@ -175,7 +230,7 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
  */
 - (void)initiateSettleTx:(NSString *)pid completion:(SPICompletionTxResult)completion;
 
-- (void)initiateSettlementEnquiry:(NSString *)posRefId completion:(SPICompletionTxResult)completion;
+
 /**
  * Initiates a get last transaction operation.
  * Use this when you want to retrieve the most recent transaction that was processed by the EFTPOS.
@@ -211,5 +266,10 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
                        requestDate:(NSDate *)requestDate
                           posRefId:(NSString *)posRefId;
 
+- (BOOL)send:(SPIMessage *)message;
+
+-(SPIPayAtTable *)enablePayAtTable;
+
+-(SPIPreAuth *)enablePreauth;
 @end
 
