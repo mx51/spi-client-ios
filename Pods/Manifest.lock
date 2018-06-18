@@ -1,15 +1,20 @@
 PODS:
-  - RNCryptor-objc (3.0.5)
+  - RNCryptor-objc (3.0.6)
   - SocketRocket (0.5.1)
 
 DEPENDENCIES:
   - RNCryptor-objc
   - SocketRocket
 
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - RNCryptor-objc
+    - SocketRocket
+
 SPEC CHECKSUMS:
-  RNCryptor-objc: a65b15493de05dda4af0f392c70372b7a5625aab
+  RNCryptor-objc: d1b228f9c02e2173df063f0617684c134aed890e
   SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
 
 PODFILE CHECKSUM: 4dcfd78b53756fb68a2f250b1b3ca96d8aee8a80
 
-COCOAPODS: 1.4.0
+COCOAPODS: 1.5.3
