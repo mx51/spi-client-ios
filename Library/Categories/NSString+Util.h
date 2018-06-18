@@ -17,6 +17,5 @@
 
 @property (nonatomic, readonly, nonnull) NSDate *toDate;
 
-/*Check for empty strings */
-+ (BOOL)isNilOrEmpty:(NSString *)str;
+- (NSDate *)toDateWithFormat:(NSString *)format;
 @end

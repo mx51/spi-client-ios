@@ -6,17 +6,20 @@
 //  Copyright © 2017 Assembly Payments. All rights reserved.
 //
 
-#import "SPIPairing.h"
 #import "SPIMessage.h"
+#import "SPIPairing.h"
 #import "SPIRequestIdHelper.h"
 
 @implementation SPIPairingRequest
 
 - (SPIMessage *)toMessage {
-    return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"pr"]
-                                       eventName:SPIPairRequestKey
-                                            data:@{@"padding":@YES}
-                                 needsEncryption:NO];
+    return [[SPIMessage alloc]
+            initWithMessageId:[SPIRequestIdHelper idForString:@"pr"]
+            eventName:SPIPairRequestKey
+            data:@{
+                   @"padding" : @YES
+                   }
+            needsEncryption:NO];
 }
 
 @end
@@ -28,8 +31,8 @@
     
     if (self) {
         _requestId = message.mid;
-        _aenc      = [message getDataDictionaryValue:@"enc"][@"A"];
-        _ahmac     = [message getDataDictionaryValue:@"hmac"][@"A"];
+        _aenc = [message getDataDictionaryValue:@"enc"][@"A"];
+        _ahmac = [message getDataDictionaryValue:@"hmac"][@"A"];
     }
     
     return self;
@@ -39,13 +42,15 @@
 
 @implementation SPIKeyResponse
 
-- (instancetype)initWithRequestId:(NSString *)requestId benc:(NSString *)benc bhmac:(NSString *)bhmac {
+- (instancetype)initWithRequestId:(NSString *)requestId
+                             benc:(NSString *)benc
+                            bhmac:(NSString *)bhmac {
     self = [super init];
     
     if (self) {
         _requestId = [requestId copy];
-        _benc      = [benc copy];
-        _bhmac     = [bhmac copy];
+        _benc = [benc copy];
+        _bhmac = [bhmac copy];
     }
     
     return self;
@@ -55,9 +60,10 @@
     return [[SPIMessage alloc] initWithMessageId:self.requestId
                                        eventName:SPIKeyResponseKey
                                             data:@{
-                                                   @"enc":@{@"B":self.benc},
-                                                   @"hmac":@{@"B":self.bhmac}
-                                                   } needsEncryption:NO];
+                                                   @"enc" : @{@"B" : self.benc},
+                                                   @"hmac" : @{@"B" : self.bhmac}
+                                                   }
+                                 needsEncryption:NO];
 }
 
 @end
@@ -82,7 +88,8 @@
     self = [super init];
     
     if (self) {
-        _isSuccess = [message getDataBoolValue:@"success" defaultIfNotFound:false];
+        _isSuccess =
+        [message getDataBoolValue:@"success" defaultIfNotFound:false];
     }
     
     return self;
@@ -92,21 +99,27 @@
 
 @implementation SPISecretsAndKeyResponse
 
-- (instancetype)initWithSecrets:(SPISecrets *)secrets keyResponse:(SPIKeyResponse *)keyResponse {
+- (instancetype)initWithSecrets:(SPISecrets *)secrets
+                    keyResponse:(SPIKeyResponse *)keyResponse {
     self = [super init];
     
     if (self) {
-        _secrets     = secrets;
+        _secrets = secrets;
         _keyResponse = keyResponse;
     }
     
     return self;
-    
 }
 
 @end
+
 @implementation SPIDropKeysRequest
--(SPIMessage *)toMessage{
-    return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"drpkys"] eventName:SPIDropKeysAdviceKey data:nil needsEncryption:true];
+
+- (SPIMessage *)toMessage {
+    return [[SPIMessage alloc]
+            initWithMessageId:[SPIRequestIdHelper idForString:@"drpkys"]
+            eventName:SPIDropKeysAdviceKey
+            data:nil
+            needsEncryption:true];
 }
 @end

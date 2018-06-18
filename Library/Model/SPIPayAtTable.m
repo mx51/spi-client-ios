@@ -9,7 +9,7 @@
 #import "SPIPayAtTable.h"
 #import "NSString+Util.h"
 #import "SPILogger.h"
-
+#import "SPIClient.h"
 @implementation SPIBillStatusResponse
 - (NSArray<SPIPaymentHistoryEntry *> *)getBillPaymentHistory{
     if (_billData == nil || [_billData isEqualToString:@""]){
@@ -31,7 +31,7 @@
     NSMutableArray * paymentHistory = [[NSMutableArray alloc] init];
     NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&jsonError];
     for (NSDictionary * historyValue in jsonObject.allValues.firstObject){
-        SPIPaymentHistoryEntry *historyItem = [[SPIPaymentHistoryEntry alloc] init:historyValue];
+        SPIPaymentHistoryEntry *historyItem = [[SPIPaymentHistoryEntry alloc] initWithDictionary:historyValue];
         [paymentHistory addObject:historyItem];
     }
     return [paymentHistory copy];
@@ -46,21 +46,15 @@
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:ph options:NSJSONWritingPrettyPrinted error:&writeError];
     NSString *bphStr = [jsonData base64EncodedStringWithOptions:0];
     return bphStr;
-    //   if (ph.Count < 1)
-    //    {
-    //        return "";
-    //    }
-    //
-    //    var bphStr = JsonConvert.SerializeObject(ph);
-    //    return Convert.ToBase64String(Encoding.UTF8.GetBytes(bphStr));
 }
+
 - (SPIMessage *)toMessage:(NSString *)messageId{
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
     [data setObject:[NSNumber numberWithInteger:BillRetrievalResultSuccess] forKey:@"success"];
-    if ([NSString isNilOrEmpty:_billId]) {
+    if (_billId.length > 0) {
         [data setObject:_billId forKey:@"bill_id"];
     }
-    if ([NSString isNilOrEmpty:_tableId]){
+    if (_tableId.length > 0) {
         [data setObject:_tableId forKey:@"table_id"];
     }
     if (_result == BillRetrievalResultSuccess){
@@ -71,40 +65,27 @@
         [data setObject:@"error_reason" forKey:[NSNumber numberWithInt:_result].stringValue];
         [data setObject:@"error_detail" forKey:[NSNumber numberWithInt:_result].stringValue];
     }
-    
-    //    var data = new JObject(
-    //                           new JProperty("success", Result==BillRetrievalResult.SUCCESS)
-    //                           );
-    //
-    //    if (!string.IsNullOrWhiteSpace(BillId)) data.Add(new JProperty("bill_id", BillId));
-    //    if (!string.IsNullOrWhiteSpace(TableId)) data.Add(new JProperty("table_id", TableId));
-    //
-    //    if (Result == BillRetrievalResult.SUCCESS)
-    //    {
-    //        data.Add(new JProperty("bill_total_amount", TotalAmount));
-    //        data.Add(new JProperty("bill_outstanding_amount", OutstandingAmount));
-    //        data.Add(new JProperty("bill_payment_history", JToken.FromObject(getBillPaymentHistory())));
-    //    }
-    //    else
-    //    {
-    //        data.Add(new JProperty("error_reason", Result.ToString()));
-    //        data.Add(new JProperty("error_detail", Result.ToString()));
-    //    }
-    //    return new Message(messageId, Events.PayAtTableBillDetails, data, true);
     SPIMessage *message = [[SPIMessage alloc] initWithMessageId:messageId eventName:SPIPayAtTableBillDetailsKey data:data needsEncryption:true];
     return  message;
 }
+
 @end
+
 @implementation SPIPaymentHistoryEntry
+
+- (instancetype)initWithDictionary:(NSDictionary *)data{
+    _paymentType = [data valueForKey:@"payment_type"];
+    _paymentSummary = [data valueForKey:@"payment_summary"];
+    return self;
+}
+
 - (NSString *)getTerminalRefId{
     if ([_paymentSummary.allKeys containsObject:@"terminal_ref_id"]){
         return _paymentSummary[@"terminal_ref_id"];
     }
     return nil;
 }
-- (id)init:(NSDictionary *)fromJson{
-    return self;
-}
+
 - (NSDictionary *)toJsonObject{
     NSMutableDictionary * data = [[NSMutableDictionary alloc] init];
     [data setObject:_paymentType forKey:@"payment_type"];
@@ -113,8 +94,15 @@
 }
 
 @end
+
+@interface SPIBillPayment()
+
+   @property (nonatomic,retain) SPIMessage* incomingAdvice;
+
+@end
+
 @implementation SPIBillPayment
-SPIMessage* _incomingAdvice;
+
 - (instancetype)initWithMessage:(SPIMessage *)message{
     _incomingAdvice = message;
     _billId = [_incomingAdvice getDataStringValue:@"bill_id"];
@@ -141,6 +129,7 @@ SPIMessage* _incomingAdvice;
     _TipAmount =  [_purchaseResponse getTipAmount];
     return self;
 }
+
 + (NSString *)paymentTypeString:(SPIPaymentType)ptype{
     if (ptype == SPIPaymentTypeCard){
         return @"CARD";
@@ -150,8 +139,11 @@ SPIMessage* _incomingAdvice;
     }
     return nil;
 }
+
 @end
+
 @implementation SPIPayAtTableConfig
+
 - (SPIMessage *)toMessage:(NSString *)messageId{
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
     [data setValue:@true forKey:@"pay_at_table_enabled"];
@@ -167,6 +159,7 @@ SPIMessage* _incomingAdvice;
     SPIMessage *message = [[SPIMessage alloc] initWithMessageId:messageId eventName:SPIPayAtTableSetTableConfigKey data:data needsEncryption:true];
     return message;
 }
+
 + (SPIMessage *)featureDisableMessage:(NSString *)messageId{
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
     [data setValue:@false forKey:@"pay_at_table_enabled"];
@@ -174,21 +167,27 @@ SPIMessage* _incomingAdvice;
     SPIMessage *message = [[SPIMessage alloc] initWithMessageId:messageId eventName:SPIPayAtTableSetTableConfigKey data:data needsEncryption:true];
     return message;
 }
+
 @end
+
 @class SPIClient;
 @interface SPIPayAtTable(){
     SPIClient * _spi;
 }
 @end
+
 @implementation SPIPayAtTable
+
 - (instancetype)initWithClient:(SPIClient *)spi{
     _spi = spi;
     return self;
 }
--(void)PushPayAtTableConfig{
+
+- (void)PushPayAtTableConfig{
     
 }
--(void)handleGetBillDetailsRequest:(SPIMessage *)message{
+
+- (void)handleGetBillDetailsRequest:(SPIMessage *)message{
     NSString * operatorId = [message getDataStringValue:@"operator_id"];
     NSString * tableId = [message getDataStringValue:@"table_id"];
     
@@ -201,7 +200,8 @@ SPIMessage* _incomingAdvice;
     }
     [_spi send:[billStatus toMessage:message.mid]];
 }
--(void)handleBillPaymentAdvice:(SPIMessage *)message{
+
+- (void)handleBillPaymentAdvice:(SPIMessage *)message{
     SPIBillPayment *billPayment = [[SPIBillPayment alloc] initWithMessage:message];
     
     // Ask POS for Bill Details, inluding encoded PaymentData
@@ -246,8 +246,10 @@ SPIMessage* _incomingAdvice;
     
     [_spi send:[updatedBillStatus toMessage:message.mid]];
 }
--(void)handleGetTableConfig:(SPIMessage *)message{
+
+- (void)handleGetTableConfig:(SPIMessage *)message{
     [_spi send:[_config toMessage:message.mid]];
 }
+
 @end
 

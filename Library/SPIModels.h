@@ -18,7 +18,7 @@
  * - SPIStatusPairedConnecting: Paired but trying to establish a connection
  * - SPIStatusPairedConnected: Paired and Connected
  */
-typedef NS_ENUM (NSUInteger, SPIStatus) {
+typedef NS_ENUM(NSUInteger, SPIStatus) {
     SPIStatusUnpaired,
     SPIStatusPairedConnecting,
     SPIStatusPairedConnected,
@@ -31,13 +31,13 @@ typedef NS_ENUM (NSUInteger, SPIStatus) {
  * - SPIFlowPairing: Currently going through the pairing process flow. Happens during the unpaired status.
  * - SPIFlowTransaction: Currently going through the transaction process flow. Cannot happen in the unpaired status.
  */
-typedef NS_ENUM (NSUInteger, SPIFlow) {
+typedef NS_ENUM(NSUInteger, SPIFlow) {
     SPIFlowIdle,
     SPIFlowPairing,
     SPIFlowTransaction,
 };
 
-typedef NS_ENUM (NSUInteger, SPITransactionType) {
+typedef NS_ENUM(NSUInteger, SPITransactionType) {
     SPITransactionTypePurchase,
     SPITransactionTypeRefund,
     SPITransactionTypeCashoutOnly,
@@ -96,14 +96,16 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 
 @end
 
-@interface SPISubmitAuthCodeResult:NSObject
+@interface SPISubmitAuthCodeResult : NSObject
 @property (nonatomic, assign) BOOL isValidFormat;
 // Text that gives reason for Invalidity
 @property (nonatomic, copy) NSString *message;
 
 - (instancetype)initWithValidFormat:(BOOL)isValidFormat
                                 msg:(NSString *)message;
+
 @end
+
 /**
  * Represents the State during a TransactionFlow
  */
@@ -116,7 +118,6 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 
 // Purchase/Refund/Settle/...
 @property (nonatomic, assign) SPITransactionType type;
-@property (nonatomic,readonly) NSString* typeString;
 
 // A text message to display on your Transaction Flow Screen
 @property (nonatomic, copy) NSString *displayMessage;
@@ -170,7 +171,7 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 @property (nonatomic, strong) SPIMessage *request;
 
 // Whether we're currently waiting for a Get Last Transaction response to get an update.
-@property (nonatomic, assign)  BOOL isAwaitingGltResponse;
+@property (nonatomic, assign) BOOL isAwaitingGltResponse;
 
 - (instancetype)initWithTid:(NSString *)tid
                        type:(SPITransactionType)type
@@ -192,13 +193,14 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 
 - (void)signatureResponded:(NSString *)msg;
 
-- (void)phoneForAuthRequired:(SPIPhoneForAuthRequired *) spiMessage msg:(NSString *)msg;
+- (void)phoneForAuthRequired:(SPIPhoneForAuthRequired *)spiMessage msg:(NSString *)msg;
 
-- (void)authCodeSent:(NSString *) msg;
+- (void)authCodeSent:(NSString *)msg;
 
 - (void)completed:(SPIMessageSuccessState)state response:(SPIMessage *)response msg:(NSString *)msg;
 
 - (void)unknownCompleted:(NSString *)msg;
+
 @end
 
 /**

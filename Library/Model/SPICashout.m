@@ -9,27 +9,34 @@
 #import "SPICashout.h"
 #import "SPIRequestIdHelper.h"
 
-@implementation CashoutOnlyRequest:NSObject
+@implementation CashoutOnlyRequest : NSObject
 
-- (id)init:(NSInteger)amountCents posRefId:(NSString *)posRefId{
+- (instancetype)initWithAmountCents:(NSInteger)amountCents
+                           posRefId:(NSString *)posRefId {
     _config = [[SPIConfig alloc] init];
     _cashoutAmount = amountCents;
     _posRefId = posRefId;
-    return  self;
+    return self;
 }
-- (SPIMessage *)toMessage{
+
+- (SPIMessage *)toMessage {
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
     [data setValue:_posRefId forKey:@"pos_ref_id"];
-    [data setValue:[NSNumber numberWithInteger:_cashoutAmount] forKey:@"cash_amount"];
+    [data setValue:[NSNumber numberWithInteger:_cashoutAmount]
+            forKey:@"cash_amount"];
     [_config addReceiptConfig:data];
     
-    SPIMessage *message = [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"cshout"] eventName:SPICashoutOnlyRequestKey data:data needsEncryption:true];
+    SPIMessage *message = [[SPIMessage alloc]
+                           initWithMessageId:[SPIRequestIdHelper idForString:@"cshout"]
+                           eventName:SPICashoutOnlyRequestKey
+                           data:data
+                           needsEncryption:true];
     return message;
 }
 
 @end
 
-@implementation CashoutOnlyResponse:NSObject
+@implementation SPICashoutOnlyResponse : NSObject
 
 - (instancetype)initWithMessage:(SPIMessage *)message {
     self = [super init];
@@ -43,65 +50,83 @@
     }
     
     return self;
-    
 }
-- (NSString *)getRRN{
-     return [self.message getDataStringValue:@"rrn"];
+
+- (NSString *)getRRN {
+    return [self.message getDataStringValue:@"rrn"];
 }
-- (NSString *)getCashoutAmount{
-    return [self.message getDataStringValue:@"cash_amount"];
+
+- (NSInteger)getCashoutAmount {
+    return [self.message getDataIntegerValue:@"cash_amount"];
 }
-- (NSString *)getBankNonCashAmount{
-    return [self.message getDataStringValue:@"bank_noncash_amount"];
+
+- (NSInteger)getBankNonCashAmount {
+    return [self.message getDataIntegerValue:@"bank_noncash_amount"];
 }
-- (NSString *)getBankCashAmount{
-    return [self.message getDataStringValue:@"bank_cash_amount"];
+
+- (NSInteger)getBankCashAmount {
+    return [self.message getDataIntegerValue:@"bank_cash_amount"];
 }
-- (NSString *)getCustomerReceipt{
+
+- (NSString *)getCustomerReceipt {
     return [self.message getDataStringValue:@"customer_receipt"];
 }
-- (NSString *)getMerchantReceipt{
+
+- (NSString *)getMerchantReceipt {
     return [self.message getDataStringValue:@"merchant_receipt"];
 }
-- (NSString *)getResponseText{
+
+- (NSString *)getResponseText {
     return [self.message getDataStringValue:@"host_response_text"];
 }
 
-- (NSString *)getResponseCode{
+- (NSString *)getResponseCode {
     return [self.message getDataStringValue:@"host_response_code"];
 }
-- (NSString *)getTerminalReferenceId{
+
+- (NSString *)getTerminalReferenceId {
     return [self.message getDataStringValue:@"terminal_ref_id"];
 }
-- (NSString *)getAccountType{
+
+- (NSString *)getAccountType {
     return [self.message getDataStringValue:@"account_type"];
 }
-- (NSString *)getAuthCode{
+
+- (NSString *)getAuthCode {
     return [self.message getDataStringValue:@"auth_code"];
 }
-- (NSString *)getBankDate{
+
+- (NSString *)getBankDate {
     return [self.message getDataStringValue:@"bank_date"];
 }
-- (NSString *)getBankTime{
+
+- (NSString *)getBankTime {
     return [self.message getDataStringValue:@"bank_time"];
 }
-- (NSString *)getMaskedPan{
+
+- (NSString *)getMaskedPan {
     return [self.message getDataStringValue:@"masked_pan"];
 }
-- (NSString *)getTerminalId{
+
+- (NSString *)getTerminalId {
     return [self.message getDataStringValue:@"terminal_id"];
 }
-- (BOOL)wasMerchantReceiptPrinted{
-    return [_message getDataBoolValue:@"merchant_receipt_printed" defaultIfNotFound:false];
+
+- (BOOL)wasMerchantReceiptPrinted {
+    return [_message getDataBoolValue:@"merchant_receipt_printed"
+                    defaultIfNotFound:false];
 }
-- (BOOL)wasCustomerReceiptPrinted{
-    return [_message getDataBoolValue:@"customer_receipt_printed" defaultIfNotFound:false];
+
+- (BOOL)wasCustomerReceiptPrinted {
+    return [_message getDataBoolValue:@"customer_receipt_printed"
+                    defaultIfNotFound:false];
 }
-- (NSString *)getResponseValue:(NSString *)attribute{
-    if (!attribute) return @"";
+
+- (NSString *)getResponseValue:(NSString *)attribute {
+    if (!attribute)
+        return @"";
     
     return (NSString *)self.message.data[attribute] ?: @"";
 }
-
 
 @end

@@ -37,7 +37,7 @@
     
     return dateFormatter;
 }
-+ (NSDateFormatter *)bankSettleMentFormat {
++ (NSDateFormatter *)bankSettleMentFormatter {
     static NSDateFormatter *dateFormatter = nil;
     
     static dispatch_once_t onceToken;
@@ -46,6 +46,19 @@
         dateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
         dateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
         [dateFormatter setDateFormat:@"ddMMyyyy"];
+    });
+    
+    return dateFormatter;
+}
++ (NSDateFormatter *)dateFormaterWithFormatter:(NSString *)format {
+    static NSDateFormatter *dateFormatter = nil;
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+        dateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+        [dateFormatter setDateFormat:format];
     });
     
     return dateFormatter;

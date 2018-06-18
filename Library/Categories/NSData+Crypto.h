@@ -10,9 +10,9 @@
 
 @interface NSData (Crypto)
 
-- (NSData *)encryptForKey:(NSData *)key iv:(unsigned char [])iv;
+- (NSData *)encryptForKey:(NSData *)key iv:(unsigned char[])iv;
 
-- (NSData *)decryptForKey:(NSData *)key iv:(unsigned char [])iv;
+- (NSData *)decryptForKey:(NSData *)key iv:(unsigned char[])iv;
 
 - (NSData *)SHA256;
 
