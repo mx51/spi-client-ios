@@ -143,7 +143,7 @@
     if (dateStr.length == 0) {
         return nil;
     }
-    return [[NSDateFormatter bankSettleMentFormatter] dateFromString:dateStr];
+    return [[NSDateFormatter bankSettlementFormatter] dateFromString:dateStr];
 }
 
 - (NSString *)getResponseValueWithAttribute:(NSString *)attribute {
@@ -390,7 +390,7 @@
     if (dateStr.length == 0) {
         return nil;
     }
-    return [[NSDateFormatter bankSettleMentFormatter] dateFromString:dateStr];
+    return [[NSDateFormatter bankSettlementFormatter] dateFromString:dateStr];
 }
 
 - (NSString *)getResponseText {

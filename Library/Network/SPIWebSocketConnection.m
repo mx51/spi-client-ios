@@ -46,7 +46,22 @@
     // Let's let our users know that we are now connecting...
     self.state = SPIConnectionStateConnecting;
     [self.webSocket open];
+    
+    // We have noticed that sometimes this websocket library, even when the network connectivivity is back,
+    // it never recovers nor gives up. So here is a crude way of timing out after 8 seconds.
+    __weak __typeof(&*self) weakSelf = self;
+    dispatch_async(
+                   dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+                   ^{
+                       sleep(8);
+                       if (weakSelf.state == SPIConnectionStateConnecting) {
+                            SPILog(@"Did not respond, disconnecting....");
+                           [self disconnect];
+                       }
+                   });
+    
     [self.delegate onSpiConnectionStatusChanged:SPIConnectionStateConnecting];
+    
 }
 
 - (void)disconnect {
