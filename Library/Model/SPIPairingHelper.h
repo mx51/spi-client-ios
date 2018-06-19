@@ -12,9 +12,13 @@
 #import "SPIPairing.h"
 
 @interface SPIPublicKeyAndSecret : NSObject
-@property (nonatomic, readonly, copy) NSString *myPublicKey;
-@property (nonatomic, readonly, copy) NSString *sharedSecretKey;
-- (id)initWithMyPublicKey:(NSString *)myPublicKey secretKey:(NSString *)sharedSecretKey;
+
+@property(nonatomic, readonly, copy) NSString *myPublicKey;
+@property(nonatomic, readonly, copy) NSString *sharedSecretKey;
+
+- (id)initWithMyPublicKey:(NSString *)myPublicKey
+                secretKey:(NSString *)sharedSecretKey;
+
 @end
 
 /**
@@ -38,12 +42,14 @@
  * @param keyRequest SPIKeyRequest
  * @return Secrets and KeyResponse to send back.
  */
-+ (SPISecretsAndKeyResponse *)generateSecretsAndKeyResponseForKeyRequest:(SPIKeyRequest *)keyRequest;
++ (SPISecretsAndKeyResponse *)generateSecretsAndKeyResponseForKeyRequest:
+(SPIKeyRequest *)keyRequest;
 
 /**
  *
  * Converts an incoming A value into a BigInteger.
- * There are some "gotchyas" here which is why this piece of work is abstracted so it can be tested separately.
+ * There are some "gotchyas" here which is why this piece of work is abstracted
+ * so it can be tested separately.
  *
  * @param hexStringA NSString
  * @return JKBigInteger
@@ -52,9 +58,10 @@
 
 /**
  *
- * Converts the DH secret BigInteger into the hex-string to be used as the secret.
- * There are some "gotchyas" here which is why this piece of work is abstracted so it can be tested separately.
- * See: http://www.simplepaymentapi.com/#/api/pairing-process
+ * Converts the DH secret BigInteger into the hex-string to be used as the
+ * secret. There are some "gotchyas" here which is why this piece of work is
+ * abstracted so it can be tested separately. See:
+ * http://www.simplepaymentapi.com/#/api/pairing-process
  *
  * @param secretBI Secret as BigInteger
  * @return Secret as Hex-String
@@ -69,6 +76,7 @@
  * @param theirPublicKey NSString
  * @return SPIPublicKeyAndSecret
  */
-+ (SPIPublicKeyAndSecret *)calculateMyPublicKeyAndSecret:(NSString *)theirPublicKey;
++ (SPIPublicKeyAndSecret *)calculateMyPublicKeyAndSecret:
+(NSString *)theirPublicKey;
 
 @end

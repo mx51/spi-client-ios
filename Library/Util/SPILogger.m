@@ -6,14 +6,13 @@
 //  Copyright © 2017 Assembly Payments. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "SPILogger.h"
+#import <Foundation/Foundation.h>
 
-NSString * const SPILogNotificationKey = @"SPILogNotificationKey";
+NSString *const SPILogNotificationKey = @"SPILogNotificationKey";
 
 void SPILogMsg(NSString *message) {
     NSLog(@"%@", message);
-    //[[NSNotificationCenter defaultCenter] postNotificationName:SPILogNotificationKey object:message];
 }
 
 void SPILog(NSString *format, ...) {

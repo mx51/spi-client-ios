@@ -9,5 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @interface NSObject (Util)
+
 - (NSString *)dynamicDescription;
+
 @end

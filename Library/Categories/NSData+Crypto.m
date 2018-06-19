@@ -15,23 +15,23 @@
 @implementation NSData (Crypto)
 
 - (NSData *)SHA256 {
-    unsigned int  outputLength = CC_SHA256_DIGEST_LENGTH;
+    unsigned int outputLength = CC_SHA256_DIGEST_LENGTH;
     unsigned char output[outputLength];
     
     CC_SHA256(self.bytes, (unsigned int)self.length, output);
     return [NSData dataWithBytes:output length:outputLength];
 }
 
-- (NSData *)encryptForKey:(NSData *)key iv:(unsigned char [])iv {
+- (NSData *)encryptForKey:(NSData *)key iv:(unsigned char[])iv {
     return [self cryptForOperation:kCCEncrypt key:key iv:iv];
 }
 
-- (NSData *)decryptForKey:(NSData *)key iv:(unsigned char [])iv {
+- (NSData *)decryptForKey:(NSData *)key iv:(unsigned char[])iv {
     return [self cryptForOperation:kCCDecrypt key:key iv:iv];
 }
 
-- (NSData *)cryptForOperation:(CCOperation)op key:(NSData *)key iv:(unsigned char [])iv {
-    NSData *data   = self;
+- (NSData *)cryptForOperation:(CCOperation)op key:(NSData *)key iv:(unsigned char[])iv {
+    NSData *data = self;
     NSData *result = nil;
     
     unsigned char cKey[kCCKeySizeAES256];
@@ -39,21 +39,21 @@
     [key getBytes:cKey length:kCCKeySizeAES256];
     
     size_t bufferSize = [data length] + kCCBlockSizeAES128;
-    void   *buffer    = malloc(bufferSize);
+    void *buffer = malloc(bufferSize);
     
     // do decrypt
-    size_t          decryptedSize = 0;
-    CCCryptorStatus cryptStatus   = CCCrypt(op,
-                                            kCCAlgorithmAES128,
-                                            kCCOptionPKCS7Padding,
-                                            cKey,
-                                            kCCKeySizeAES256,
-                                            iv,
-                                            [data bytes],
-                                            [data length],
-                                            buffer,
-                                            bufferSize,
-                                            &decryptedSize);
+    size_t decryptedSize = 0;
+    CCCryptorStatus cryptStatus = CCCrypt(op,
+                                          kCCAlgorithmAES128,
+                                          kCCOptionPKCS7Padding,
+                                          cKey,
+                                          kCCKeySizeAES256,
+                                          iv,
+                                          [data bytes],
+                                          [data length],
+                                          buffer,
+                                          bufferSize,
+                                          &decryptedSize);
     
     if (cryptStatus == kCCSuccess) {
         result = [NSData dataWithBytesNoCopy:buffer length:decryptedSize];
@@ -66,9 +66,9 @@
 }
 
 - (NSString *)hexString {
-    NSUInteger    length    = self.length;
-    unichar       *hexChars = (unichar *)malloc(sizeof(unichar) * (length * 2));
-    unsigned char *bytes    = (unsigned char *)self.bytes;
+    NSUInteger length = self.length;
+    unichar *hexChars = (unichar *)malloc(sizeof(unichar) * (length * 2));
+    unsigned char *bytes = (unsigned char *)self.bytes;
     
     for (NSUInteger i = 0; i < length; i++) {
         unichar c = bytes[i] / 16;
