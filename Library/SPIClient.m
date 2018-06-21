@@ -455,8 +455,6 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     __weak __typeof(&*self) weakSelf = self;
     
     dispatch_async(self.queue, ^{
-        SPILog(@"initiateRefundTx");
-        
         if (weakSelf.state.status == SPIStatusUnpaired)
             return completion([[SPIInitiateTxResult alloc]
                                initWithTxResult:NO
@@ -467,6 +465,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                                initWithTxResult:NO
                                message:@"Not idle"]);
         
+        SPILog(@"initiateRefundTx");
         SPIRefundRequest *refund =
         [[SPIRefundRequest alloc] initWithPosRefId:pid
                                        amountCents:amountCents];
@@ -712,9 +711,9 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                        completion:(SPICompletionTxResult)completion {
     __weak __typeof(&*self) weakSelf = self;
     if (self.state.status == SPIStatusUnpaired) {
-        completion([[SPIInitiateTxResult alloc]
+       return completion([[SPIInitiateTxResult alloc]
                     initWithTxResult:NO
-                    message:@"Not Paired"]);
+                    message:@"Not paired"]);
     }
     
     dispatch_async(self.queue, ^{
