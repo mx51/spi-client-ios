@@ -17,4 +17,5 @@
 
 @property (nonatomic, readonly, nonnull) NSDate *toDate;
 
+- (NSDate *)toDateWithFormat:(NSString *)format;
 @end
