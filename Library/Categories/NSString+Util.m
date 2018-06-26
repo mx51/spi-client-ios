@@ -20,4 +20,11 @@
     return [[NSDateFormatter dateFormatter] dateFromString:self];
 }
 
+- (NSDate *)toDateWithFormat:(NSString *)format {
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+        dateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+        [dateFormatter setDateFormat:format];
+    return [dateFormatter dateFromString:self];
+}
 @end

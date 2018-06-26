@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM (NSInteger, SPIConnectionState) {
+typedef NS_ENUM(NSInteger, SPIConnectionState) {
     SPIConnectionStateDisconnected,
     SPIConnectionStateConnecting,
     SPIConnectionStateConnected,
@@ -34,7 +34,7 @@ typedef NS_ENUM (NSInteger, SPIConnectionState) {
 - (BOOL)isConnected;
 - (SPIConnectionState)state;
 
-- (id <SPIConnectionDelegate> )delegate;
-- (void)setDelegate:(id <SPIConnectionDelegate> )delegate;
+- (id<SPIConnectionDelegate>)delegate;
+- (void)setDelegate:(id<SPIConnectionDelegate>)delegate;
 
 @end

@@ -9,7 +9,9 @@
 #import "SPIRequestIdHelper.h"
 
 @interface SPIRequestIdHelper ()
+
 @property (nonatomic, assign) NSUInteger counter;
+
 @end
 
 @implementation SPIRequestIdHelper
