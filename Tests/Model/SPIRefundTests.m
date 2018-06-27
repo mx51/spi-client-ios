@@ -50,12 +50,6 @@
     XCTAssertTrue([[response getTerminalId] isEqualToString:@"100312348845"]);
     XCTAssertEqual([response wasCustomerReceiptPrinted], true);
     XCTAssertEqual([response wasMerchantReceiptPrinted], true);
-    
-}
-
-- (void)test_client_can_handle_response{
-
-    
 }
 
 @end

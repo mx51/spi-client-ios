@@ -252,7 +252,6 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
 /**
  * This is useful to recover from your POS crashing in the middle of a
  * transaction. When you restart your POS, if you had saved enough state, you
- * can call this method to recover the client library state. You need to have
  * the posRefId that you passed in with the original transaction, and the
  * transaction type. This method will return immediately whether recovery has
  * started or not. If recovery has started, you need to bring up the transaction
@@ -294,10 +293,6 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
  * @param posRefId The reference ID that you passed in with the original request.
  */
 - (SPIMessageSuccessState)gltMatch:(SPIGetLastTransactionResponse *)gltResponse posRefId:(NSString *)posRefId;
-
-- (BOOL)send:(SPIMessage *)message;
-
-- (void)onSpiMessageReceived:(NSString *)message;
 
 - (SPIPayAtTable *)enablePayAtTable;
 

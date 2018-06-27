@@ -200,6 +200,8 @@ typedef NS_ENUM(NSUInteger, SPITransactionType) {
 
 - (void)unknownCompleted:(NSString *)msg;
 
++ (NSString *)txTypeString:(SPITransactionType)type;
+
 @end
 
 /**

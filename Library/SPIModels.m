@@ -49,11 +49,13 @@
 @end
 
 @implementation SPISubmitAuthCodeResult
+
 - (instancetype)initWithValidFormat:(BOOL)isValidFormat msg:(NSString *)message {
     _isValidFormat = isValidFormat;
     _message = message;
     return self;
 }
+
 @end
 
 @implementation SPITransactionFlowState
@@ -85,35 +87,39 @@
     return self;
 }
 
-- (NSString *)txTypeString {
-    switch (self.type) {
++ (NSString *)txTypeString:(SPITransactionType)type {
+    switch (type) {
         case SPITransactionTypePurchase:
-            return @"PURCHASE";
+            return @"Purchase";
             
         case SPITransactionTypeRefund:
-            return @"REFUND";
+            return @"Refund";
             
         case SPITransactionTypeCashoutOnly:
-            return @"CASHOUT_ONLY";
+            return @"Cashout Only";
             
         case SPITransactionTypeMOTO:
             return @"MOTO";
             
         case SPITransactionTypeSettle:
-            return @"SETTLE";
+            return @"Settle";
             
         case SPITransactionTypeSettleEnquiry:
-            return @"SETTLE_ENQUIRY";
+            return @"Settlement Enquiry";
             
         case SPITransactionTypeGetLastTransaction:
-            return @"GET_LAST_TRANSACTION";
+            return @"Get Last Transaction";
             
         case SPITransactionTypePreAuth:
-            return @"PRE_AUTH";
+            return @"Preauth";
             
         case SPITransactionTypeAccountVerify:
-            return @"ACCOUNT_VERIFY";
+            return @"Account Verify";
     }
+}
+
+- (NSString *)txTypeString {
+    return [SPITransactionFlowState txTypeString:self.type];
 }
 
 - (void)sent:(NSString *)msg {

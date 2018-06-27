@@ -60,6 +60,7 @@
 		273E9B65205A34BF0006ED5C /* NSData+Crypto.m in Sources */ = {isa = PBXBuildFile; fileRef = 273E9B54205A34BF0006ED5C /* NSData+Crypto.m */; };
 		273E9B67205A34BF0006ED5C /* NSDate+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 273E9B56205A34BF0006ED5C /* NSDate+Util.m */; };
 		273E9B68205A34BF0006ED5C /* NSDate+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 273E9B56205A34BF0006ED5C /* NSDate+Util.m */; };
+		27599C3320E4A368006619A8 /* SPIClient+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 27599C3220E4A368006619A8 /* SPIClient+Internal.h */; };
 		279BB72D205B581E005ADECB /* JKBigInteger.h in Headers */ = {isa = PBXBuildFile; fileRef = 279BB724205B581E005ADECB /* JKBigInteger.h */; };
 		279BB730205B581E005ADECB /* tommath_class.h in Headers */ = {isa = PBXBuildFile; fileRef = 279BB727205B581E005ADECB /* tommath_class.h */; };
 		279BB731205B581E005ADECB /* tommath.c in Sources */ = {isa = PBXBuildFile; fileRef = 279BB728205B581E005ADECB /* tommath.c */; };
@@ -186,6 +187,7 @@
 		273E9B57205A34BF0006ED5C /* NSObject+Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+Util.h"; sourceTree = "<group>"; };
 		273E9B58205A34BF0006ED5C /* NSString+Crypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Crypto.h"; sourceTree = "<group>"; };
 		273E9B6B205A379D0006ED5C /* SPIClient_iOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPIClient_iOS.h; sourceTree = "<group>"; };
+		27599C3220E4A368006619A8 /* SPIClient+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SPIClient+Internal.h"; sourceTree = "<group>"; };
 		279BB724205B581E005ADECB /* JKBigInteger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JKBigInteger.h; sourceTree = "<group>"; };
 		279BB727205B581E005ADECB /* tommath_class.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tommath_class.h; sourceTree = "<group>"; };
 		279BB728205B581E005ADECB /* tommath.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tommath.c; sourceTree = "<group>"; };
@@ -430,6 +432,7 @@
 			isa = PBXGroup;
 			children = (
 				273E9AAF205A2FDD0006ED5C /* SPIClient.h */,
+				27599C3220E4A368006619A8 /* SPIClient+Internal.h */,
 				273E9AAD205A2FDD0006ED5C /* SPIClient.m */,
 				273E9AB1205A2FDE0006ED5C /* SPIModels.h */,
 				273E9AAE205A2FDD0006ED5C /* SPIModels.m */,
@@ -492,6 +495,7 @@
 				279BB72D205B581E005ADECB /* JKBigInteger.h in Headers */,
 				27C68F4320E32C7100D8268C /* SPIClient.h in Headers */,
 				27C68F4420E32C7500D8268C /* SPIModels.h in Headers */,
+				27599C3320E4A368006619A8 /* SPIClient+Internal.h in Headers */,
 				27C68F4520E32C7B00D8268C /* NSData+Crypto.h in Headers */,
 				27C68F4620E32C7E00D8268C /* NSDate+Util.h in Headers */,
 				27C68F4720E32C8E00D8268C /* NSDateFormatter+Util.h in Headers */,

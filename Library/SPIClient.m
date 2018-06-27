@@ -11,6 +11,7 @@
 #import "NSDate+Util.h"
 #import "SPICashout.h"
 #import "SPIClient.h"
+#import "SPIClient+Internal.h"
 #import "SPIConnection.h"
 #import "SPIGCDTimer.h"
 #import "SPIKeyRollingHelper.h"
@@ -55,6 +56,8 @@
 
 @property (nonatomic, strong) dispatch_queue_t queue;
 
+@property (nonatomic, strong) NSObject *txLock;
+
 @end
 
 static NSTimeInterval txMonitorCheckFrequency = 1; // How often do we check on the tx state from our tx monitoring thread
@@ -78,6 +81,8 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         _transactionMonitoringTimer = [[SPIGCDTimer alloc] initWithObject:self queue:"com.assemblypayments.txMonitor"];
         _config = [[SPIConfig alloc] init];
         _state = [SPIState new];
+        
+        _txLock = [[NSObject alloc] init];
     }
     
     return self;
@@ -102,6 +107,26 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     _spiPat = [[SPIPayAtTable alloc] initWithClient:self];
     return _spiPat;
 }
+
+#pragma mark - Delegate
+
+- (void)statusChanged {
+    [self.delegate spi:self statusChanged:self.state.copy];
+}
+
+- (void)pairingFlowStateChanged {
+    [self.delegate spi:self pairingFlowStateChanged:self.state.copy];
+}
+
+- (void)transactionFlowStateChanged {
+    [self.delegate spi:self transactionFlowStateChanged:self.state.copy];
+}
+
+- (void)secretsChanged:(SPISecrets *)secrets {
+    [self.delegate spi:self secretsChanged:secrets state:self.state.copy];
+}
+
+#pragma mark - Setup
 
 - (BOOL)start {
     if (self.started) return false;
@@ -130,14 +155,14 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         NSLog(@"setup with secrets");
         
         self.state.status = SPIStatusPairedConnecting;
-        [self.delegate spi:self statusChanged:self.state];
+        [self statusChanged];
         [self connect];
         return NO;
     } else {
         NSLog(@"setup with NO secrets");
         
         self.state.status = SPIStatusUnpaired;
-        [self.delegate spi:self statusChanged:self.state];
+        [self statusChanged];
         return YES;
     }
 }
@@ -150,45 +175,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     self.secrets = [[SPISecrets alloc] initWithEncKey:encKey hmacKey:hmacKey];
 }
 
-- (BOOL)updatePosId:(NSString *)posId {
-    if (self.state.status != SPIStatusUnpaired) return NO;
-    
-    _posId = posId.copy;
-    self.spiMessageStamp.posId = posId;
-    return YES;
-}
-
-- (BOOL)updateEftposAddress:(NSString *)eftposAddress {
-    if (self.state.status != SPIStatusUnpaired) return NO;
-    
-    self.eftposAddress = eftposAddress;
-    return YES;
-}
-
-- (void)ackFlowEndedAndBackToIdle:(SPICompletionState)completion {
-    NSLog(@"ackFlowEndedAndBackToIdle");
-    
-    dispatch_async(self.queue, ^{
-        if (self.state.flow == SPIFlowIdle) {
-            return completion(YES, self.state); // already idle
-        }
-        
-        if (self.state.flow == SPIFlowPairing &&
-            self.state.pairingFlowState.isFinished) {
-            self.state.flow = SPIFlowIdle;
-            return completion(YES, self.state);
-        }
-        if (self.state.flow == SPIFlowTransaction &&
-            self.state.txFlowState.isFinished) {
-            self.state.flow = SPIFlowIdle;
-            return completion(YES, self.state);
-        }
-        
-        completion(NO, self.state.copy);
-    });
-}
-
-#pragma mark -  Pairing Flow Methods
+#pragma mark - Pairing
 
 - (void)pair {
     NSLog(@"pair");
@@ -207,7 +194,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         weakSelf.state.flow = SPIFlowPairing;
         weakSelf.state.pairingFlowState = currentPairingFlowState;
         
-        [weakSelf.delegate spi:weakSelf pairingFlowStateChanged:weakSelf.state];
+        [weakSelf pairingFlowStateChanged];
         [weakSelf.connection connect];
     });
 }
@@ -227,7 +214,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     if (weakSelf.state.pairingFlowState.isAwaitingCheckFromEftpos) {
         // But we are still waiting for confirmation from EFTPOS side.
         weakSelf.state.pairingFlowState.message = [NSString stringWithFormat:@"Click YES on EFTPOS if code is: %@", weakSelf.state.pairingFlowState.confirmationCode];
-        [weakSelf.delegate spi:weakSelf pairingFlowStateChanged:weakSelf.state];
+        [weakSelf pairingFlowStateChanged];
     } else {
         NSLog(@"pairedReady");
         // Already confirmed from EFTPOS - So all good now. We're Paired also
@@ -240,7 +227,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
 
 - (void)pairingCancel {
     if (_state.flow != SPIFlowPairing || _state.pairingFlowState.isFinished) return;
-
+    
     if (_state.pairingFlowState.isAwaitingCheckFromPos && !_state.pairingFlowState.isAwaitingCheckFromEftpos) {
         SPIMessage *message = [[[SPIDropKeysRequest alloc] init] toMessage];
         [self send:message];
@@ -251,14 +238,36 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
 
 - (BOOL)unpair {
     if (_state.status == SPIStatusUnpaired || _state.flow != SPIFlowIdle) return false;
-
+    
     [self send:[[[SPIDropKeysRequest alloc] init] toMessage]];
     [self doUnpair];
-
+    
     return true;
 }
 
 #pragma mark - Transactions
+
+- (void)ackFlowEndedAndBackToIdle:(SPICompletionState)completion {
+    NSLog(@"ackFlowEndedAndBackToIdle");
+    
+    if (self.state.flow == SPIFlowIdle) {
+        completion(YES, self.state); // already idle
+        return;
+    }
+    
+    if (self.state.flow == SPIFlowPairing && self.state.pairingFlowState.isFinished) {
+        self.state.flow = SPIFlowIdle;
+        completion(YES, self.state);
+        return;
+    }
+    if (self.state.flow == SPIFlowTransaction && self.state.txFlowState.isFinished) {
+        self.state.flow = SPIFlowIdle;
+        completion(YES, self.state);
+        return;
+    }
+    
+    completion(NO, self.state);
+}
 
 - (void)initiatePurchaseTx:(NSString *)pid
                amountCents:(NSInteger)amountCents
@@ -274,101 +283,101 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
           promptForCashout:(BOOL)promptForCashout
                 completion:(SPICompletionTxResult)completion {
     
+    SPILog(@"initiatePurchaseTx");
+    
+    if (self.state.status == SPIStatusUnpaired) {
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
+        return;
+    }
+    
     if (tipAmount > 0 && (cashoutAmount > 0 || promptForCashout)) {
         completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Cannot accept tips and cashout at the same time."]);
-    }
-    if (self.state.status == SPIStatusUnpaired) {
-        return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
+        return;
     }
     
-    __weak __typeof(&*self) weakSelf = self;
-    
-    dispatch_async(self.queue, ^{
-        if (weakSelf.state.flow != SPIFlowIdle) {
-            return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not idle"]);
+    @synchronized(self.txLock) {
+        if (self.state.flow != SPIFlowIdle) {
+            completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not idle"]);
+            return;
         }
         
-        SPILog(@"initiatePurchaseTx");
-        
-        weakSelf.state.flow = SPIFlowTransaction;
+        self.state.flow = SPIFlowTransaction;
         
         SPIPurchaseRequest *purchase = [SPIPurchaseHelper createPurchaseRequest:posRefId
                                                                  purchaseAmount:purchaseAmount
                                                                       tipAmount:tipAmount
                                                                      cashAmount:cashoutAmount
                                                                promptForCashout:promptForCashout];
-        purchase.config = weakSelf.config;
+        purchase.config = self.config;
         
         SPIMessage *purchaseMsg = [purchase toMessage];
         
-        weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId
-                                                                             type:SPITransactionTypePurchase
-                                                                      amountCents:purchaseAmount
-                                                                          message:purchaseMsg
-                                                                              msg:[NSString stringWithFormat:@"Waiting for EFTPOS connection to make payment request. %@",
-                                                                                   [purchase amountSummary]]];
+        self.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId
+                                                                         type:SPITransactionTypePurchase
+                                                                  amountCents:purchaseAmount
+                                                                      message:purchaseMsg
+                                                                          msg:[NSString stringWithFormat:@"Waiting for EFTPOS connection to make payment request. %@",
+                                                                               [purchase amountSummary]]];
         
-        if ([weakSelf send:purchaseMsg]) {
-            [weakSelf.state.txFlowState sent:[NSString stringWithFormat:@"Asked EFTPOS to accept payment for %@}", [purchase amountSummary]]];
+        if ([self send:purchaseMsg]) {
+            [self.state.txFlowState sent:[NSString stringWithFormat:@"Asked EFTPOS to accept payment for %@}", [purchase amountSummary]]];
         }
-        
-        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state];
-        completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Purchase initiated"]);
-    });
+    }
+    
+    [self transactionFlowStateChanged];
+    completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Purchase initiated"]);
 }
 
 - (void)initiateRefundTx:(NSString *)pid
              amountCents:(NSInteger)amountCents
               completion:(SPICompletionTxResult)completion {
-
-    if (self.state.status == SPIStatusUnpaired) {
-        return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
-    }
-
-    __weak __typeof(&*self) weakSelf = self;
     
-    dispatch_async(self.queue, ^{
-        if (weakSelf.state.flow != SPIFlowIdle) {
-            return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not idle"]);
+    if (self.state.status == SPIStatusUnpaired) {
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
+        return;
+    }
+    
+    @synchronized(self.txLock) {
+        if (self.state.flow != SPIFlowIdle) {
+            completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not idle"]);
+            return;
         }
         
         SPILog(@"initiateRefundTx");
         
-        weakSelf.state.flow = SPIFlowTransaction;
+        self.state.flow = SPIFlowTransaction;
         
         SPIRefundRequest *refund = [[SPIRefundRequest alloc] initWithPosRefId:pid amountCents:amountCents];
-        refund.config = weakSelf.config;
+        refund.config = self.config;
         
         SPIMessage *purchaseMessage = [refund toMessage];
         
-        weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:pid
-                                                                             type:SPITransactionTypeRefund
-                                                                      amountCents:amountCents
-                                                                          message:purchaseMessage
-                                                                              msg:[NSString stringWithFormat:@"Waiting for EFTPOS connection to make refund request for $%.2f",
-                                                                                   amountCents / 100.0]];
+        self.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:pid
+                                                                         type:SPITransactionTypeRefund
+                                                                  amountCents:amountCents
+                                                                      message:purchaseMessage
+                                                                          msg:[NSString stringWithFormat:@"Waiting for EFTPOS connection to make refund request for $%.2f",
+                                                                               amountCents / 100.0]];
         
-        if ([weakSelf send:purchaseMessage]) {
-            [weakSelf.state.txFlowState sent:[NSString stringWithFormat:@"Asked EFTPOS to refund $%.2f", amountCents / 100.0]];
+        if ([self send:purchaseMessage]) {
+            [self.state.txFlowState sent:[NSString stringWithFormat:@"Asked EFTPOS to refund $%.2f", amountCents / 100.0]];
         }
-        
-        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state];
-        completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Refund initiated"]);
-    });
+    }
+    
+    [self transactionFlowStateChanged];
+    completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Refund initiated"]);
 }
 
 - (void)acceptSignature:(BOOL)accepted {
-    __weak __typeof(&*self) weakSelf = self;
-    
-    dispatch_async(self.queue, ^{
+    @synchronized(self.txLock) {
         SPILog(@"acceptSignature");
         
-        if (weakSelf.state.flow != SPIFlowTransaction || weakSelf.state.txFlowState.isFinished || !weakSelf.state.txFlowState.isAwaitingSignatureCheck) {
+        if (self.state.flow != SPIFlowTransaction || self.state.txFlowState.isFinished || !self.state.txFlowState.isAwaitingSignatureCheck) {
             SPILog(@"Asked to accept signature but I was not waiting for one.");
             return;
         }
         
-        [weakSelf.state.txFlowState signatureResponded:accepted ? @"Accepting signature..." : @"Declining signature..."];
+        [self.state.txFlowState signatureResponded:accepted ? @"Accepting signature..." : @"Declining signature..."];
         
         NSString *sigReqMsgId = self.state.txFlowState.signatureRequiredMessage.requestId;
         SPIMessage *msg;
@@ -378,48 +387,48 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             msg = [[[SPISignatureDecline alloc] initWithSignatureRequiredRequestId:sigReqMsgId] toMessage];
         }
         
-        [weakSelf send:msg];
+        [self send:msg];
         
-        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state];
-    });
+        [self transactionFlowStateChanged];
+    }
 }
 
 - (void)initiateCashoutOnlyTx:(NSString *)posRefId
                   amountCents:(NSInteger)amountCents
                    completion:(SPICompletionTxResult)completion {
-
+    
     if (self.state.status == SPIStatusUnpaired) {
-        return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
+        return;
     }
     
-    __weak __typeof(&*self) weakSelf = self;
-    
-    dispatch_async(self.queue, ^{
-        if (weakSelf.state.flow != SPIFlowIdle) {
-            return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not idle"]);
+    @synchronized(self.txLock) {
+        if (self.state.flow != SPIFlowIdle) {
+            completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not idle"]);
+            return;
         }
-
-        weakSelf.state.flow = SPIFlowTransaction;
+        
+        self.state.flow = SPIFlowTransaction;
         
         SPICashoutOnlyRequest *cashoutOnlyRequest = [[SPICashoutOnlyRequest alloc] initWithAmountCents:amountCents posRefId:posRefId];
-        cashoutOnlyRequest.config = weakSelf.config;
+        cashoutOnlyRequest.config = self.config;
         
         SPIMessage *cashoutMsg = [cashoutOnlyRequest toMessage];
         
-        weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId
-                                                                             type:SPITransactionTypeCashoutOnly
-                                                                      amountCents:amountCents
-                                                                          message:cashoutMsg
-                                                                              msg:[NSString stringWithFormat:@"Waiting for EFTPOS connection to send cashout request for $%.2f",
-                                                                                   ((float)amountCents / 100.0)]];
+        self.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId
+                                                                         type:SPITransactionTypeCashoutOnly
+                                                                  amountCents:amountCents
+                                                                      message:cashoutMsg
+                                                                          msg:[NSString stringWithFormat:@"Waiting for EFTPOS connection to send cashout request for $%.2f",
+                                                                               ((float)amountCents / 100.0)]];
         
-        if ([weakSelf send:cashoutMsg]) {
-            [weakSelf.state.txFlowState sent:[NSString stringWithFormat:@"Asked EFTPOS to do cashout for $%.2f", ((float)amountCents / 100.0)]];
+        if ([self send:cashoutMsg]) {
+            [self.state.txFlowState sent:[NSString stringWithFormat:@"Asked EFTPOS to do cashout for $%.2f", ((float)amountCents / 100.0)]];
         }
         
-        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state];
+        [self transactionFlowStateChanged];
         completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Cashout initiated"]);
-    });
+    }
 }
 
 - (void)initiateMotoPurchaseTx:(NSString *)posRefId
@@ -427,183 +436,180 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                     completion:(SPICompletionTxResult)completion {
     
     if (self.state.status == SPIStatusUnpaired) {
-        return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
+        return;
     }
     
-    __weak __typeof(&*self) weakSelf = self;
-    
-    dispatch_async(self.queue, ^{
-        if (weakSelf.state.flow != SPIFlowIdle) {
-            return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not idle"]);
+    @synchronized(self.txLock) {
+        if (self.state.flow != SPIFlowIdle) {
+            completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not idle"]);
+            return;
         }
         
-        weakSelf.state.flow = SPIFlowTransaction;
+        self.state.flow = SPIFlowTransaction;
         
         SPIMotoPurchaseRequest *motoPurchaseRequest = [[SPIMotoPurchaseRequest alloc] initWithAmountCents:amountCents posRefId:posRefId];
-        motoPurchaseRequest.config = weakSelf.config;
+        motoPurchaseRequest.config = self.config;
         
         SPIMessage *cashoutMsg = [motoPurchaseRequest toMessage];
         
-        weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId
-                                                                             type:SPITransactionTypeMOTO
-                                                                      amountCents:amountCents
-                                                                          message:cashoutMsg
-                                                                              msg:[NSString stringWithFormat:@"Waiting for EFTPOS connection to send MOTO request for %.2f",
-                                                                                   ((float)amountCents) / 100]];
+        self.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId
+                                                                         type:SPITransactionTypeMOTO
+                                                                  amountCents:amountCents
+                                                                      message:cashoutMsg
+                                                                          msg:[NSString stringWithFormat:@"Waiting for EFTPOS connection to send MOTO request for %.2f",
+                                                                               ((float)amountCents) / 100]];
         
-        if ([weakSelf send:cashoutMsg]) {
-            [weakSelf.state.txFlowState sent:[NSString stringWithFormat:@"Asked EFTPOS do MOTO for  %.2f", ((float)amountCents) / 100]];
+        if ([self send:cashoutMsg]) {
+            [self.state.txFlowState sent:[NSString stringWithFormat:@"Asked EFTPOS do MOTO for  %.2f", ((float)amountCents) / 100]];
         }
         
-        [weakSelf.delegate spi:self transactionFlowStateChanged:weakSelf.state];
+        [self transactionFlowStateChanged];
         completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"MOTO initiated"]);
-    });
+    }
 }
 
 - (void)submitAuthCode:(NSString *)authCode completion:(SPIAuthCodeSubmitCompletionResult)completion {
-    __weak __typeof(&*self) weakSelf = self;
-    
     if (authCode.length != 6) {
-        return completion([[SPISubmitAuthCodeResult alloc] initWithValidFormat:false msg:@"Not a 6-digit code"]);
+        completion([[SPISubmitAuthCodeResult alloc] initWithValidFormat:false msg:@"Not a 6-digit code"]);
+        return;
     }
     
-    dispatch_async(self.queue, ^{
-        if (weakSelf.state.flow != SPIFlowTransaction || weakSelf.state.txFlowState.isFinished || !weakSelf.state.txFlowState.isAwaitingPhoneForAuth) {
+    @synchronized(self.txLock) {
+        if (self.state.flow != SPIFlowTransaction || self.state.txFlowState.isFinished || !self.state.txFlowState.isAwaitingPhoneForAuth) {
             SPILog(@"Asked to send auth code but I was not waiting for one");
             return completion([[SPISubmitAuthCodeResult alloc] initWithValidFormat:false msg:@"Was not waiting for one"]);
         }
         
-        [weakSelf.state.txFlowState authCodeSent:[NSString stringWithFormat:@"Submitting auth code %@", authCode]];
+        [self.state.txFlowState authCodeSent:[NSString stringWithFormat:@"Submitting auth code %@", authCode]];
         
-        SPIMessage *message = [[[SPIAuthCodeAdvice alloc] initWithPosRefId:weakSelf.state.txFlowState.posRefId authCode:authCode] toMessage];
+        SPIMessage *message = [[[SPIAuthCodeAdvice alloc] initWithPosRefId:self.state.txFlowState.posRefId authCode:authCode] toMessage];
         
         [self send:message];
-    });
+    }
     
-    [weakSelf.delegate spi:self transactionFlowStateChanged:_state];
+    [self transactionFlowStateChanged];
     completion([[SPISubmitAuthCodeResult alloc] initWithValidFormat:true msg:@"Valid code"]);
 }
 
 - (void)cancelTransaction {
-    __weak __typeof(&*self) weakSelf = self;
+    SPILog(@"cancelTransaction");
     
-    dispatch_async(self.queue, ^{
-        SPILog(@"cancelTransaction");
-        
-        if (weakSelf.state.flow != SPIFlowTransaction || weakSelf.state.txFlowState.isFinished) {
+    @synchronized(self.txLock) {
+        if (self.state.flow != SPIFlowTransaction || self.state.txFlowState.isFinished) {
             SPILog(@"Asked to cancel transaction but I was not in the middle of one");
             return;
         }
         
         // TH-1C, TH-3C - Merchant pressed cancel
-        if (weakSelf.state.txFlowState.isRequestSent) {
+        if (self.state.txFlowState.isRequestSent) {
             SPICancelTransactionRequest *cancelReq = [SPICancelTransactionRequest new];
-            [weakSelf.state.txFlowState cancelling:@"Attempting to cancel transaction..."];
-            [weakSelf send:[cancelReq toMessage]];
+            [self.state.txFlowState cancelling:@"Attempting to cancel transaction..."];
+            [self send:[cancelReq toMessage]];
         } else {
             // We had not even sent request yet. Consider as known failed.
-            [weakSelf.state.txFlowState failed:nil msg:@"Transaction cancelled, request had not even been sent yet"];
+            [self.state.txFlowState failed:nil msg:@"Transaction cancelled, request had not even been sent yet"];
         }
-        
-        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state];
-    });
+    }
+    
+    [self transactionFlowStateChanged];
 }
 
 - (void)initiateSettleTx:(NSString *)pid completion:(SPICompletionTxResult)completion {
     if (self.state.status == SPIStatusUnpaired) {
-        return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
+        return;
     }
     
-    __weak __typeof(&*self) weakSelf = self;
-    
-    dispatch_async(self.queue, ^{
-        if (weakSelf.state.flow != SPIFlowIdle) {
-            return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not idle"]);
+    @synchronized(self.txLock) {
+        if (self.state.flow != SPIFlowIdle) {
+            completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not idle"]);
+            return;
         }
         
-        weakSelf.state.flow = SPIFlowTransaction;
+        self.state.flow = SPIFlowTransaction;
         
         SPISettleRequest *settleRequest = [[SPISettleRequest alloc] initWithSettleId:[SPIRequestIdHelper idForString:@"settle"]];
         
         SPIMessage *settleMessage = [settleRequest toMessage];
         
-        weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:pid
-                                                                             type:SPITransactionTypeSettle
-                                                                      amountCents:0
-                                                                          message:settleMessage
-                                                                              msg:@"Waiting for EFTPOS connection to make a settle request"];
+        self.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:pid
+                                                                         type:SPITransactionTypeSettle
+                                                                  amountCents:0
+                                                                      message:settleMessage
+                                                                          msg:@"Waiting for EFTPOS connection to make a settle request"];
         
-        if ([weakSelf send:settleMessage]) {
-            [weakSelf.state.txFlowState sent:@"Asked EFTPOS to settle"];
+        if ([self send:settleMessage]) {
+            [self.state.txFlowState sent:@"Asked EFTPOS to settle"];
         }
-        
-        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state];
-        completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Settle initiated"]);
-    });
+    }
+    
+    [self transactionFlowStateChanged];
+    completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Settle initiated"]);
 }
 
 - (void)initiateSettlementEnquiry:(NSString *)posRefId completion:(SPICompletionTxResult)completion {
     if (self.state.status == SPIStatusUnpaired) {
-        return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
+        return;
     }
     
-    __weak __typeof(&*self) weakSelf = self;
-    
-    dispatch_async(self.queue, ^{
-        if (weakSelf.state.flow != SPIFlowIdle) {
-            return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not idle"]);
+    @synchronized(self.txLock) {
+        if (self.state.flow != SPIFlowIdle) {
+            completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not idle"]);
+            return;
         }
         
-        weakSelf.state.flow = SPIFlowTransaction;
+        self.state.flow = SPIFlowTransaction;
         
         SPIMessage *stlEnqMsg = [[[SPISettlementEnquiryRequest alloc] initWithRequestId:[SPIRequestIdHelper idForString:@"stlenq"]] toMessage];
         
-        weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId
+        self.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId
                                                                          type:SPITransactionTypeSettleEnquiry
                                                                   amountCents:0
                                                                       message:stlEnqMsg
                                                                           msg:@"Waiting for EFTPOS connection to make a settlement enquiry"];
         
-        if ([weakSelf send:stlEnqMsg]) {
-            [weakSelf.state.txFlowState sent:@"Asked EFTPOS to make a settlement enquiry"];
+        if ([self send:stlEnqMsg]) {
+            [self.state.txFlowState sent:@"Asked EFTPOS to make a settlement enquiry"];
         }
-        
-        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state];
-        completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Settle Initiated"]);
-    });
+    }
+    
+    [self transactionFlowStateChanged];
+    completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Settle Initiated"]);
 }
 
 - (void)initiateGetLastTxWithCompletion:(SPICompletionTxResult)completion {
     if (self.state.status == SPIStatusUnpaired) {
-        return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
+        return;
     }
     
-    __weak __typeof(&*self) weakSelf = self;
-    
-    dispatch_async(self.queue, ^{
-        if (weakSelf.state.flow != SPIFlowIdle) {
-            return completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not idle"]);
+    @synchronized(self.txLock) {
+        if (self.state.flow != SPIFlowIdle) {
+            completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not idle"]);
+            return;
         }
         
-        weakSelf.state.flow = SPIFlowTransaction;
+        self.state.flow = SPIFlowTransaction;
         
         SPIGetLastTransactionRequest *gltRequest = [SPIGetLastTransactionRequest new];
         
         SPIMessage *gltMessage = [gltRequest toMessage];
         
-        weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:gltMessage.mid
-                                                                             type:SPITransactionTypeGetLastTransaction
-                                                                      amountCents:0
-                                                                          message:gltMessage
-                                                                              msg:@"Waiting for EFTPOS connection to make a get last transaction request"];
+        self.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:gltMessage.mid
+                                                                         type:SPITransactionTypeGetLastTransaction
+                                                                  amountCents:0
+                                                                      message:gltMessage
+                                                                          msg:@"Waiting for EFTPOS connection to make a get last transaction request"];
         
-        if ([weakSelf send:gltMessage]) {
-            [weakSelf.state.txFlowState sent:@"Asked EFTPOS to get last transaction"];
+        if ([self send:gltMessage]) {
+            [self.state.txFlowState sent:@"Asked EFTPOS to get last transaction"];
         }
-        
-        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state];
-        completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Get last transaction initiated"]);
-    });
+    }
+    
+    [self transactionFlowStateChanged];
+    completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Get last transaction initiated"]);
 }
 
 - (void)initiateRecovery:(NSString *)posRefId
@@ -611,17 +617,17 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
               completion:(SPICompletionTxResult)completion {
     
     if (self.state.status == SPIStatusUnpaired) {
-        return completion([[SPIInitiateTxResult alloc] initWithTxResult:false message:@"Not paired"]);
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:false message:@"Not paired"]);
+        return;
     }
     
-    __weak __typeof(&*self) weakSelf = self;
-    
-    dispatch_async(self.queue, ^{
-        if (weakSelf.state.flow != SPIFlowIdle) {
-            return completion([[SPIInitiateTxResult alloc] initWithTxResult:false message:@"Not idle"]);
+    @synchronized(self.txLock) {
+        if (self.state.flow != SPIFlowIdle) {
+            completion([[SPIInitiateTxResult alloc] initWithTxResult:false message:@"Not idle"]);
+            return;
         }
         
-        weakSelf.state.flow = SPIFlowTransaction;
+        self.state.flow = SPIFlowTransaction;
         
         SPIGetLastTransactionRequest *gtlRequest = [[SPIGetLastTransactionRequest alloc] init];
         
@@ -633,18 +639,17 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                                                                       message:gltRequestMsg
                                                                           msg:@"Waiting for EFTPOS connection to attempt recovery"];
         
-        if ([weakSelf send:gltRequestMsg]) {
-            [weakSelf.state.txFlowState sent:@"Asked EFTPOS to recover state"];
+        if ([self send:gltRequestMsg]) {
+            [self.state.txFlowState sent:@"Asked EFTPOS to recover state"];
         }
-        
-        [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state];
-        completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Recovery initiated"]);
-    });
+    }
+    
+    [self transactionFlowStateChanged];
+    completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Recovery initiated"]);
 }
 
-- (void)canceltransactionMonitoringTimer {
-    [self.transactionMonitoringTimer cancel];
-}
+#pragma mark -
+#pragma mark - Connection
 
 - (void)setEftposAddress:(NSString *)url {
     if (url.length == 0) {
@@ -719,7 +724,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     SPILog(@"handleKeyRequest");
     
     self.state.pairingFlowState.message = @"Negotiating pairing...";
-    [self.delegate spi:self pairingFlowStateChanged:self.state];
+    [self pairingFlowStateChanged];
     
     // Use the helper. It takes the incoming request, and generates the secrets
     // and the response.
@@ -745,7 +750,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     self.state.pairingFlowState.isAwaitingCheckFromPos = YES;
     self.state.pairingFlowState.message = [NSString stringWithFormat:@"Confirm that the following code:\n\n%@\n\n is showing on the terminal",
                                            keyCheck.confirmationCode];
-    [self.delegate spi:self pairingFlowStateChanged:self.state];
+    [self pairingFlowStateChanged];
 }
 
 /**
@@ -766,7 +771,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             // Still Waiting for User to say yes on POS
             self.state.pairingFlowState.message = [NSString stringWithFormat:@"Confirm that the following Code:\n\n%@\n\n is what the EFTPOS showed",
                                                    self.state.pairingFlowState.confirmationCode];
-            [self.delegate spi:self pairingFlowStateChanged:self.state];
+            [self pairingFlowStateChanged];
         } else {
             SPILog(@"Got pair confirm from EFTPOS, and already had confirm from POS. Now just waiting for first pong.");
             [self onPairingSuccess];
@@ -788,11 +793,11 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
 
 - (void)doUnpair {
     _state.status = SPIStatusUnpaired;
-    [_delegate spi:self statusChanged:_state];
+    [self statusChanged];
     [_connection disconnect];
     _secrets = nil;
     _spiMessageStamp.secrets = nil;
-    [_delegate spi:self secretsChanged:_secrets state:_state];
+    [self secretsChanged:_secrets];
 }
 
 - (void)onPairingSuccess {
@@ -802,8 +807,8 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     self.state.pairingFlowState.isFinished = YES;
     self.state.pairingFlowState.message = @"Pairing successful!";
     self.state.status = SPIStatusPairedConnected;
-    [self.delegate spi:self secretsChanged:self.secrets state:self.state];
-    [self.delegate spi:self pairingFlowStateChanged:self.state.copy];
+    [self secretsChanged:self.secrets];
+    [self pairingFlowStateChanged];
 }
 
 - (void)onPairingFailed {
@@ -814,13 +819,13 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     [self.connection disconnect];
     
     self.state.status = SPIStatusUnpaired;
-    [_delegate spi:self statusChanged:_state];
+    [self statusChanged];
     
     self.state.pairingFlowState.message = @"Pairing failed";
     self.state.pairingFlowState.isFinished = YES;
     self.state.pairingFlowState.isSuccessful = NO;
     self.state.pairingFlowState.isAwaitingCheckFromPos = NO;
-    [self.delegate spi:self pairingFlowStateChanged:self.state.copy];
+    [self pairingFlowStateChanged];
 }
 
 /**
@@ -835,7 +840,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     self.secrets = krRes.secrets;                // and update our secrets with them
     self.spiMessageStamp.secrets = self.secrets; // and our stamp
     [self send:krRes.keyRollingConfirmation];
-    [self.delegate spi:self secretsChanged:self.secrets state:self.state];
+    [self secretsChanged:self.secrets];
     
     self.mostRecentPingSent = nil;
     [self startPeriodicPing];
@@ -852,26 +857,26 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
  */
 - (void)handleSignatureRequired:(SPIMessage *)m {
     NSLog(@"handleSignatureRequired");
-    __weak __typeof(&*self) weakSelf = self;
-    dispatch_async(self.queue, ^{
+    
+    @synchronized(self.txLock) {
         NSString *incomingPosRefId = [m getDataStringValue:@"pos_ref_id"];
-        if (weakSelf.state.flow != SPIFlowTransaction || weakSelf.state.txFlowState.isFinished || ![weakSelf.state.txFlowState.posRefId isEqualToString:incomingPosRefId]) {
+        if (self.state.flow != SPIFlowTransaction || self.state.txFlowState.isFinished || ![self.state.txFlowState.posRefId isEqualToString:incomingPosRefId]) {
             SPILog(@"Received signature required but I was not waiting for one. %@", m.decryptedJson);
             return;
         }
+        
         [self.state.txFlowState signatureRequired:[[SPISignatureRequired alloc] initWithMessage:m] msg:@"Ask customer to sign the receipt"];
-    });
+    }
     
-    [self.delegate spi:self transactionFlowStateChanged:self.state.copy];
+    [self transactionFlowStateChanged];
 }
 
 - (void)handleAuthCodeRequired:(SPIMessage *)m {
     NSLog(@"handleAuthCodeRequired");
-    __weak __typeof(&*self) weakSelf = self;
     
-    dispatch_async(self.queue, ^{
+    @synchronized(self.txLock) {
         NSString *incomingPosRefId = [m getDataStringValue:@"pos_ref_id"];
-        if (weakSelf.state.flow != SPIFlowTransaction || weakSelf.state.txFlowState.isFinished || ![weakSelf.state.txFlowState.posRefId isEqualToString:incomingPosRefId]) {
+        if (self.state.flow != SPIFlowTransaction || self.state.txFlowState.isFinished || ![self.state.txFlowState.posRefId isEqualToString:incomingPosRefId]) {
             SPILog(@"Received Auth Code Required but I was not waiting for one. Incoming POS ref ID: %@", incomingPosRefId);
             return;
         }
@@ -879,43 +884,11 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         SPIPhoneForAuthRequired *phoneForAuthRequired = [[SPIPhoneForAuthRequired alloc] initWithMessage:m];
         NSString *msg = [NSString stringWithFormat:@"Auth code required. Call %@ and quote merchant ID %@",
                          phoneForAuthRequired.getPhoneNumber, phoneForAuthRequired.getMerchantId];
-        [weakSelf.state.txFlowState phoneForAuthRequired:phoneForAuthRequired msg:msg];
-    });
-    [weakSelf.delegate spi:self transactionFlowStateChanged:_state];
-}
-
-- (void)handleCashoutOnlyResponse:(SPIMessage *)m {
-    NSLog(@"handleCashoutOnlyResponse");
-    __weak __typeof(&*self) weakSelf = self;
+        
+        [self.state.txFlowState phoneForAuthRequired:phoneForAuthRequired msg:msg];
+    }
     
-    dispatch_async(self.queue, ^{
-        NSString *incomingPosRefId = [m getDataStringValue:@"pos_ref_id"];
-        if (weakSelf.state.flow != SPIFlowTransaction || weakSelf.state.txFlowState.isFinished || ![weakSelf.state.txFlowState.posRefId isEqualToString:incomingPosRefId]) {
-            SPILog(@"Received cashout response but I was not waiting for one. Incoming POS ref ID:  %@", incomingPosRefId);
-            return;
-        }
-        // TH-1A, TH-2A
-        [weakSelf.state.txFlowState completed:[m successState] response:m msg:@"Cashout transaction ended"];
-        // TH-6A, TH-6E
-    });
-    [weakSelf.delegate spi:self transactionFlowStateChanged:_state];
-}
-
-- (void)handleMotoPurchaseResponse:(SPIMessage *)m {
-    NSLog(@"handleMotoPurchaseResponse");
-    __weak __typeof(&*self) weakSelf = self;
-    
-    dispatch_async(self.queue, ^{
-        NSString *incomingPosRefId = [m getDataStringValue:@"pos_ref_id"];
-        if (weakSelf.state.flow != SPIFlowTransaction || weakSelf.state.txFlowState.isFinished || ![weakSelf.state.txFlowState.posRefId isEqualToString:incomingPosRefId]) {
-            SPILog(@"Received Cashout Response but I was not waiting for one. Incoming Pos Ref ID: %@", incomingPosRefId);
-            return;
-        }
-        // TH-1A, TH-2A
-        [weakSelf.state.txFlowState completed:[m successState] response:m msg:@"MOTO transaction ended"];
-        // TH-6A, TH-6E
-    });
-    [weakSelf.delegate spi:self transactionFlowStateChanged:_state];
+    [self transactionFlowStateChanged];
 }
 
 /**
@@ -924,20 +897,25 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
  * @param m Message
  */
 - (void)handlePurchaseResponse:(SPIMessage *)m {
-    // FIXME(mike)
-    NSLog(@"handlePurchaseResponse");
-    
-    if (self.state.flow != SPIFlowTransaction || self.state.txFlowState.isFinished) {
-        NSString *msg = [NSString stringWithFormat:@"Received purchase response but I was not waiting for one. %@", m.decryptedJson];
-        SPILog(msg);
-        return;
-    }
-    
-    // TH-1A, TH-2A
-    [self.state.txFlowState completed:m.successState response:m msg:@"Purchase transaction ended"];
-    // TH-6A, TH-6E
-    
-    [self.delegate spi:self transactionFlowStateChanged:self.state.copy];
+    [self handleTxResponse:m type:SPITransactionTypePurchase checkPosRefId:YES];
+}
+
+/**
+ * The PIN pad server will reply to our cashout only request with a cashout only response.
+ *
+ * @param m Message
+ */
+- (void)handleCashoutOnlyResponse:(SPIMessage *)m {
+    [self handleTxResponse:m type:SPITransactionTypeCashoutOnly checkPosRefId:YES];
+}
+
+/**
+ * The PIN pad server will reply to our MOTO purchase request with a MOTO purchase response.
+ *
+ * @param m Message
+ */
+- (void)handleMotoPurchaseResponse:(SPIMessage *)m {
+    [self handleTxResponse:m type:SPITransactionTypeMOTO checkPosRefId:YES];
 }
 
 /**
@@ -946,18 +924,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
  * @param m Message
  */
 - (void)handleRefundResponse:(SPIMessage *)m {
-    NSLog(@"handleRefundResponse");
-    
-    if (self.state.flow != SPIFlowTransaction || self.state.txFlowState.isFinished) {
-        SPILog(@"Received refund response but I was not waiting for one. %@", m.decryptedJson);
-        return;
-    }
-    
-    // TH-1A, TH-2A
-    [self.state.txFlowState completed:m.successState response:m msg:@"Refund transaction ended"];
-    // TH-6A, TH-6E
-    
-    [self.delegate spi:self transactionFlowStateChanged:self.state];
+    [self handleTxResponse:m type:SPITransactionTypeRefund checkPosRefId:YES];
 }
 
 /**
@@ -966,18 +933,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
  * @param m Message
  */
 - (void)handleSettleResponse:(SPIMessage *)m {
-    NSLog(@"handleSettleResponse");
-    
-    if (self.state.flow != SPIFlowTransaction || self.state.txFlowState.isFinished) {
-        SPILog(@"Received settle response but I was not waiting for one. %@", m.decryptedJson);
-        return;
-    }
-    
-    // TH-1A, TH-2A
-    [self.state.txFlowState completed:m.successState response:m msg:@"Settle transaction ended"];
-    // TH-6A, TH-6E
-    
-    [self.delegate spi:self transactionFlowStateChanged:self.state];
+    [self handleTxResponse:m type:SPITransactionTypeSettle checkPosRefId:NO];
 }
 
 /**
@@ -986,20 +942,53 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
  * @param m Message
  */
 - (void)handleSettlementEnquiryResponse:(SPIMessage *)m {
-    NSLog(@"handleSettlementEnquiryResponse");
-    __weak __typeof(&*self) weakSelf = self;
+    [self handleTxResponse:m type:SPITransactionTypeSettleEnquiry checkPosRefId:NO];
+}
+
+- (void)handleTxResponse:(SPIMessage *)m
+                    type:(SPITransactionType)type
+           checkPosRefId:(BOOL)checkPosRefId {
     
-    dispatch_async(self.queue, ^{
-        if (weakSelf.state.flow != SPIFlowTransaction ||
-            weakSelf.state.txFlowState.isFinished) {
-            SPILog(@"Received Settlement Enquiry response but I was not waiting for one. %@", [m decryptedJson]);
-            return;
-        }
-        // TH-1A, TH-2A
-        [weakSelf.state.txFlowState completed:[m successState] response:m msg:@"Settlement Enquiry Ended."];
+    @synchronized(self.txLock) {
+        NSString *typeName = [SPITransactionFlowState txTypeString:type];
+        
+        if ([self isTxResponseUnexpected:m typeName:typeName checkPosRefId:checkPosRefId]) return;
+        
+        NSString *msg = [typeName stringByAppendingString:@" transaction ended"];
+        [self.state.txFlowState completed:m.successState response:m msg:msg];
         // TH-6A, TH-6E
-    });
-    [weakSelf.delegate spi:self transactionFlowStateChanged:_state];
+    }
+    
+    [self transactionFlowStateChanged];
+}
+
+/**
+ * Verifies transaction response (TH-1A, TH-2A).
+ *
+ * @return YES if transaction response is unexpected and should be ignored, false if all is well.
+ */
+- (BOOL)isTxResponseUnexpected:(SPIMessage *)m
+                      typeName:(NSString *)typeName
+                 checkPosRefId:(BOOL)checkPosRefId {
+    
+    SPITransactionFlowState *currentState = self.state.txFlowState;
+    
+    NSString *incomingPosRefId;
+    BOOL posRefIdMatched;
+    if (checkPosRefId) {
+        incomingPosRefId = [m getDataStringValue:@"pos_ref_id"];
+        posRefIdMatched = [currentState.posRefId isEqualToString:incomingPosRefId];
+    } else {
+        incomingPosRefId = nil;
+        posRefIdMatched = YES;
+    }
+    
+    if (self.state.flow != SPIFlowTransaction || currentState.isFinished || !posRefIdMatched) {
+        NSString *trace = checkPosRefId ? [@"Incoming Pos Ref ID: " stringByAppendingString:incomingPosRefId] : m.decryptedJson;
+        SPILog(@"Received %@ response but I was not waiting for one. %@", typeName, trace);
+        return YES;
+    }
+    return NO;
 }
 
 /**
@@ -1009,13 +998,15 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
  * @param m SPIMessage
  */
 - (void)handleErrorEvent:(SPIMessage *)m {
-    if (self.state.flow == SPIFlowTransaction && !self.state.txFlowState.isFinished &&
-        self.state.txFlowState.isAttemptingToCancel && [m.error isEqualToString:@"NO_TRANSACTION"]) {
-        // TH-2E
-        SPILog(@"Was trying to cancel a transaction but there is nothing to cancel. Calling GLT to see what's up");
-        [self callGetLastTransaction];
-    } else {
-        SPILog(@"Received error event but don't know what to do with it. %@", m.decryptedJson);
+    @synchronized(self.txLock) {
+        if (self.state.flow == SPIFlowTransaction && !self.state.txFlowState.isFinished &&
+            self.state.txFlowState.isAttemptingToCancel && [m.error isEqualToString:@"NO_TRANSACTION"]) {
+            // TH-2E
+            SPILog(@"Was trying to cancel a transaction but there is nothing to cancel. Calling GLT to see what's up");
+            [self callGetLastTransaction];
+        } else {
+            SPILog(@"Received error event but don't know what to do with it. %@", m.decryptedJson);
+        }
     }
 }
 
@@ -1026,9 +1017,8 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
  */
 - (void)handleGetLastTransactionResponse:(SPIMessage *)m {
     NSLog(@"handleGetLastTransactionResponse");
-    __weak __typeof(&*self) weakSelf = self;
     
-    dispatch_async(self.queue, ^{
+    @synchronized(self.txLock) {
         SPITransactionFlowState *txState = self.state.txFlowState;
         
         if (self.state.flow != SPIFlowTransaction || txState.isFinished) {
@@ -1050,18 +1040,18 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                            "The user can only really decline at this stage as there is no receipt to print for signing.");
                     
                     SPISignatureRequired *req = [[SPISignatureRequired alloc] initWithPosRefId:txState.posRefId
-                                                                                    requestId:m.mid
-                                                                                receiptToSign:@"MISSING RECEIPT\n DECLINE AND TRY AGAIN."];
-                    [weakSelf.state.txFlowState signatureRequired:req msg:@"Recovered in signature required but we don't have receipt. You may decline then retry."];
+                                                                                     requestId:m.mid
+                                                                                 receiptToSign:@"MISSING RECEIPT\n DECLINE AND TRY AGAIN."];
+                    [self.state.txFlowState signatureRequired:req msg:@"Recovered in signature required but we don't have receipt. You may decline then retry."];
                 } else if ([gltResponse isWaitingForAuthCode] && !txState.isAwaitingPhoneForAuth) {
                     SPILog(@"EFTPOS is waiting for us to send it auth code, but we were not aware of this. "
                            "We can only cancel the transaction at this stage as we don't have enough information to recover from this.");
                     
                     SPIPhoneForAuthRequired *req = [[SPIPhoneForAuthRequired alloc] initWithPosRefId:txState.posRefId
-                                                                                          requestId:m.mid
-                                                                                        phoneNumber:@"UNKNOWN"
-                                                                                         merchantId:@"UNKNOWN"];
-                    [weakSelf.state.txFlowState phoneForAuthRequired:req msg:@"Recovered mid phone-for-auth but don't have details. You may cancel then retry."];
+                                                                                           requestId:m.mid
+                                                                                         phoneNumber:@"UNKNOWN"
+                                                                                          merchantId:@"UNKNOWN"];
+                    [self.state.txFlowState phoneForAuthRequired:req msg:@"Recovered mid phone-for-auth but don't have details. You may cancel then retry."];
                 } else {
                     SPILog(@"Operation still in progress... stay waiting");
                     // No need to publish txFlowStateChanged. Can return;
@@ -1091,9 +1081,9 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                     [txState completed:successState response:m msg:@"Transaction ended"];
                 }
             }
-            [self.delegate spi:self transactionFlowStateChanged:self.state.copy];
+            [self transactionFlowStateChanged];
         }
-    });
+    }
 }
 
 - (SPIMessageSuccessState)gltMatch:(SPIGetLastTransactionResponse *)gltResponse
@@ -1143,7 +1133,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         }
         
         if (needsPublishing) {
-            [weakSelf.delegate spi:weakSelf transactionFlowStateChanged:weakSelf.state];
+            [weakSelf transactionFlowStateChanged];
         }
     });
 }
@@ -1165,69 +1155,65 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
  * @param newConnectionState Connection state
  */
 - (void)onSpiConnectionStatusChanged:(SPIConnectionState)newConnectionState {
-    __weak __typeof(&*self) weakSelf = self;
+    NSLog(@"onSpiConnectionStatusChanged %ld", (long)newConnectionState);
     
-    dispatch_async(self.queue, ^{
-        NSLog(@"onSpiConnectionStatusChanged %ld", (long)newConnectionState);
-        
-        switch (newConnectionState) {
-            case SPIConnectionStateConnecting:
-                SPILog(@"I'm connecting to the EFTPOS at %@...", weakSelf.eftposAddress);
-                break;
+    switch (newConnectionState) {
+        case SPIConnectionStateConnecting:
+            SPILog(@"I'm connecting to the EFTPOS at %@...", self.eftposAddress);
+            break;
+            
+        case SPIConnectionStateConnected:
+            if (self.state.flow == SPIFlowPairing) {
+                self.state.pairingFlowState.message = @"Requesting to pair...";
+                [self pairingFlowStateChanged];
                 
-            case SPIConnectionStateConnected:
-                if (weakSelf.state.flow == SPIFlowPairing) {
-                    weakSelf.state.pairingFlowState.message = @"Requesting to pair...";
-                    [weakSelf.delegate spi:weakSelf pairingFlowStateChanged:weakSelf.state];
+                SPIPairingRequest *pr = [SPIPairingHelper newPairRequest];
+                [self send:[pr toMessage]];
+            } else {
+                SPILog(@"I'm connected to %@", self.eftposAddress);
+                self.spiMessageStamp.secrets = self.secrets;
+                [self startPeriodicPing];
+            }
+            break;
+            
+        case SPIConnectionStateDisconnected:
+            SPILog(@"I'm disconnected to %@", self.eftposAddress);
+            // Let's reset some lifecycle related state, ready for next connection
+            self.mostRecentPingSent = nil;
+            self.mostRecentPongReceived = nil;
+            self.missedPongsCount = 0;
+            [self stopPeriodPing];
+            
+            if (self.state.status != SPIStatusUnpaired) {
+                self.state.status = SPIStatusPairedConnecting;
+                [self statusChanged];
+                dispatch_async(self.queue, ^{
+                    if (self.state.flow == SPIFlowTransaction && !self.state.pairingFlowState.isFinished) {
+                        // we're in the middle of a transaction, just so you know!
+                        // TH-1D
+                        SPILog(@"Lost connection in the middle of a transaction...");
+                    }
+                });
+                
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    if (self.connection == nil) return;
                     
-                    SPIPairingRequest *pr = [SPIPairingHelper newPairRequest];
-                    [weakSelf send:[pr toMessage]];
-                } else {
-                    SPILog(@"I'm connected to %@", weakSelf.eftposAddress);
-                    weakSelf.spiMessageStamp.secrets = weakSelf.secrets;
-                    [weakSelf startPeriodicPing];
-                }
-                break;
-                
-            case SPIConnectionStateDisconnected:
-                SPILog(@"I'm disconnected to %@", weakSelf.eftposAddress);
-                // Let's reset some lifecycle related state, ready for next connection
-                weakSelf.mostRecentPingSent = nil;
-                weakSelf.mostRecentPongReceived = nil;
-                weakSelf.missedPongsCount = 0;
-                [weakSelf stopPeriodPing];
-                
-                if (weakSelf.state.status != SPIStatusUnpaired) {
-                    weakSelf.state.status = SPIStatusPairedConnecting;
-                    [weakSelf.delegate spi:self statusChanged:weakSelf.state];
-                    dispatch_async(self.queue, ^{
-                        if (weakSelf.state.flow == SPIFlowTransaction && !weakSelf.state.pairingFlowState.isFinished) {
-                            // we're in the middle of a transaction, just so you know!
-                            // TH-1D
-                            SPILog(@"Lost connection in the middle of a transaction...");
-                        }
-                    });
+                    SPILog(@"Will try to reconnect in 5s...");
+                    sleep(5);
                     
-                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                        if (weakSelf.connection == nil) return;
-                        
-                        SPILog(@"Will try to reconnect in 5s...");
-                        sleep(5);
-                        
-                        if (weakSelf.state.status != SPIStatusUnpaired) {
-                            [weakSelf.connection connect];
-                        }
-                    });
-                } else if (weakSelf.state.flow == SPIFlowPairing) {
-                    SPILog(@"Lost connection during pairing.");
-                    weakSelf.state.pairingFlowState.message = @"Could not connect to pair. Check network/EFTPOS and try again...";
-                    [weakSelf onPairingFailed];
-                    [self.delegate spi:self pairingFlowStateChanged:self.state];
-                }
-                
-                break;
-        }
-    });
+                    if (self.state.status != SPIStatusUnpaired) {
+                        [self.connection connect];
+                    }
+                });
+            } else if (self.state.flow == SPIFlowPairing) {
+                SPILog(@"Lost connection during pairing.");
+                self.state.pairingFlowState.message = @"Could not connect to pair. Check network/EFTPOS and try again...";
+                [self onPairingFailed];
+                [self pairingFlowStateChanged];
+            }
+
+            break;
+    }
 }
 
 #pragma mark - Ping
@@ -1285,15 +1271,13 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
  * we received the first Login Response from the PIN pad.
  */
 - (void)onReadyToTransact {
-    __weak __typeof(&*self) weakSelf = self;
-    
     NSLog(@"onReadyToTransact %lu, %d", (unsigned long)self.state.flow, (int)!self.state.txFlowState.isFinished);
     
     // So, we have just made a connection, pinged and logged in successfully.
     self.state.status = SPIStatusPairedConnected;
-    [self.delegate spi:self statusChanged:self.state.copy];
+    [self statusChanged];
     
-    dispatch_async(self.queue, ^{
+    @synchronized(self.txLock) {
         if (self.state.flow == SPIFlowTransaction && !self.state.txFlowState.isFinished) {
             if (self.state.txFlowState.isRequestSent) {
                 // TH-3A - We've just reconnected and were in the middle of Tx.
@@ -1306,13 +1290,13 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                 // TH-3AR - We had not even sent the request yet. Let's do that now
                 [self send:self.state.txFlowState.request];
                 [self.state.txFlowState sent:@"Sending request now..."];
-                [self.delegate spi:self transactionFlowStateChanged:self.state];
+                [self transactionFlowStateChanged];
             }
         } else {
-            [weakSelf.spiPat pushPayAtTableConfig];
+            [self.spiPat pushPayAtTableConfig];
             SPILog(@"onReadyToTransact, we were NOT in the middle of a transaction. nothing to do.");
         }
-    });
+    }
 }
 
 /**

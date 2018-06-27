@@ -10,6 +10,7 @@
 #import "NSString+Util.h"
 #import "SPILogger.h"
 #import "SPIClient.h"
+#import "SPIClient+Internal.h"
 #import "SPIRequestIdHelper.h"
 
 @implementation SPIBillStatusResponse

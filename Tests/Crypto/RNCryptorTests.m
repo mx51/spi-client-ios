@@ -173,7 +173,10 @@ NSString *const kBadPassword = @"NotThePassword";
   XCTAssertNotNil(plaintext, @"Couldn't download: %@", downloadError);
 
   NSURLRequest *request = [NSURLRequest requestWithURL:testURL];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+#pragma clang diagnostic pop
   [connection start];
 
   self.isTestRunning = YES;
