@@ -13,13 +13,12 @@
 @implementation SPIPairingRequest
 
 - (SPIMessage *)toMessage {
-    return [[SPIMessage alloc]
-            initWithMessageId:[SPIRequestIdHelper idForString:@"pr"]
-            eventName:SPIPairRequestKey
-            data:@{
-                   @"padding" : @YES
-                   }
-            needsEncryption:NO];
+    return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"pr"]
+                                       eventName:SPIPairRequestKey
+                                            data:@{
+                                                   @"padding": @YES
+                                                   }
+                                 needsEncryption:NO];
 }
 
 @end
@@ -45,6 +44,7 @@
 - (instancetype)initWithRequestId:(NSString *)requestId
                              benc:(NSString *)benc
                             bhmac:(NSString *)bhmac {
+    
     self = [super init];
     
     if (self) {
@@ -60,8 +60,8 @@
     return [[SPIMessage alloc] initWithMessageId:self.requestId
                                        eventName:SPIKeyResponseKey
                                             data:@{
-                                                   @"enc" : @{@"B" : self.benc},
-                                                   @"hmac" : @{@"B" : self.bhmac}
+                                                   @"enc": @{@"B": self.benc},
+                                                   @"hmac": @{@"B": self.bhmac}
                                                    }
                                  needsEncryption:NO];
 }
@@ -69,6 +69,7 @@
 @end
 
 @implementation SPIKeyCheck
+
 - (instancetype)initWithMessage:(SPIMessage *)message {
     self = [super init];
     
@@ -84,6 +85,7 @@
 @end
 
 @implementation SPIPairResponse
+
 - (instancetype)initWithMessage:(SPIMessage *)message {
     self = [super init];
     
@@ -101,6 +103,7 @@
 
 - (instancetype)initWithSecrets:(SPISecrets *)secrets
                     keyResponse:(SPIKeyResponse *)keyResponse {
+    
     self = [super init];
     
     if (self) {
@@ -116,10 +119,10 @@
 @implementation SPIDropKeysRequest
 
 - (SPIMessage *)toMessage {
-    return [[SPIMessage alloc]
-            initWithMessageId:[SPIRequestIdHelper idForString:@"drpkys"]
-            eventName:SPIDropKeysAdviceKey
-            data:nil
-            needsEncryption:true];
+    return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"drpkys"]
+                                       eventName:SPIDropKeysAdviceKey
+                                            data:nil
+                                 needsEncryption:true];
 }
+
 @end

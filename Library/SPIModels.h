@@ -78,7 +78,6 @@ typedef NS_ENUM(NSUInteger, SPITransactionType) {
 @end
 
 /**
- *
  * Used as a return in the InitiateTx methods to signify whether
  * the transaction was initiated or not, and a reason to go with it.
  */
@@ -97,21 +96,21 @@ typedef NS_ENUM(NSUInteger, SPITransactionType) {
 @end
 
 @interface SPISubmitAuthCodeResult : NSObject
+
 @property (nonatomic, assign) BOOL isValidFormat;
 // Text that gives reason for Invalidity
 @property (nonatomic, copy) NSString *message;
 
-- (instancetype)initWithValidFormat:(BOOL)isValidFormat
-                                msg:(NSString *)message;
+- (instancetype)initWithValidFormat:(BOOL)isValidFormat msg:(NSString *)message;
 
 @end
 
 /**
- * Represents the State during a TransactionFlow
+ * Represents the state during a transaction flow.
  */
 @interface SPITransactionFlowState : NSObject <NSCopying>
 
-//  The id given to this transaction
+// The ID given to this transaction
 @property (nonatomic, copy) NSString *tid __deprecated_msg("Use posRefId instead.");
 
 @property (nonatomic, copy) NSString *posRefId;
@@ -221,5 +220,14 @@ typedef NS_ENUM(NSUInteger, SPITransactionType) {
 @property (nonatomic, strong) SPITransactionFlowState *txFlowState;
 
 + (NSString *)flowString:(SPIFlow)flow;
+
+@end
+
+@interface SPIConfig : NSObject
+
+@property (nonatomic) BOOL promptForCustomerCopyOnEftpos;
+@property (nonatomic) BOOL signatureFlowOnEftpos;
+
+- (void)addReceiptConfig:(NSMutableDictionary *)data;
 
 @end

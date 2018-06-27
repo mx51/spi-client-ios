@@ -13,7 +13,6 @@
 @implementation SPIInitiateTxResult
 
 - (instancetype)initWithTxResult:(BOOL)isInitiated message:(NSString *)message {
-    
     self = [super init];
     
     if (self) {
@@ -50,8 +49,7 @@
 @end
 
 @implementation SPISubmitAuthCodeResult
-- (instancetype)initWithValidFormat:(BOOL)isValidFormat
-                                msg:(NSString *)message {
+- (instancetype)initWithValidFormat:(BOOL)isValidFormat msg:(NSString *)message {
     _isValidFormat = isValidFormat;
     _message = message;
     return self;
@@ -69,7 +67,10 @@
     self = [super init];
     
     if (self) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         self.tid = posRefId.copy;
+#pragma clang diagnostic pop
         self.posRefId = posRefId.copy;
         self.type = type;
         self.amountCents = amountCents;
@@ -93,25 +94,25 @@
             return @"REFUND";
             
         case SPITransactionTypeCashoutOnly:
-            return @"CASHOUT ONLY";
-            break;
+            return @"CASHOUT_ONLY";
+            
         case SPITransactionTypeMOTO:
             return @"MOTO";
-            break;
+            
         case SPITransactionTypeSettle:
             return @"SETTLE";
             
         case SPITransactionTypeSettleEnquiry:
-            return @"SETTLE ENQUIRY";
-            break;
+            return @"SETTLE_ENQUIRY";
+            
         case SPITransactionTypeGetLastTransaction:
             return @"GET_LAST_TRANSACTION";
+            
         case SPITransactionTypePreAuth:
-            return @"PRE AUTH";
-            break;
+            return @"PRE_AUTH";
+            
         case SPITransactionTypeAccountVerify:
-            return @"ACCOUNT VERIFY";
-            break;
+            return @"ACCOUNT_VERIFY";
     }
 }
 
@@ -144,8 +145,7 @@
     self.displayMessage = msg;
 }
 
-- (void)signatureRequired:(SPISignatureRequired *)spiMessage
-                      msg:(NSString *)msg {
+- (void)signatureRequired:(SPISignatureRequired *)spiMessage msg:(NSString *)msg {
     self.signatureRequiredMessage = spiMessage;
     self.isAwaitingSignatureCheck = YES;
     self.displayMessage = msg;
@@ -156,9 +156,7 @@
     self.displayMessage = msg;
 }
 
-- (void)completed:(SPIMessageSuccessState)state
-         response:(SPIMessage *)response
-              msg:(NSString *)msg {
+- (void)completed:(SPIMessageSuccessState)state response:(SPIMessage *)response msg:(NSString *)msg {
     self.successState = state;
     self.response = response;
     self.isFinished = YES;
@@ -182,7 +180,10 @@
 
 - (id)copyWithZone:(NSZone *)zone {
     SPITransactionFlowState *state = [SPITransactionFlowState new];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     state.tid = self.tid;
+#pragma clang diagnostic pop
     state.posRefId = self.posRefId;
     state.type = self.type;
     state.displayMessage = self.displayMessage;
@@ -203,8 +204,7 @@
     return state;
 }
 
-- (void)phoneForAuthRequired:(SPIPhoneForAuthRequired *)spiMessage
-                         msg:(NSString *)msg {
+- (void)phoneForAuthRequired:(SPIPhoneForAuthRequired *)spiMessage msg:(NSString *)msg {
     _phoneForAuthRequiredMessage = spiMessage;
     _isAwaitingGltResponse = true;
     _isAwaitingPhoneForAuth = true;
@@ -248,6 +248,19 @@
 
 - (NSString *)description {
     return [self dynamicDescription];
+}
+
+@end
+
+@implementation SPIConfig
+
+- (void)addReceiptConfig:(NSMutableDictionary *)data {
+    if (_promptForCustomerCopyOnEftpos) {
+        [data setObject:[NSNumber numberWithBool:_promptForCustomerCopyOnEftpos] forKey:@"prompt_for_customer_copy"];
+    }
+    if (_signatureFlowOnEftpos) {
+        [data setObject:[NSNumber numberWithBool:_signatureFlowOnEftpos] forKey:@"print_for_signature_required_transactions"];
+    }
 }
 
 @end

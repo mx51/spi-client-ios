@@ -10,11 +10,11 @@
 
 @interface SPISecrets : NSObject
 
-@property(nonatomic, readonly, copy) NSString *encKey;
-@property(nonatomic, readonly, copy) NSString *hmacKey;
+@property (nonatomic, readonly, copy) NSString *encKey;
+@property (nonatomic, readonly, copy) NSString *hmacKey;
 
-@property(nonatomic, copy) NSData *encKeyData;
-@property(nonatomic, copy) NSData *hmacKeyData;
+@property (nonatomic, copy) NSData *encKeyData;
+@property (nonatomic, copy) NSData *hmacKeyData;
 
 - (instancetype)initWithEncKey:(NSString *)encKey hmacKey:(NSString *)hmacKey;
 

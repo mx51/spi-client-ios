@@ -11,7 +11,6 @@
 #import "JKBigInteger.h"
 
 /**
- *
  * This class implements the Diffie-Hellman algorithm using BigIntegers.
  * It can do the 3 main things:
  * 1. Generate a random Private Key for you.
@@ -22,7 +21,6 @@
 @interface SPIDiffieHellman : NSObject
 
 /**
- *
  * Generates a random Private Key that you can use.
  *
  * @param p JKBigInteger
@@ -31,7 +29,6 @@
 + (JKBigInteger *)randomPrivateKey:(JKBigInteger *)p;
 
 /**
- *
  * Calculates the Public Key from a Private Key.
  *
  * @param primeP JKBigInteger
@@ -44,7 +41,6 @@
                            privateKey:(JKBigInteger *)privateKey;
 
 /**
- *
  * Calculates the shared secret given their Public Key (A) and your Private Key (b)
  *
  * @param primeP JKBigInteger

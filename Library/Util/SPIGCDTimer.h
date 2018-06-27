@@ -11,14 +11,12 @@
 
 @interface SPIGCDTimer : NSObject
 
-@property(nonatomic, weak, readonly) id obj;
-@property(nonatomic, strong, readonly) dispatch_queue_t queue;
+@property (nonatomic, weak, readonly) id obj;
+@property (nonatomic, strong, readonly) dispatch_queue_t queue;
 
 - (instancetype)initWithObject:(id)obj queue:(char const *)queueLabel;
 
-- (void)afterDelay:(NSTimeInterval)delay
-            repeat:(BOOL)repeat
-             block:(void (^)(id self))block;
+- (void)afterDelay:(NSTimeInterval)delay repeat:(BOOL)repeat block:(void (^)(id self))block;
 
 - (void)performWhileLocked:(void (^)(void))block;
 

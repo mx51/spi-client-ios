@@ -11,6 +11,7 @@
 @class SPIMessage;
 
 @interface SPISettleRequest : NSObject
+
 @property (nonatomic, readonly, copy) NSString *settleId;
 
 - (instancetype)initWithSettleId:(NSString *)settleId;

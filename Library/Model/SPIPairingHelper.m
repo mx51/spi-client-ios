@@ -17,8 +17,10 @@
 #import "SPISecrets.h"
 
 @implementation SPIPublicKeyAndSecret
+
 - (id)initWithMyPublicKey:(NSString *)myPublicKey
                 secretKey:(NSString *)sharedSecretKey {
+    
     self = [super init];
     
     if (self) {
@@ -37,37 +39,27 @@
     return [SPIPairingRequest new];
 }
 
-+ (SPISecretsAndKeyResponse *)generateSecretsAndKeyResponseForKeyRequest:
-(SPIKeyRequest *)keyRequest {
-    SPIPublicKeyAndSecret *encPubAndSec =
-    [self calculateMyPublicKeyAndSecret:keyRequest.aenc];
++ (SPISecretsAndKeyResponse *)generateSecretsAndKeyResponseForKeyRequest:(SPIKeyRequest *)keyRequest {
+    SPIPublicKeyAndSecret *encPubAndSec = [self calculateMyPublicKeyAndSecret:keyRequest.aenc];
     NSString *benc = encPubAndSec.myPublicKey;
     NSString *senc = encPubAndSec.sharedSecretKey;
     
-    SPIPublicKeyAndSecret *hmacPubAndSec =
-    [self calculateMyPublicKeyAndSecret:keyRequest.ahmac];
+    SPIPublicKeyAndSecret *hmacPubAndSec = [self calculateMyPublicKeyAndSecret:keyRequest.ahmac];
     NSString *bhmac = hmacPubAndSec.myPublicKey;
     NSString *shmac = hmacPubAndSec.sharedSecretKey;
     
-    SPISecrets *secrets =
-    [[SPISecrets alloc] initWithEncKey:senc hmacKey:shmac];
-    SPIKeyResponse *keyResponse =
-    [[SPIKeyResponse alloc] initWithRequestId:keyRequest.requestId
-                                         benc:benc
-                                        bhmac:bhmac];
+    SPISecrets *secrets = [[SPISecrets alloc] initWithEncKey:senc hmacKey:shmac];
+    SPIKeyResponse *keyResponse = [[SPIKeyResponse alloc] initWithRequestId:keyRequest.requestId
+                                                                       benc:benc
+                                                                      bhmac:bhmac];
     
-    return [[SPISecretsAndKeyResponse alloc] initWithSecrets:secrets
-                                                 keyResponse:keyResponse];
+    return [[SPISecretsAndKeyResponse alloc] initWithSecrets:secrets keyResponse:keyResponse];
 }
 
-+ (SPIPublicKeyAndSecret *)calculateMyPublicKeyAndSecret:
-(NSString *)theirPublicKey {
-    // NSLog(@"calculateMyPublicKeyAndSecret %@", theirPublicKey);
-    
++ (SPIPublicKeyAndSecret *)calculateMyPublicKeyAndSecret:(NSString *)theirPublicKey {
     // SPI uses the 2048-bit MODP Group as the shared constants for the DH
     // algorithm https://tools.ietf.org/html/rfc3526#section-3
-    JKBigInteger *modp2048P = [[JKBigInteger alloc]
-                               initWithString:
+    JKBigInteger *modp2048P = [[JKBigInteger alloc] initWithString:
                                @"32317006071311007300338913926423828248817941241140239112842009751"
                                @"40074170663435422261968941736356934711790173790970419175460587320"
                                @"91950288537589861856221532121754125149017745202702357960782362488"
@@ -80,13 +72,11 @@
                                @"62416972035911852507045361090559"];
     JKBigInteger *modp2048G = [[JKBigInteger alloc] initWithString:@"2"];
     
-    JKBigInteger *theirPublicBI =
-    [self spiAHexStringToBigIntegerForHexStringA:theirPublicKey];
+    JKBigInteger *theirPublicBI = [self spiAHexStringToBigIntegerForHexStringA:theirPublicKey];
     JKBigInteger *myPrivateBI = [SPIDiffieHellman randomPrivateKey:modp2048P];
-    JKBigInteger *myPublicBI =
-    [SPIDiffieHellman publicKeyWithPrimeP:modp2048P
-                                   primeG:modp2048G
-                               privateKey:myPrivateBI];
+    JKBigInteger *myPublicBI = [SPIDiffieHellman publicKeyWithPrimeP:modp2048P
+                                                              primeG:modp2048G
+                                                          privateKey:myPrivateBI];
     JKBigInteger *secretBI = [SPIDiffieHellman secretWithPrimeP:modp2048P
                                                  theirPublicKey:theirPublicBI
                                                  yourPrivateKey:myPrivateBI];
@@ -94,30 +84,18 @@
     NSString *myPublic = [[myPublicBI stringValueWithRadix:16] uppercaseString];
     NSString *secret = [self dhSecretToSPISecret:secretBI];
     
-    // NSLog(@"theirPublicBI %@", theirPublicBI);
-    // NSLog(@"myPrivateBI %@",   myPrivateBI);
-    // NSLog(@"myPublicBI %@",    myPublicBI);
-    //
-    // NSLog(@"myPublic %@",      myPublic);
-    // NSLog(@"secret %@",        secret);
-    
-    return [[SPIPublicKeyAndSecret alloc] initWithMyPublicKey:myPublic
-                                                    secretKey:secret];
+    return [[SPIPublicKeyAndSecret alloc] initWithMyPublicKey:myPublic secretKey:secret];
 }
 
-+ (JKBigInteger *)spiAHexStringToBigIntegerForHexStringA:
-(NSString *)hexStringA {
-    return [[JKBigInteger alloc]
-            initWithString:[NSString stringWithFormat:@"00%@", hexStringA]
-            andRadix:16];
++ (JKBigInteger *)spiAHexStringToBigIntegerForHexStringA:(NSString *)hexStringA {
+    return [[JKBigInteger alloc] initWithString:[NSString stringWithFormat:@"00%@", hexStringA] andRadix:16];
 }
 
 + (NSString *)dhSecretToSPISecret:(JKBigInteger *)secretBI {
-    NSString *mySecretHex =
-    [[secretBI stringValueWithRadix:16] uppercaseString];
+    NSString *mySecretHex = [[secretBI stringValueWithRadix:16] uppercaseString];
     
     if (mySecretHex.length == 513) {
-        // happens in .net haven't seen it in iOS
+        // happens in .NET haven't seen it in iOS
         mySecretHex = [mySecretHex substringFromIndex:1];
     }
     

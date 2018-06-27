@@ -16,62 +16,39 @@
 @class SPIPreAuth;
 @class SPIPayAtTable;
 
-@interface SPIConfig : NSObject
-
-@property (nonatomic) BOOL promptForCustomerCopyOnEftpos;
-@property (nonatomic) BOOL signatureFlowOnEftpos;
-
-- (void)addReceiptConfig:(NSMutableDictionary *)data;
-
-@end
-
 typedef void (^SPICompletionTxResult)(SPIInitiateTxResult *result);
-typedef void (^SPIAuthCodeSubmitCompletionResult)(
-                                                  SPISubmitAuthCodeResult *result);
+typedef void (^SPIAuthCodeSubmitCompletionResult)(SPISubmitAuthCodeResult *result);
 
 /**
  * Completion handler
  *
- * @param alreadyMovedToIdleState true means we have moved back to the Idle
- * state. false means current flow was not finished yet.
+ * @param alreadyMovedToIdleState true means we have moved back to the Idle state. false means current flow was not finished yet.
  * @param state SPIState
  */
-typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState,
-                                   SPIState *state);
+typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state);
 
 @protocol SPIDelegate <NSObject>
 
 @optional
 
-// Subscribe to this event to know when the CurrentPairingFlowState changes
+// Subscribe to this event to know when the CurrentPairingFlowState changes.
 - (void)spi:(SPIClient *)spi statusChanged:(SPIState *)state;
 
 - (void)spi:(SPIClient *)spi pairingFlowStateChanged:(SPIState *)state;
 
-// When CurrentFlow==Transaction, this represents the state of the transaction
-// process.
+// When CurrentFlow==Transaction, this represents the state of the transaction process.
 - (void)spi:(SPIClient *)spi transactionFlowStateChanged:(SPIState *)state;
 
 // Subscribe to this event to know when the Secrets change, such as at the end
 // of the pairing process, or everytime that the keys are periodicaly rolled.
 // You then need to persist the secrets safely so you can instantiate SPI with
 // them next time around.
-- (void)spi:(SPIClient *)spi
-secretsChanged:(SPISecrets *)secrets
-      state:(SPIState *)state;
+- (void)spi:(SPIClient *)spi secretsChanged:(SPISecrets *)secrets state:(SPIState *)state;
 
 @end
 
 /**
- *
- *  AcmePos is a command line POS that demonstrates connecting to a PIN
- * pad/EFTPOS and accept payments through it.
- *
- *  A word on the terminology. "PIN pad" and "EFTPOS" refer to the same thing.
- * When referring to it in your User Interface to your merchant users, we
- * recommend using the "EFTPOS" wording. Most of the documentation and code uses
- * the "PIN pad" wording.
- *
+ * SPI integration client, used to manage connection to the terminal.
  */
 @interface SPIClient : NSObject
 
@@ -96,12 +73,12 @@ secretsChanged:(SPISecrets *)secrets
  * If you provide secrets, it will start in PairedConnecting status; Otherwise
  * it will start in Unpaired status.
  *
- * @return BOOL, YES if needs to pair, else NO
+ * @return BOOL, YES if needs to pair, else NO.
  */
 - (BOOL)start;
 
 /**
- * returns the SDK version
+ * Returns the SDK version.
  */
 - (NSString *)getVersion;
 
@@ -116,8 +93,7 @@ secretsChanged:(SPISecrets *)secrets
 /**
  * This will connect to the EFTPOS and start the pairing process.
  * Only call this if you are in the Unpaired state.
- * Subscribe to the PairingFlowStateChanged event to get updates on the pairing
- * process.
+ * Subscribe to the PairingFlowStateChanged event to get updates on the pairing process.
  */
 - (void)pair;
 
@@ -173,16 +149,15 @@ secretsChanged:(SPISecrets *)secrets
  * @param purchaseAmount The Purchase Amount in Cents
  * @param tipAmount The Tip Amount in Cents
  * @param cashoutAmount The Cashout Amount in Cents
- * @param promptForCashout Whether to prompt your customer for cashout on the
- * Eftpos
+ * @param promptForCashout Whether to prompt your customer for cashout on the EFTPOS
  * @param completion SPICompletionTxResult
  */
-- (void)initiatePurchaseTxV2:(NSString *)posRefId
-              purchaseAmount:(NSInteger)purchaseAmount
-                   tipAmount:(NSInteger)tipAmount
-               cashoutAmount:(NSInteger)cashoutAmount
-            promptForCashout:(BOOL)promptForCashout
-                  completion:(SPICompletionTxResult)completion;
+- (void)initiatePurchaseTx:(NSString *)posRefId
+            purchaseAmount:(NSInteger)purchaseAmount
+                 tipAmount:(NSInteger)tipAmount
+             cashoutAmount:(NSInteger)cashoutAmount
+          promptForCashout:(BOOL)promptForCashout
+                completion:(SPICompletionTxResult)completion;
 
 /**
  * Initiates a refund transaction. Be subscribed to TxFlowStateChanged event to
@@ -247,8 +222,7 @@ secretsChanged:(SPISecrets *)secrets
  * It should be a 6-character alpha-numeric value.
  * @param completion Whether code has a valid format or not.
  */
-- (void)submitAuthCode:(NSString *)authCode
-            completion:(SPIAuthCodeSubmitCompletionResult)completion;
+- (void)submitAuthCode:(NSString *)authCode completion:(SPIAuthCodeSubmitCompletionResult)completion;
 
 /**
  * Attempts to cancel a Transaction.
@@ -265,8 +239,7 @@ secretsChanged:(SPISecrets *)secrets
  * @param pid Unique ID
  * @param completion SPICompletionTxResult
  */
-- (void)initiateSettleTx:(NSString *)pid
-              completion:(SPICompletionTxResult)completion;
+- (void)initiateSettleTx:(NSString *)pid completion:(SPICompletionTxResult)completion;
 
 /**
  * Initiates a get last transaction operation.
@@ -285,13 +258,13 @@ secretsChanged:(SPISecrets *)secrets
  * started or not. If recovery has started, you need to bring up the transaction
  * modal to your user a be listening to TxFlowStateChanged.
  *
- * @param posRefId     The is that you had assigned to the transaction that you
- * are trying to recover.
+ * @param posRefId     The is that you had assigned to the transaction that you are trying to recover.
  * @param txType       The transaction type.
  */
 - (void)initiateRecovery:(NSString *)posRefId
          transactionType:(SPITransactionType)txType
               completion:(SPICompletionTxResult)completion;
+
 /**
  * Attempts to conclude whether a gltResponse matches an expected transaction
  * and returns the outcome. If Success/Failed is returned, it means that the GTL
@@ -303,18 +276,25 @@ secretsChanged:(SPISecrets *)secrets
  * @param expectedType   The expected type (e.g. Purchase, Refund).
  * @param expectedAmount The expected amount in cents.
  * @param requestDate    The time you made your request.
- * @param posRefId       The reference ID that you passed in with the original
- * request. Currently not used.
+ * @param posRefId       The reference ID that you passed in with the original request. Currently not used.
  */
 - (SPIMessageSuccessState)gltMatch:(SPIGetLastTransactionResponse *)gltResponse
                       expectedType:(SPITransactionType)expectedType
                     expectedAmount:(NSInteger)expectedAmount
                        requestDate:(NSDate *)requestDate
-                          posRefId:(NSString *)posRefId DEPRECATED_MSG_ATTRIBUTE("Use GltMatch(GetLastTransactionResponse gltResponse, string posRefId, TransactionType expectedType)");
-;
+                          posRefId:(NSString *)posRefId DEPRECATED_MSG_ATTRIBUTE("Use gltMatch(GetLastTransactionResponse gltResponse, string posRefId)");
 
-- (SPIMessageSuccessState)gltMatch:(SPIGetLastTransactionResponse *)gltResponse
-                          posRefId:(NSString *)posRefId;
+/**
+ * Attempts to conclude whether a gltResponse matches an expected transaction
+ * and returns the outcome. If Success/Failed is returned, it means that the GTL
+ * response did match, and that transaction was successful/failed. If Unknown is
+ * returned, it means that the gltResponse does not match the expected
+ * transaction.
+ *
+ * @param posRefId The reference ID that you passed in with the original request.
+ */
+- (SPIMessageSuccessState)gltMatch:(SPIGetLastTransactionResponse *)gltResponse posRefId:(NSString *)posRefId;
+
 - (BOOL)send:(SPIMessage *)message;
 
 - (void)onSpiMessageReceived:(NSString *)message;

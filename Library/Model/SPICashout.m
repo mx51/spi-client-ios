@@ -9,10 +9,9 @@
 #import "SPICashout.h"
 #import "SPIRequestIdHelper.h"
 
-@implementation CashoutOnlyRequest : NSObject
+@implementation SPICashoutOnlyRequest : NSObject
 
-- (instancetype)initWithAmountCents:(NSInteger)amountCents
-                           posRefId:(NSString *)posRefId {
+- (instancetype)initWithAmountCents:(NSInteger)amountCents posRefId:(NSString *)posRefId {
     _config = [[SPIConfig alloc] init];
     _cashoutAmount = amountCents;
     _posRefId = posRefId;
@@ -22,16 +21,13 @@
 - (SPIMessage *)toMessage {
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
     [data setValue:_posRefId forKey:@"pos_ref_id"];
-    [data setValue:[NSNumber numberWithInteger:_cashoutAmount]
-            forKey:@"cash_amount"];
+    [data setValue:[NSNumber numberWithInteger:_cashoutAmount] forKey:@"cash_amount"];
     [_config addReceiptConfig:data];
     
-    SPIMessage *message = [[SPIMessage alloc]
-                           initWithMessageId:[SPIRequestIdHelper idForString:@"cshout"]
-                           eventName:SPICashoutOnlyRequestKey
-                           data:data
-                           needsEncryption:true];
-    return message;
+    return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"cshout"]
+                                       eventName:SPICashoutOnlyRequestKey
+                                            data:data
+                                 needsEncryption:true];
 }
 
 @end
@@ -113,18 +109,15 @@
 }
 
 - (BOOL)wasMerchantReceiptPrinted {
-    return [_message getDataBoolValue:@"merchant_receipt_printed"
-                    defaultIfNotFound:false];
+    return [_message getDataBoolValue:@"merchant_receipt_printed" defaultIfNotFound:false];
 }
 
 - (BOOL)wasCustomerReceiptPrinted {
-    return [_message getDataBoolValue:@"customer_receipt_printed"
-                    defaultIfNotFound:false];
+    return [_message getDataBoolValue:@"customer_receipt_printed" defaultIfNotFound:false];
 }
 
 - (NSString *)getResponseValue:(NSString *)attribute {
-    if (!attribute)
-        return @"";
+    if (!attribute) return @"";
     
     return (NSString *)self.message.data[attribute] ?: @"";
 }

@@ -17,6 +17,7 @@
 
 - (instancetype)initWithKeyRollingConfirmation:(SPIMessage *)keyRollingConfirmation
                                        secrets:(SPISecrets *)secrets {
+    
     self = [super init];
     
     if (self) {
@@ -40,6 +41,7 @@
                                           needsEncryption:YES];
     SPISecrets *newSecrets = [[SPISecrets alloc] initWithEncKey:[[[currentSecrets.encKey dataFromHexEncoding] SHA256] hexString]
                                                         hmacKey:[[[currentSecrets.hmacKey dataFromHexEncoding] SHA256] hexString]];
+    
     return [[SPIKeyRollingResult alloc] initWithKeyRollingConfirmation:m secrets:newSecrets];
 }
 

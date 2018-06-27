@@ -31,18 +31,18 @@
     XCTAssertEqual([msg getDataIntegerValue:@"purchase_amount"], amountCents);
 }
 
-- (void)testRequestPurchaseV2_adds_all_fields_to_dataDictionary {
+- (void)testRequestPurchase_adds_all_fields_to_dataDictionary {
     NSString *posRefId = @"test";
     int amountCents = 10;
     int tipamount = 10;
     int cashamount = 10;
     BOOL promptForCash = true;
     SPIPurchaseRequest *request =
-    [SPIPurchaseHelper createPurchaseRequestV2:posRefId
-                                purchaseAmount:amountCents
-                                     tipAmount:tipamount
-                                    cashAmount:cashamount
-                              promptForCashout:promptForCash];
+    [SPIPurchaseHelper createPurchaseRequest:posRefId
+                              purchaseAmount:amountCents
+                                   tipAmount:tipamount
+                                  cashAmount:cashamount
+                            promptForCashout:promptForCash];
     
     SPIMessage *msg = [request toMessage];
     

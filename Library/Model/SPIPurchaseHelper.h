@@ -14,11 +14,11 @@
 + (SPIPurchaseRequest *)createPurchaseRequest:(NSInteger)amountCents
                                    purchaseId:(NSString *)purchaseId;
 
-+ (SPIPurchaseRequest *)createPurchaseRequestV2:(NSString *)posRefId
-                                 purchaseAmount:(NSInteger)purchaseAmount
-                                      tipAmount:(NSInteger)tipAmount
-                                     cashAmount:(NSInteger)cashAmount
-                               promptForCashout:(BOOL)promptForCashout;
++ (SPIPurchaseRequest *)createPurchaseRequest:(NSString *)posRefId
+                               purchaseAmount:(NSInteger)purchaseAmount
+                                    tipAmount:(NSInteger)tipAmount
+                                   cashAmount:(NSInteger)cashAmount
+                             promptForCashout:(BOOL)promptForCashout;
 
 + (SPIRefundRequest *)createRefundRequest:(NSInteger)amountCents
                                purchaseId:(NSString *)purchaseId;

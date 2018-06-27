@@ -18,6 +18,6 @@
 
 @property (nonatomic, weak) id <SPIConnectionDelegate> delegate;
 
-- (instancetype)initWithDelegate:(id <SPIConnectionDelegate> )delegate;
+- (instancetype)initWithDelegate:(id <SPIConnectionDelegate>)delegate;
 
 @end

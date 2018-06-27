@@ -11,6 +11,7 @@
 #import "SPIMessage.h"
 #import "SPIRequestIdHelper.h"
 #import "SPISettlement.h"
+
 @implementation SPISettleRequest
 
 - (instancetype)initWithSettleId:(NSString *)settleId {
@@ -33,23 +34,34 @@
 @end
 
 @implementation SPISchemeSettlementEntry
+
 - (instancetype)initWithSchemeName:(NSString *)schemeName
                   settleByAcquirer:(BOOL)settleByAcquirer
                         totalCount:(int)totalCount
                         totalValue:(int)totalValue {
-    _schemeName = schemeName;
-    _settleByAcquirer = settleByAcquirer;
-    _totalCount = totalCount;
-    _totalValue = totalValue;
+    
+    self = [super init];
+    
+    if (self) {
+        _schemeName = schemeName;
+        _settleByAcquirer = settleByAcquirer;
+        _totalCount = totalCount;
+        _totalValue = totalValue;
+    }
+    
     return self;
 }
 
 - (instancetype)initWithData:(NSDictionary *)dictionary {
-    _schemeName = [dictionary valueForKey:@"scheme_name"];
-    _settleByAcquirer =
-    [[[dictionary valueForKey:@"scheme_name"] lowercaseString] isEqualToString:@"yes"];
-    _totalValue = [NSNumber numberWithInteger:(int)[dictionary valueForKey:@"total_value"]].integerValue;
-    _totalCount = [NSNumber numberWithInteger:(int)[dictionary valueForKey:@"total_count"]].integerValue;
+    self = [super init];
+    
+    if (self) {
+        _schemeName = [dictionary valueForKey:@"scheme_name"];
+        _settleByAcquirer = [[[dictionary valueForKey:@"scheme_name"] lowercaseString] isEqualToString:@"yes"];
+        _totalValue = [NSNumber numberWithInteger:(int)[dictionary valueForKey:@"total_value"]].integerValue;
+        _totalCount = [NSNumber numberWithInteger:(int)[dictionary valueForKey:@"total_count"]].integerValue;
+    }
+    
     return self;
 }
 
@@ -88,15 +100,13 @@
 - (NSDate *)getPeriodStartTime {
     NSString *timeStr = [self.message getDataStringValue:@"settlement_period_start_time"]; // "05:00"
     NSString *dateStr = [self.message getDataStringValue:@"settlement_period_start_date"]; // "05Oct17"
-    return [[NSDateFormatter dateFormaterWithFormatter:@"HH:mmddMMMyy"]
-            dateFromString:[NSString stringWithFormat:@"%@%@", timeStr, dateStr]];
+    return [[NSDateFormatter dateFormaterWithFormatter:@"HH:mmddMMMyy"] dateFromString:[NSString stringWithFormat:@"%@%@", timeStr, dateStr]];
 }
 
 - (NSDate *)getPeriodEndTime {
     NSString *timeStr = [self.message getDataStringValue:@"settlement_period_end_time"]; // "05:00"
     NSString *dateStr = [self.message getDataStringValue:@"settlement_period_end_date"]; // "05Oct17"
-    return [[NSDateFormatter dateFormaterWithFormatter:@"HH:mmddMMMyy"]
-            dateFromString:[NSString stringWithFormat:@"%@%@", timeStr, dateStr]];
+    return [[NSDateFormatter dateFormaterWithFormatter:@"HH:mmddMMMyy"] dateFromString:[NSString stringWithFormat:@"%@%@", timeStr, dateStr]];
 }
 
 - (NSDate *)getTriggeredTime {
@@ -104,9 +114,9 @@
     NSString *dateStr = [self.message getDataStringValue:@"settlement_triggered_date"]; // "05Oct17"
     NSString *joinedString = [NSString stringWithFormat:@"%@%@", timeStr, dateStr];
     
-    NSDate *date = [joinedString toDateWithFormat:@"HH:mm:ssddMMMyy"];
-    return date;
+    return [joinedString toDateWithFormat:@"HH:mm:ssddMMMyy"];
 }
+
 - (NSString *)getResponseText {
     return [self.message getDataStringValue:@"host_response_text"];
 }
@@ -127,8 +137,7 @@
     NSArray *schemes = [_message getDataArrayValue:@"schemes"];
     NSMutableArray<SPISchemeSettlementEntry *> *entries = [[NSMutableArray alloc] init];
     for (NSDictionary *item in schemes) {
-        SPISchemeSettlementEntry *entry = [[SPISchemeSettlementEntry alloc] initWithData:item];
-        [entries addObject:entry];
+        [entries addObject:[[SPISchemeSettlementEntry alloc] initWithData:item]];
     }
     return entries;
 }
@@ -138,7 +147,12 @@
 @implementation SPISettlementEnquiryRequest
 
 - (instancetype)initWithRequestId:(NSString *)requestId {
-    _requestId = requestId;
+    self = [super init];
+    
+    if (self) {
+        _requestId = requestId;
+    }
+    
     return self;
 }
 

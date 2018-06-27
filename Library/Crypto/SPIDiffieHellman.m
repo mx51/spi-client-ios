@@ -15,6 +15,7 @@
 + (JKBigInteger *)publicKeyWithPrimeP:(JKBigInteger *)primeP
                                primeG:(JKBigInteger *)primeG
                            privateKey:(JKBigInteger *)privateKey {
+    
     return [primeG pow:privateKey andMod:primeP];
 }
 

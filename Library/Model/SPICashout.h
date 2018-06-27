@@ -9,19 +9,20 @@
 #import <UIKit/UIKit.h>
 #import "SPIClient.h"
 
-@interface CashoutOnlyRequest : NSObject
+@interface SPICashoutOnlyRequest : NSObject
+
 @property (nonatomic, readonly) NSInteger cashoutAmount;
 @property (nonatomic, readonly, copy) NSString *posRefId;
 @property (nonatomic, retain) SPIConfig *config;
 
 - (SPIMessage *)toMessage;
 
-- (instancetype)initWithAmountCents:(NSInteger)amountCents
-                           posRefId:(NSString *)posRefId;
+- (instancetype)initWithAmountCents:(NSInteger)amountCents posRefId:(NSString *)posRefId;
 
 @end
 
 @interface SPICashoutOnlyResponse : NSObject
+
 @property (nonatomic, readonly) BOOL isSuccess;
 @property (nonatomic, readonly, copy) NSString *requestid;
 @property (nonatomic, readonly, copy) NSString *schemeName;

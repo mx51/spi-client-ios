@@ -11,7 +11,9 @@
 
 @class SPIMessage;
 @class SPIConfig;
+
 @interface SPIPurchaseRequest : NSObject
+
 @property (nonatomic, readonly, copy) NSString *purchaseId DEPRECATED_MSG_ATTRIBUTE("Id is deprecated. Use PosRefId instead.");
 @property (nonatomic, readonly, copy) NSString *posRefId;
 @property (nonatomic, readonly) NSInteger amountCents DEPRECATED_MSG_ATTRIBUTE("AmountCents is deprecated. Use PurchaseAmount instead.");
@@ -23,12 +25,14 @@
 
 - (instancetype)initWithAmountCents:(NSInteger)amountCents
                            posRefId:(NSString *)posRefId;
+
 - (SPIMessage *)toMessage;
 - (NSString *)amountSummary;
 
 @end
 
 @interface SPIPurchaseResponse : NSObject
+
 @property (nonatomic, readonly) BOOL isSuccess;
 @property (nonatomic, readonly, copy) NSString *requestid;
 @property (nonatomic, readonly, copy) NSString *schemeName;
@@ -146,7 +150,6 @@
 @interface SPIRefundRequest : NSObject
 
 @property (nonatomic, readonly, copy) NSString *refundId DEPRECATED_MSG_ATTRIBUTE("Id is deprecated. Use PosRefId instead.");
-;
 @property (nonatomic, readonly) NSInteger amountCents;
 @property (nonatomic, readonly, copy) NSString *posRefId;
 @property (nonatomic, retain) SPIConfig *config;
@@ -159,6 +162,7 @@
 @end
 
 @interface SPIRefundResponse : NSObject
+
 @property (nonatomic, readonly, copy) NSString *requestId;
 @property (nonatomic, readonly) BOOL isSuccess;
 @property (nonatomic, readonly, copy) NSString *schemeName;
@@ -224,8 +228,7 @@
 
 @property (nonatomic, readonly, copy) NSString *signatureRequiredRequestId;
 
-- (instancetype)initWithSignatureRequiredRequestId:
-(NSString *)signatureRequiredRequestId;
+- (instancetype)initWithSignatureRequiredRequestId:(NSString *)signatureRequiredRequestId;
 
 - (SPIMessage *)toMessage;
 
@@ -235,8 +238,7 @@
 
 @property (nonatomic, readonly, copy) NSString *signatureRequiredRequestId;
 
-- (instancetype)initWithSignatureRequiredRequestId:
-(NSString *)signatureRequiredRequestId;
+- (instancetype)initWithSignatureRequiredRequestId:(NSString *)signatureRequiredRequestId;
 
 - (SPIMessage *)toMessage;
 

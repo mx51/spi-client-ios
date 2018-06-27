@@ -86,7 +86,6 @@ typedef NS_ENUM(NSInteger, SPIMessageSuccessState) {
 @end
 
 /**
- *
  * Message represents the contents of a Message.
  * See http://www.simplepaymentapi.com/#/api/message-encryption
  */
@@ -149,7 +148,6 @@ typedef NS_ENUM(NSInteger, SPIMessageSuccessState) {
 @end
 
 /**
- *
  * MessageEnvelope represents the outer structure of any message that is
  * exchanged between the Pos and the PIN pad and vice-versa. See
  * http://www.simplepaymentapi.com/#/api/message-encryption
@@ -185,4 +183,5 @@ typedef NS_ENUM(NSInteger, SPIMessageSuccessState) {
                       posId:(NSString *)posId;
 
 - (NSDictionary *)toJson;
+
 @end

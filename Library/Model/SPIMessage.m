@@ -70,6 +70,7 @@ NSString *const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomin
 - (instancetype)initWithPosId:(NSString *)posId
                       secrets:(SPISecrets *)secrets
               serverTimeDelta:(NSTimeInterval)serverTimeDelta {
+    
     self = [super init];
     
     if (self) {
@@ -104,6 +105,7 @@ NSString *const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomin
                         eventName:(NSString *)eventName
                              data:(NSDictionary<NSString *, NSObject *> *)data
                   needsEncryption:(BOOL)needsEncryption {
+    
     self = [super init];
     
     if (self) {
@@ -139,11 +141,7 @@ NSString *const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomin
         if (!self.data) {
             _successState = SPIMessageSuccessStateUnknown;
         } else {
-            _successState =
-            [self getDataBoolValue:@"success"
-                 defaultIfNotFound:false]
-            ? SPIMessageSuccessStateSuccess
-            : SPIMessageSuccessStateFailed;
+            _successState = [self getDataBoolValue:@"success" defaultIfNotFound:false] ? SPIMessageSuccessStateSuccess : SPIMessageSuccessStateFailed;
         }
     }
     
@@ -152,110 +150,95 @@ NSString *const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomin
 
 - (NSString *)toJson:(SPIMessageStamp *)stamp {
     NSDate *currentDate = [NSDate date];
-    NSDate *adjustedDate =
-    [currentDate dateByAddingTimeInterval:stamp.serverTimeDelta];
+    NSDate *adjustedDate = [currentDate dateByAddingTimeInterval:stamp.serverTimeDelta];
     self.dateTimeStamp = [adjustedDate toString];
     
     if (!self.needsEncryption) {
         self.posId = stamp.posId;
     }
     
-    SPIMessageEnvelope *messageEnvelope =
-    [[SPIMessageEnvelope alloc] initWithMessage:self];
+    SPIMessageEnvelope *messageEnvelope = [[SPIMessageEnvelope alloc] initWithMessage:self];
     NSDictionary *messageEnvelopeJson = [messageEnvelope toJson];
     
     NSError *jsonError = nil;
-    NSData *jsonData =
-    [NSJSONSerialization dataWithJSONObject:messageEnvelopeJson
-                                    options:0
-                                      error:&jsonError];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:messageEnvelopeJson
+                                                       options:0
+                                                         error:&jsonError];
     
     if (jsonError) {
-        // ERROR
         NSLog(@"toJson jsonError: %@", jsonError);
         return nil;
     }
     
-    NSString *messageEnvelopeString =
-    [[NSString alloc] initWithData:jsonData
-                          encoding:NSUTF8StringEncoding];
+    NSString *messageEnvelopeString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     self.decryptedJson = messageEnvelopeString;
     
     if (!self.needsEncryption) {
         return messageEnvelopeString;
     }
     
-    NSString *encMsg = [SPICrypto aesEncryptMessage:messageEnvelopeString
-                                                key:stamp.secrets.encKeyData];
-    NSString *hmacSig =
-    [SPICrypto hmacSignatureMessage:encMsg
-                                key:stamp.secrets.hmacKeyData];
-    SPIMessageEnvelope *encrMessageEnvelope =
-    [[SPIMessageEnvelope alloc] initWithEnc:encMsg
-                                       hmac:hmacSig
-                                      posId:stamp.posId];
+    NSString *encMsg = [SPICrypto aesEncryptMessage:messageEnvelopeString key:stamp.secrets.encKeyData];
+    NSString *hmacSig = [SPICrypto hmacSignatureMessage:encMsg key:stamp.secrets.hmacKeyData];
+    
+    SPIMessageEnvelope *encrMessageEnvelope = [[SPIMessageEnvelope alloc] initWithEnc:encMsg hmac:hmacSig posId:stamp.posId];
     NSDictionary *encrMessageEnvelopeJson = [encrMessageEnvelope toJson];
     
-    jsonData = [NSJSONSerialization dataWithJSONObject:encrMessageEnvelopeJson
-                                               options:0
-                                                 error:&jsonError];
+    jsonData = [NSJSONSerialization dataWithJSONObject:encrMessageEnvelopeJson options:0 error:&jsonError];
     
     if (jsonError) {
-        // ERROR
         NSLog(@"jsonError: %@", jsonError);
         return nil;
     }
     
-    return
-    [[NSString alloc] initWithData:jsonData
-                          encoding:NSUTF8StringEncoding];
+    return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 }
 
 - (NSString *)getDataStringValue:(NSString *)attribute {
     NSObject *v = self.data[attribute];
-    if ([v isKindOfClass:[NSString class]])
+    if ([v isKindOfClass:[NSString class]]) {
         return (NSString *)v;
+    }
     return @"";
 }
 
 - (NSInteger)getDataIntegerValue:(NSString *)attribute {
     NSObject *v = self.data[attribute];
-    if (v != [NSNull null])
+    if (v != [NSNull null]) {
         return ((NSString *)v).integerValue;
+    }
     return 0;
 }
 
-- (BOOL)getDataBoolValue:(NSString *)attribute
-       defaultIfNotFound:(BOOL)defaultIfNotFound {
+- (BOOL)getDataBoolValue:(NSString *)attribute defaultIfNotFound:(BOOL)defaultIfNotFound {
     NSObject *v = self.data[attribute];
-    if (v != [NSNull null])
+    if (v != [NSNull null]) {
         return ((NSString *)v).boolValue;
+    }
     return defaultIfNotFound;
 }
 
 - (NSDictionary *)getDataDictionaryValue:(NSString *)attribute {
     NSObject *v = self.data[attribute];
-    if ([v isKindOfClass:[NSDictionary class]])
+    if ([v isKindOfClass:[NSDictionary class]]) {
         return (NSDictionary *)v;
+    }
     return [NSDictionary new];
 }
 
 - (NSArray *)getDataArrayValue:(NSString *)attribute {
     NSObject *v = self.data[attribute];
-    if ([v isKindOfClass:[NSArray class]])
+    if ([v isKindOfClass:[NSArray class]]) {
         return (NSArray *)v;
+    }
     return [NSArray new];
 }
 
 + (SPIMessage *)fromJson:(NSString *)msgJson secrets:(SPISecrets *)secrets {
-    
     NSLog(@"\nSPIMessage fromJson: %@", msgJson);
     
     NSError *error = nil;
     NSData *mJsonData = [msgJson dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:mJsonData
-                                                         options:0
-                                                           error:&error];
+    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:mJsonData options:0 error:&error];
     
     NSDictionary *message = json[@"message"];
     
@@ -268,9 +251,7 @@ NSString *const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomin
     NSString *enc = json[@"enc"];
     NSString *hmac = json[@"hmac"];
     
-    NSString *hmacSig =
-    [SPICrypto hmacSignatureMessage:enc
-                                key:secrets.hmacKeyData];
+    NSString *hmacSig = [SPICrypto hmacSignatureMessage:enc key:secrets.hmacKeyData];
     
     if (![hmacSig isEqualToString:hmac]) {
         return [[SPIMessage alloc] initWithMessageId:SPIInvalidMessageId
@@ -279,9 +260,8 @@ NSString *const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomin
                                      needsEncryption:NO];
     }
     
-    NSString *aesDecryptedJson =
-    [SPICrypto aesDecryptEncMessage:enc
-                                key:secrets.encKeyData];
+    NSString *aesDecryptedJson = [SPICrypto aesDecryptEncMessage:enc key:secrets.encKeyData];
+    
     SPIMessage *m;
     if (aesDecryptedJson != nil) {
         NSData *decryptedJsonData = [aesDecryptedJson dataUsingEncoding:NSUTF8StringEncoding];
@@ -291,8 +271,7 @@ NSString *const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomin
         
         if (error) {
             NSLog(@"ERROR!!~ =%@", error);
-            NSLog(@"%@", [[NSString alloc] initWithData:decryptedJsonData
-                                               encoding:NSUTF8StringEncoding]);
+            NSLog(@"%@", [[NSString alloc] initWithData:decryptedJsonData encoding:NSUTF8StringEncoding]);
         }
         
         NSDictionary *msgDecryptedJson = (NSDictionary *)newJson[@"message"];
@@ -341,6 +320,7 @@ NSString *const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomin
 - (instancetype)initWithMessage:(SPIMessage *)message
                             enc:(NSString *)enc
                            hmac:(NSString *)hmac {
+    
     self = [super init];
     
     if (self) {
@@ -365,6 +345,7 @@ NSString *const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomin
 - (instancetype)initWithEnc:(NSString *)enc
                        hmac:(NSString *)hmac
                       posId:(NSString *)posId {
+    
     self = [super init];
     
     if (self) {

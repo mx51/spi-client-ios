@@ -11,11 +11,12 @@
 @interface NSString (Util)
 
 /**
- *  NSString with leading/trailing whitespace removed
+ * NSString with leading/trailing whitespace removed
  */
 @property (nonatomic, readonly, nonnull) NSString *trim;
 
 @property (nonatomic, readonly, nonnull) NSDate *toDate;
 
 - (NSDate *)toDateWithFormat:(NSString *)format;
+
 @end

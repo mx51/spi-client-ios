@@ -7,7 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+
 @class SPIClient;
+
 @interface SPIPreAuth : NSObject
 
 - (instancetype)init:(SPIClient *)client queue:(dispatch_queue_t)queue;

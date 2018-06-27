@@ -24,11 +24,10 @@
 @implementation SPIPingHelper
 
 + (SPIMessage *)generatePingRequest {
-    return [[SPIMessage alloc]
-            initWithMessageId:[SPIRequestIdHelper idForString:@"ping"]
-            eventName:SPIPingKey
-            data:nil
-            needsEncryption:YES];
+    return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"ping"]
+                                       eventName:SPIPingKey
+                                            data:nil
+                                 needsEncryption:YES];
 }
 
 @end
