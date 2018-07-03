@@ -135,6 +135,11 @@
     self.displayMessage = msg;
 }
 
+- (void)cancelFailed:(NSString *)msg {
+    self.isAttemptingToCancel = NO;
+    self.displayMessage = msg;
+}
+
 - (void)callingGlt {
     self.isAwaitingGltResponse = YES;
     self.lastStateRequestTime = [NSDate date];

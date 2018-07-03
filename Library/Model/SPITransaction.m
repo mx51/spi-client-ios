@@ -1,5 +1,5 @@
 //
-//  SPIPurchase.m
+//  SPITransaction.m
 //  SPIClient-iOS
 //
 //  Created by Yoo-Jin Lee on 2017-11-29.
@@ -9,7 +9,7 @@
 #import "NSDateFormatter+Util.h"
 #import "SPIClient.h"
 #import "SPIMessage.h"
-#import "SPIPurchase.h"
+#import "SPITransaction.h"
 #import "SPIRequestIdHelper.h"
 
 @implementation SPIPurchaseRequest : NSObject
@@ -194,6 +194,34 @@
                                        eventName:SPICancelTransactionRequestKey
                                             data:nil
                                  needsEncryption:true];
+}
+
+@end
+
+@implementation SPICancelTransactionResponse : NSObject
+
+- (instancetype)initWithMessage:(SPIMessage *)message {
+    self = [super init];
+    
+    if (self) {
+        _message = message;
+        _posRefId = [message getDataStringValue:@"pos_ref_id"];
+        _isSuccess = [message isSuccess];
+    }
+    
+    return self;
+}
+
+- (NSString *)getErrorReason {
+    return [self.message getDataStringValue:@"error_reason"];
+}
+
+- (NSString *)getErrorDetail {
+    return [self.message getDataStringValue:@"error_detail"];
+}
+
+- (NSString *)getResponseValueWithAttribute:(NSString *)attribute {
+    return [self.message getDataStringValue:attribute];
 }
 
 @end

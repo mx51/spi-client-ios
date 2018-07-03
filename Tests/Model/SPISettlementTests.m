@@ -12,6 +12,7 @@
 #import "NSDate+Util.h"
 #import "SPIClient.h"
 #import "SPIClient+Internal.h"
+#import "SPITestUtils.h"
 
 @interface SPISettlementTests : XCTestCase
 
@@ -40,14 +41,10 @@
     XCTAssertTrue([[response getTransactionRange] isEqualToString:@"000148-000149"]);
     XCTAssertTrue([[response getTerminalId] isEqualToString:@"100312348845"]);
     XCTAssertGreaterThan([response getSchemeSettlementEntries].count, 0);
-
 }
 
 - (void)testClient_canHandle_settlement_response {
-    NSString *encKey = @"81CF9E6A14CDAF244A30B298D4CECB505C730CE352C6AF6E1DE61B3232E24D3F";
-    NSString *hmacKey = @"D35060723C9EECDB8AEA019581381CB08F64469FC61A5A04FE553EBDB5CD55B9";
-    SPIClient *client = [[SPIClient alloc] init];
-    [client setSecretEncKey:encKey hmacKey:hmacKey];
+    SPIClient *client = [SPITestUtils clientWithTestSecrets];
     
     // Initiate request
     client.state.status = SPIStatusPairedConnected;

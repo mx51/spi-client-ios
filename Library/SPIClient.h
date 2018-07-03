@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "SPIConnection.h"
 #import "SPIModels.h"
-#import "SPIPurchase.h"
+#import "SPITransaction.h"
 #import "SPISettlement.h"
 
 @class SPIClient;

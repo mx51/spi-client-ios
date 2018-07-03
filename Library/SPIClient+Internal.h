@@ -11,6 +11,8 @@
 
 @interface SPIClient ()
 
+@property (nonatomic, strong) SPISecrets *secrets;
+
 - (BOOL)send:(SPIMessage *)message;
 
 - (void)onSpiMessageReceived:(NSString *)message;

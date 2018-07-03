@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #import "SPIMessage.h"
-#import "SPIPurchase.h"
+#import "SPITransaction.h"
 
 /**
  * Represents the 3 Pairing statuses that the SPI instance can be in.
@@ -181,6 +181,8 @@ typedef NS_ENUM(NSUInteger, SPITransactionType) {
 - (void)sent:(NSString *)msg;
 
 - (void)cancelling:(NSString *)msg;
+
+- (void)cancelFailed:(NSString *)msg;
 
 - (void)callingGlt;
 

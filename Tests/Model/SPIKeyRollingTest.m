@@ -1,5 +1,5 @@
 //
-//  SPIKeyRollingTest.m
+//  SPIKeyRollingTests.m
 //  SPIClient-iOSTests
 //
 //  Created by Yoo-Jin Lee on 2017-11-27.
@@ -11,10 +11,10 @@
 #import "SPIMessage.h"
 #import "SPISecrets.h"
 
-@interface SPIKeyRollingTest : XCTestCase
+@interface SPIKeyRollingTests : XCTestCase
 @end
 
-@implementation SPIKeyRollingTest
+@implementation SPIKeyRollingTests
 
 - (void)testKeyRolling {
     SPIMessage *krRequest = [[SPIMessage alloc] initWithMessageId:@"x"

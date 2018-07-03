@@ -8,6 +8,7 @@
 
 #import <XCTest/XCTest.h>
 #import "SPIClient.h"
+
 @interface SPIClient_iOSTests : XCTestCase
 
 @end

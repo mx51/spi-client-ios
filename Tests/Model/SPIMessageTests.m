@@ -1,5 +1,5 @@
 //
-//  SPIModelTests.m
+//  SPIMessageTests.m
 //  SPIClient-iOSTests
 //
 //  Created by Yoo-Jin Lee on 2017-11-25.

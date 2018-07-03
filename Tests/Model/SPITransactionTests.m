@@ -7,17 +7,18 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "SPIPurchase.h"
+#import "SPITransaction.h"
 #import "SPIPurchaseHelper.h"
 #import "NSDate+Util.h"
 #import "SPIClient.h"
 #import "SPIClient+Internal.h"
+#import "SPITestUtils.h"
 
-@interface SPIPurchaseTest : XCTestCase
+@interface SPITransactionTests : XCTestCase
 
 @end
 
-@implementation SPIPurchaseTest
+@implementation SPITransactionTests
 
 - (void)testPurchaseRequestV1_adds_all_fields_to_dataDictionary {
     NSString *posRefId = @"test";
@@ -76,14 +77,11 @@
     XCTAssertTrue([[response getTerminalId] isEqualToString:@"100312348845"]);
     XCTAssertEqual([response wasCustomerReceiptPrinted], true);
     XCTAssertEqual([response wasMerchantReceiptPrinted], true);
-    
 }
 
 - (void)testClient_canInitiate_purchase_request {
-    NSString *encKey = @"81CF9E6A14CDAF244A30B298D4CECB505C730CE352C6AF6E1DE61B3232E24D3F";
-    NSString *hmacKey = @"D35060723C9EECDB8AEA019581381CB08F64469FC61A5A04FE553EBDB5CD55B9";
-    SPIClient *client = [[SPIClient alloc] init];
-    [client setSecretEncKey:encKey hmacKey:hmacKey];
+    SPIClient *client = [SPITestUtils clientWithTestSecrets];
+    
     client.state.status = SPIStatusPairedConnected;
     [client initiatePurchaseTx:@"test" purchaseAmount:10 tipAmount:0 cashoutAmount:0 promptForCashout:false completion:^(SPIInitiateTxResult *result) {
         XCTAssertNotNil(result);
@@ -91,10 +89,8 @@
 }
 
 - (void)testClient_canInitiate_motoPurchase_request {
-    NSString *encKey = @"81CF9E6A14CDAF244A30B298D4CECB505C730CE352C6AF6E1DE61B3232E24D3F";
-    NSString *hmacKey = @"D35060723C9EECDB8AEA019581381CB08F64469FC61A5A04FE553EBDB5CD55B9";
-    SPIClient *client = [[SPIClient alloc] init];
-    [client setSecretEncKey:encKey hmacKey:hmacKey];
+    SPIClient *client = [SPITestUtils clientWithTestSecrets];
+    
     client.state.status = SPIStatusPairedConnected;
     [client initiateMotoPurchaseTx:@"test" amountCents:19 completion:^(SPIInitiateTxResult *result) {
         XCTAssertNotNil(result);
@@ -102,10 +98,8 @@
 }
 
 - (void)testClient_canInitiate_cashOutOnly_request {
-    NSString *encKey = @"81CF9E6A14CDAF244A30B298D4CECB505C730CE352C6AF6E1DE61B3232E24D3F";
-    NSString *hmacKey = @"D35060723C9EECDB8AEA019581381CB08F64469FC61A5A04FE553EBDB5CD55B9";
-    SPIClient *client = [[SPIClient alloc] init];
-    [client setSecretEncKey:encKey hmacKey:hmacKey];
+    SPIClient *client = [SPITestUtils clientWithTestSecrets];
+    
     client.state.status = SPIStatusPairedConnected;
     [client initiateCashoutOnlyTx:@"test" amountCents:10 completion:^(SPIInitiateTxResult *result) {
         XCTAssertNotNil(result);
@@ -113,10 +107,8 @@
 }
 
 - (void)testClient_canInitiate_settleEnquiry_request {
-    NSString *encKey = @"81CF9E6A14CDAF244A30B298D4CECB505C730CE352C6AF6E1DE61B3232E24D3F";
-    NSString *hmacKey = @"D35060723C9EECDB8AEA019581381CB08F64469FC61A5A04FE553EBDB5CD55B9";
-    SPIClient *client = [[SPIClient alloc] init];
-    [client setSecretEncKey:encKey hmacKey:hmacKey];
+    SPIClient *client = [SPITestUtils clientWithTestSecrets];
+    
     client.state.status = SPIStatusPairedConnected;
     [client initiateSettlementEnquiry:@"test" completion:^(SPIInitiateTxResult *result) {
         XCTAssertNotNil(result);
@@ -125,10 +117,8 @@
 
 
 - (void)testClient_canInitiate_settlement_request {
-    NSString *encKey = @"81CF9E6A14CDAF244A30B298D4CECB505C730CE352C6AF6E1DE61B3232E24D3F";
-    NSString *hmacKey = @"D35060723C9EECDB8AEA019581381CB08F64469FC61A5A04FE553EBDB5CD55B9";
-    SPIClient *client = [[SPIClient alloc] init];
-    [client setSecretEncKey:encKey hmacKey:hmacKey];
+    SPIClient *client = [SPITestUtils clientWithTestSecrets];
+    
     client.state.status = SPIStatusPairedConnected;
     [client initiateSettleTx:@"test" completion:^(SPIInitiateTxResult *result) {
         XCTAssertNotNil(result);
@@ -136,10 +126,8 @@
 }
 
 - (void)testClient_canInitiate_recovery_request {
-    NSString *encKey = @"81CF9E6A14CDAF244A30B298D4CECB505C730CE352C6AF6E1DE61B3232E24D3F";
-    NSString *hmacKey = @"D35060723C9EECDB8AEA019581381CB08F64469FC61A5A04FE553EBDB5CD55B9";
-    SPIClient *client = [[SPIClient alloc] init];
-    [client setSecretEncKey:encKey hmacKey:hmacKey];
+    SPIClient *client = [SPITestUtils clientWithTestSecrets];
+    
     client.state.status = SPIStatusPairedConnected;
     [client initiateRecovery:@"test" transactionType:SPITransactionTypePurchase completion:^(SPIInitiateTxResult *result) {
         XCTAssertNotNil(result);
@@ -147,21 +135,59 @@
 }
 
 - (void)testClient_canInitiate_cancel_transaction {
-    NSString *encKey = @"81CF9E6A14CDAF244A30B298D4CECB505C730CE352C6AF6E1DE61B3232E24D3F";
-    NSString *hmacKey = @"D35060723C9EECDB8AEA019581381CB08F64469FC61A5A04FE553EBDB5CD55B9";
-    SPIClient *client = [[SPIClient alloc] init];
-    [client setSecretEncKey:encKey hmacKey:hmacKey];
+    SPIClient *client = [SPITestUtils clientWithTestSecrets];
+    
     client.state.status = SPIStatusPairedConnected;
     [client initiateRefundTx:@"test" amountCents:10 completion:^(SPIInitiateTxResult *result) {
         XCTAssertNotNil(result);
     }];
 }
 
+- (void)testClient_canHandle_cancel_response {
+    SPIClient *client = [SPITestUtils clientWithTestSecrets];
+    SPISecrets *secrets = client.secrets;
+    SPIMessageStamp *stamp = [[SPIMessageStamp alloc] initWithPosId:@"POS" secrets:secrets serverTimeDelta:0];
+    
+    client.state.status = SPIStatusPairedConnected;
+    
+    NSString *posRefId = @"kebab-18-06-2018-03-44-05";
+    
+    [client initiatePurchaseTx:posRefId
+                purchaseAmount:10
+                     tipAmount:0
+                 cashoutAmount:0
+              promptForCashout:false
+                    completion:^(SPIInitiateTxResult *result) {}];
+    
+    // Simulate cancellation
+    client.state.txFlowState.isAttemptingToCancel = YES;
+    
+    SPIMessage *msg = [[SPIMessage alloc] initWithDict:@{
+                                                         @"event": @"cancel_response",
+                                                         @"id": @"0",
+                                                         @"datetime": @"2018-02-06T15:16:44.094",
+                                                         @"data": @{
+                                                                 @"pos_ref_id": posRefId,
+                                                                 @"success": @NO,
+                                                                 @"error_reason": @"txn_past_point_of_no_return",
+                                                                 @"error_detail": @"Too late to cancel transaction"
+                                                                 }
+                                                         }];
+    NSString *msgJson = [msg toJson:stamp];
+    [client onSpiMessageReceived:msgJson];
+    
+    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"test expectation"];
+    (void) [XCTWaiter waitForExpectations:@[expectation] timeout:1];
+    
+    NSString *displayMessage = client.state.txFlowState.displayMessage;
+    XCTAssertTrue([displayMessage isEqualToString:@"Failed to cancel transaction: Too late to cancel transaction. Check EFTPOS."],
+                  @"Unexpected display message: '%@'", displayMessage);
+    
+    XCTAssertEqual(NO, client.state.txFlowState.isAttemptingToCancel);
+}
+
 - (void)testClient_canHandle_purchase_response {
-    NSString *encKey = @"81CF9E6A14CDAF244A30B298D4CECB505C730CE352C6AF6E1DE61B3232E24D3F";
-    NSString *hmacKey = @"D35060723C9EECDB8AEA019581381CB08F64469FC61A5A04FE553EBDB5CD55B9";
-    SPIClient *client = [[SPIClient alloc] init];
-    [client setSecretEncKey:encKey hmacKey:hmacKey];
+    SPIClient *client = [SPITestUtils clientWithTestSecrets];
     
     // Initiate request
     client.state.status = SPIStatusPairedConnected;
@@ -174,7 +200,8 @@
     (void) [XCTWaiter waitForExpectations:@[expectation] timeout:1];
 
     NSString *displayMessage = client.state.txFlowState.displayMessage;
-    XCTAssertTrue([displayMessage isEqualToString:@"Purchase transaction ended"], @"Unexpected display message: '%@'", displayMessage);
+    XCTAssertTrue([displayMessage isEqualToString:@"Purchase transaction ended"],
+                  @"Unexpected display message: '%@'", displayMessage);
 }
 
 @end

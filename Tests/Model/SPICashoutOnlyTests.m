@@ -7,10 +7,11 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "SPIPurchase.h"
+#import "SPITransaction.h"
 #import "SPIPurchaseHelper.h"
 #import "NSString+Util.h"
 #import "SPICashout.h"
+
 @interface SPICashoutOnlyTests : XCTestCase
 
 @end

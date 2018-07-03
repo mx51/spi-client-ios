@@ -7,10 +7,11 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "SPIPurchase.h"
+#import "SPITransaction.h"
 #import "SPIPurchaseHelper.h"
 #import "NSDate+Util.h"
 #import "SPIClient.h"
+
 @interface SPIRefundTests : XCTestCase
 
 @end

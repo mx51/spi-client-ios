@@ -23,7 +23,7 @@
 #import "SPIPayAtTable.h"
 #import "SPIPingHelper.h"
 #import "SPIPreAuth.h"
-#import "SPIPurchase.h"
+#import "SPITransaction.h"
 #import "SPIPurchaseHelper.h"
 #import "SPIRequestIdHelper.h"
 #import "SPISettlement.h"
@@ -38,7 +38,6 @@
 @property (nonatomic, strong) id<SPIConnection> connection;
 
 @property (nonatomic, strong) SPIMessageStamp *spiMessageStamp;
-@property (nonatomic, strong) SPISecrets *secrets;
 @property (nonatomic, strong) SPIPayAtTable *spiPat;
 @property (nonatomic, strong) SPIPreAuth *spiPreauth;
 
@@ -211,7 +210,6 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     }
     if (self.state.flow == SPIFlowTransaction && self.state.txFlowState.isFinished) {
         self.state.flow = SPIFlowIdle;
-        completion(YES, self.state.copy);
         return;
     }
     
@@ -1039,19 +1037,19 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                       typeName:(NSString *)typeName
                  checkPosRefId:(BOOL)checkPosRefId {
     
-    SPITransactionFlowState *currentState = self.state.txFlowState;
+    SPITransactionFlowState *txState = self.state.txFlowState;
     
     NSString *incomingPosRefId;
     BOOL posRefIdMatched;
     if (checkPosRefId) {
         incomingPosRefId = [m getDataStringValue:@"pos_ref_id"];
-        posRefIdMatched = [currentState.posRefId isEqualToString:incomingPosRefId];
+        posRefIdMatched = [txState.posRefId isEqualToString:incomingPosRefId];
     } else {
         incomingPosRefId = nil;
         posRefIdMatched = YES;
     }
     
-    if (self.state.flow != SPIFlowTransaction || currentState.isFinished || !posRefIdMatched) {
+    if (self.state.flow != SPIFlowTransaction || txState.isFinished || !posRefIdMatched) {
         NSString *trace = checkPosRefId ? [@"Incoming Pos Ref ID: " stringByAppendingString:incomingPosRefId] : m.decryptedJson;
         SPILog(@"Received %@ response but I was not waiting for one. %@", typeName, trace);
         return YES;
@@ -1175,6 +1173,28 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     }
     
     return gltResponse.getSuccessState;
+}
+
+/**
+ * When the transaction cancel response is returned.
+ *
+ * @param m Message
+ */
+- (void)handleCancelTransactionResponse:(SPIMessage *)m {
+    @synchronized(self.txLock) {
+        if ([self isTxResponseUnexpected:m typeName:@"Cancel" checkPosRefId:YES]) return;
+        
+        SPICancelTransactionResponse *response = [[SPICancelTransactionResponse alloc] initWithMessage:m];
+        if (response.isSuccess) {
+            // We can ignore successful cancellation, we will just get purchase response shortly
+            return;
+        }
+        
+        SPILog(@"Failed to cancel transaction: reason=%@, detail=%@", response.getErrorReason, response.getErrorDetail);
+        NSString *msg = [NSString stringWithFormat:@"Failed to cancel transaction: %@. Check EFTPOS.", response.getErrorDetail];
+        [self.state.txFlowState cancelFailed:msg];
+        [self transactionFlowStateChanged];
+    }
 }
 
 - (void)transactionMonitoring {
@@ -1516,6 +1536,9 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             
         } else if ([eventName isEqualToString:SPISettlementEnquiryResponseKey]) {
             [weakSelf handleSettlementEnquiryResponse:m];
+            
+        } else if ([eventName isEqualToString:SPICancelTransactionResponseKey]) {
+            [weakSelf handleCancelTransactionResponse:m];
             
         } else if ([eventName isEqualToString:SPIPingKey]) {
             [weakSelf handleIncomingPing:m];

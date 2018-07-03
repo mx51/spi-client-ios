@@ -1,5 +1,5 @@
 //
-//  SPIPurchase.h
+//  SPITransaction.h
 //  SPIClient-iOS
 //
 //  Created by Yoo-Jin Lee on 2017-11-29.
@@ -92,6 +92,22 @@
 @interface SPICancelTransactionRequest : NSObject
 
 - (SPIMessage *)toMessage;
+
+@end
+
+@interface SPICancelTransactionResponse : NSObject
+
+@property (nonatomic, readonly, strong) SPIMessage *message;
+@property (nonatomic, readonly, copy) NSString *posRefId;
+@property (nonatomic, readonly) BOOL isSuccess;
+
+- (instancetype)initWithMessage:(SPIMessage *)message;
+
+- (NSString *)getErrorReason;
+
+- (NSString *)getErrorDetail;
+
+- (NSString *)getResponseValueWithAttribute:(NSString *)attribute;
 
 @end
 

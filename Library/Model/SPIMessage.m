@@ -28,7 +28,10 @@ NSString *const SPIPongKey = @"pong";
 
 NSString *const SPIPurchaseRequestKey = @"purchase";
 NSString *const SPIPurchaseResponseKey = @"purchase_response";
+
 NSString *const SPICancelTransactionRequestKey = @"cancel_transaction";
+NSString *const SPICancelTransactionResponseKey = @"cancel_response";
+
 NSString *const SPIGetLastTransactionRequestKey = @"get_last_transaction";
 NSString *const SPIGetLastTransactionResponseKey = @"last_transaction";
 
@@ -285,7 +288,7 @@ NSString *const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomin
     return m;
 }
 
-- (NSString *)toJson {
+- (NSDictionary *)toJson {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     
     if (self.mid) {

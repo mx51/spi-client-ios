@@ -8,7 +8,7 @@
 
 #import <XCTest/XCTest.h>
 #import "NSObject+Util.h"
-#import "SPIPurchase.h"
+#import "SPITransaction.h"
 #import "SPIPurchaseHelper.h"
 @interface NSObjectDynamicDescription : XCTestCase
 
