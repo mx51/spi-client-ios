@@ -10,12 +10,12 @@
 #import "NSObject+Util.h"
 #import "SPITransaction.h"
 #import "SPIPurchaseHelper.h"
+
 @interface NSObjectDynamicDescription : XCTestCase
 
 @end
 
 @implementation NSObjectDynamicDescription
-
 
 - (void)testDynamicDescription {
     SPISecrets *secrets = [[SPISecrets alloc] initWithEncKey:@"2" hmacKey:@"1"];
@@ -23,6 +23,5 @@
     XCTAssertTrue([dynamicDescription containsString:@"hmacKey"]);
     XCTAssertTrue([dynamicDescription containsString:@"encKey"]);
 }
-
 
 @end

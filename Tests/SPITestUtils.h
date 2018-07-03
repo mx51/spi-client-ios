@@ -14,4 +14,6 @@
 
 + (SPIClient *)clientWithTestSecrets;
 
++ (void)waitForAsync:(NSTimeInterval)seconds;
+
 @end

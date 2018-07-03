@@ -201,9 +201,9 @@
 		27BEE97E2058F9C400E74E66 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		27BEE9832058F9C400E74E66 /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		27BEE9882058F9C400E74E66 /* SPIClient_iOSTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIClient_iOSTests.m; sourceTree = "<group>"; };
-		27BEE98A2058F9C400E74E66 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		27C8E47320EB399300E00EA9 /* SPITestUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPITestUtils.h; sourceTree = "<group>"; };
 		27C8E47420EB399300E00EA9 /* SPITestUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPITestUtils.m; sourceTree = "<group>"; };
+		27C8E47820EB483D00E00EA9 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		290A3BFF20BEEF59006FD523 /* SPIPurchaseHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPIPurchaseHelper.h; sourceTree = "<group>"; };
 		290A3C0020BEEF59006FD523 /* SPIPurchaseHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIPurchaseHelper.m; sourceTree = "<group>"; };
 		290EBBA720C55E3000D98C3A /* SPIPreAuth.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPIPreAuth.h; sourceTree = "<group>"; };
@@ -464,7 +464,7 @@
 				27BEE9882058F9C400E74E66 /* SPIClient_iOSTests.m */,
 				27C8E47320EB399300E00EA9 /* SPITestUtils.h */,
 				27C8E47420EB399300E00EA9 /* SPITestUtils.m */,
-				27BEE98A2058F9C400E74E66 /* Info.plist */,
+				27C8E47820EB483D00E00EA9 /* Info.plist */,
 			);
 			path = Tests;
 			sourceTree = "<group>";

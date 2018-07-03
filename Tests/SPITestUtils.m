@@ -6,6 +6,7 @@
 //  Copyright © 2018 Assembly Payments. All rights reserved.
 //
 
+#import <XCTest/XCTest.h>
 #import "SPITestUtils.h"
 #import "SPIClient+Internal.h"
 
@@ -17,6 +18,12 @@
     SPIClient *client = [[SPIClient alloc] init];
     [client setSecretEncKey:encKey hmacKey:hmacKey];
     return client;
+}
+
++ (void)waitForAsync:(NSTimeInterval)seconds {
+    (void) [XCTWaiter waitForExpectations:@[
+                                            [[XCTestExpectation alloc] initWithDescription:@"waiting for result"]
+                                            ] timeout:seconds];
 }
 
 @end

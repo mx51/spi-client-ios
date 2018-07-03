@@ -25,6 +25,7 @@
     XCTAssertTrue([pongMsg.eventName isEqualToString:SPIPongKey]);
 
 }
+
 - (void)testGeneratePingRequest {
     SPIMessage *pingMessage = [SPIPingHelper generatePingRequest];
 
