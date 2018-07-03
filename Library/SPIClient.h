@@ -66,6 +66,14 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
 // state.
 @property (nonatomic, copy) NSString *posId;
 
+// Vendor identifier of the POS itself. This value is used to identify the POS software
+// to the EFTPOS terminal. Must be set before starting!
+@property (nonatomic, copy) NSString *posVendorId;
+
+// Version string of the POS itself. This value is used to identify the POS software
+// to the EFTPOS terminal. Must be set before starting!
+@property (nonatomic, copy) NSString *posVersion;
+
 @property (nonatomic, weak) id<SPIDelegate> delegate;
 
 @property (nonatomic, readonly) SPIConfig *config;

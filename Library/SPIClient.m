@@ -28,6 +28,8 @@
 #import "SPIRequestIdHelper.h"
 #import "SPISettlement.h"
 #import "SPIWebSocketConnection.h"
+#import "SPIPosInfo.h"
+#import "SPIDeviceInfo.h"
 #import "SPIManifest+Internal.h"
 
 @interface SPIClient () <SPIConnectionDelegate>
@@ -154,6 +156,11 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     if (self.posId) {
         // Our stamp for signing outgoing messages
         self.spiMessageStamp =  [[SPIMessageStamp alloc] initWithPosId:self.posId secrets:self.secrets serverTimeDelta:0];
+    }
+    
+    if (self.posVendorId.length == 0 || self.posVersion.length == 0) {
+        // POS information is now required to be set
+        [NSException raise:@"Missing POS vendor ID and version" format:@"posVendorId and posVersion are required before starting"];
     }
     
     // Setup the Connection
@@ -741,6 +748,8 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     if (_posId.length == 0) return;
     
     self.spiMessageStamp = [[SPIMessageStamp alloc] initWithPosId:posId secrets:nil serverTimeDelta:0];
+    
+    // FIXME(mike) is this needed? doubling up the work in start
 }
 
 /**
@@ -1197,6 +1206,21 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     }
 }
 
+/**
+ * When the result response for the POS info is returned.
+ *
+ * @param m Message
+ */
+- (void)handleSetPosInfoResponse:(SPIMessage *)m {
+    SPISetPosInfoResponse *response = [[SPISetPosInfoResponse alloc] initWithMessage:m];
+    if (response.isSuccess) {
+        self.hasSetPosInfo = YES;
+        SPILog(@"Setting POS info successful");
+    } else {
+        SPILog(@"Setting POS info failed: reason=@%, detail=%@", response.getErrorReason, response.getErrorDetail);
+    }
+}
+
 - (void)transactionMonitoring {
     __weak __typeof(&*self) weakSelf = self;
     
@@ -1396,6 +1420,10 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             }
         } else {
             dispatch_async(self.queue, ^{
+                if (!self.hasSetPosInfo) {
+                    [weakSelf callSetPosInfo];
+                }
+                
                 [weakSelf.spiPat pushPayAtTableConfig];
             });
             SPILog(@"onReadyToTransact, we were NOT in the middle of a transaction. nothing to do.");
@@ -1408,6 +1436,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
  */
 - (void)stopPeriodPing {
     NSLog(@"stopPeriodPing");
+
     // If we were already set up, clean up before restarting.
     [self.pingTimer cancel];
     [self.disconnectIfNeededSourceTimer cancel];
@@ -1418,7 +1447,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
  */
 - (void)doPing {
     NSLog(@"doPing");
-    
+
     SPIMessage *ping = [SPIPingHelper generatePingRequest];
     self.mostRecentPingSent = ping;
     [self send:ping];
@@ -1463,22 +1492,21 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     [self send:pong];
 }
 
+#pragma mark - Internal calls
+
+- (void)callSetPosInfo {
+    [self send:[[[SPISetPosInfoRequest alloc] initWithVersion:self.posVersion
+                                                     vendorId:self.posVendorId
+                                              libraryLanguage:@"ios"
+                                               libraryVersion:[SPIClient getVersion]
+                                                    otherInfo:[SPIDeviceInfo getAppDeviceInfo]] toMessage]];
+}
+
 /**
  * Ask the PIN pad to tell us what the Most Recent Transaction was
  */
 - (void)callGetLastTransaction {
     [self send:[[SPIGetLastTransactionRequest new] toMessage]];
-}
-
-/**
- * Ask the PIN pad to initiate settlement.
- */
-- (void)settle {
-    NSLog(@"settle");
-    
-    SPISettleRequest *settleRequest = [[SPISettleRequest alloc] initWithSettleId:[SPIRequestIdHelper idForString:@"settle"]];
-    SPILog(@"Asking EFTPOS to execute settlement...");
-    [self.connection send:[[settleRequest toMessage] toJson:self.spiMessageStamp]]; // Send it to the PIN pad server
 }
 
 /**
@@ -1540,6 +1568,9 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         } else if ([eventName isEqualToString:SPICancelTransactionResponseKey]) {
             [weakSelf handleCancelTransactionResponse:m];
             
+        } else if ([eventName isEqualToString:SPISetPosInfoResponseKey]) {
+            [weakSelf handleSetPosInfoResponse:m];
+            
         } else if ([eventName isEqualToString:SPIPingKey]) {
             [weakSelf handleIncomingPing:m];
             
@@ -1566,11 +1597,11 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             SPILog(@"I could not verify message from EFTPOS. You might have to un-pair EFTPOS and then reconnect.");
             
         } else if ([eventName isEqualToString:SPIEventError]) {
-            SPILog(@"ERROR!!: '%@', %@", m.eventName, m.data);
+            SPILog(@"ERROR!!: '%@', %@", eventName, m.data);
             [weakSelf handleErrorEvent:m];
             
         } else {
-            SPILog(@"I don't understand event:'%@', %@. Perhaps I have not implemented it yet.", m.eventName, m.data);
+            SPILog(@"I don't understand event:'%@', %@. Perhaps I have not implemented it yet.", eventName, m.data);
         }
     });
 }

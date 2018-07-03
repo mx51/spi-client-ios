@@ -55,6 +55,9 @@ NSString *const SPISettleResponseKey = @"settle_response";
 NSString *const SPISettlementEnquiryRequestKey = @"settlement_enquiry";
 NSString *const SPISettlementEnquiryResponseKey = @"settlement_enquiry_response";
 
+NSString *const SPISetPosInfoRequestKey = @"set_pos_info";
+NSString *const SPISetPosInfoResponseKey = @"set_pos_info_response";
+
 NSString *const SPIKeyRollRequestKey = @"request_use_next_keys";
 NSString *const SPIKeyRollResponseKey = @"response_use_next_keys";
 

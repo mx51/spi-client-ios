@@ -52,6 +52,9 @@ extern NSString *const SPISettleResponseKey;
 extern NSString *const SPISettlementEnquiryRequestKey;
 extern NSString *const SPISettlementEnquiryResponseKey;
 
+extern NSString *const SPISetPosInfoRequestKey;
+extern NSString *const SPISetPosInfoResponseKey;
+
 extern NSString *const SPIKeyRollRequestKey;
 extern NSString *const SPIKeyRollResponseKey;
 

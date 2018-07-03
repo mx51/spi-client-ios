@@ -101,6 +101,11 @@
 		27C68F5D20E32CE000D8268C /* SPILogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 273E9B2C205A310A0006ED5C /* SPILogger.h */; };
 		27C68F5E20E32CE600D8268C /* SPIClient_iOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 273E9B6B205A379D0006ED5C /* SPIClient_iOS.h */; };
 		27C8E47520EB399300E00EA9 /* SPITestUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C8E47420EB399300E00EA9 /* SPITestUtils.m */; };
+		27C8E47C20EB4EB400E00EA9 /* SPIPosInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C8E47A20EB4EB400E00EA9 /* SPIPosInfo.h */; };
+		27C8E47D20EB4EB400E00EA9 /* SPIPosInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C8E47B20EB4EB400E00EA9 /* SPIPosInfo.m */; };
+		27C8E47F20EC67EF00E00EA9 /* SPIPosInfoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C8E47E20EC67EF00E00EA9 /* SPIPosInfoTests.m */; };
+		27C8E48220EC74CC00E00EA9 /* SPIDeviceInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 27C8E48020EC74CC00E00EA9 /* SPIDeviceInfo.h */; };
+		27C8E48320EC74CC00E00EA9 /* SPIDeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 27C8E48120EC74CC00E00EA9 /* SPIDeviceInfo.m */; };
 		290A3C0220BEEF59006FD523 /* SPIPurchaseHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 290A3C0020BEEF59006FD523 /* SPIPurchaseHelper.m */; };
 		290EBBAA20C55E3000D98C3A /* SPIPreAuth.m in Sources */ = {isa = PBXBuildFile; fileRef = 290EBBA820C55E3000D98C3A /* SPIPreAuth.m */; };
 		29468BD920D6B1A90095D3EC /* SPIRefundTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 29468BD820D6B1A90095D3EC /* SPIRefundTests.m */; };
@@ -204,6 +209,11 @@
 		27C8E47320EB399300E00EA9 /* SPITestUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPITestUtils.h; sourceTree = "<group>"; };
 		27C8E47420EB399300E00EA9 /* SPITestUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPITestUtils.m; sourceTree = "<group>"; };
 		27C8E47820EB483D00E00EA9 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		27C8E47A20EB4EB400E00EA9 /* SPIPosInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPIPosInfo.h; sourceTree = "<group>"; };
+		27C8E47B20EB4EB400E00EA9 /* SPIPosInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIPosInfo.m; sourceTree = "<group>"; };
+		27C8E47E20EC67EF00E00EA9 /* SPIPosInfoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIPosInfoTests.m; sourceTree = "<group>"; };
+		27C8E48020EC74CC00E00EA9 /* SPIDeviceInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPIDeviceInfo.h; sourceTree = "<group>"; };
+		27C8E48120EC74CC00E00EA9 /* SPIDeviceInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIDeviceInfo.m; sourceTree = "<group>"; };
 		290A3BFF20BEEF59006FD523 /* SPIPurchaseHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPIPurchaseHelper.h; sourceTree = "<group>"; };
 		290A3C0020BEEF59006FD523 /* SPIPurchaseHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIPurchaseHelper.m; sourceTree = "<group>"; };
 		290EBBA720C55E3000D98C3A /* SPIPreAuth.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPIPreAuth.h; sourceTree = "<group>"; };
@@ -291,16 +301,18 @@
 				273E9AF4205A30F90006ED5C /* SPIPairingHelper.m */,
 				2986B1C320B117EF0044857A /* SPIPayAtTable.h */,
 				2986B1C420B117EF0044857A /* SPIPayAtTable.m */,
+				27C8E47A20EB4EB400E00EA9 /* SPIPosInfo.h */,
+				27C8E47B20EB4EB400E00EA9 /* SPIPosInfo.m */,
 				290EBBA720C55E3000D98C3A /* SPIPreAuth.h */,
 				290EBBA820C55E3000D98C3A /* SPIPreAuth.m */,
-				273E9AF3205A30F90006ED5C /* SPITransaction.h */,
-				273E9AFA205A30F90006ED5C /* SPITransaction.m */,
 				290A3BFF20BEEF59006FD523 /* SPIPurchaseHelper.h */,
 				290A3C0020BEEF59006FD523 /* SPIPurchaseHelper.m */,
 				273E9AF5205A30F90006ED5C /* SPISecrets.h */,
 				273E9AFC205A30F90006ED5C /* SPISecrets.m */,
 				273E9AEE205A30F90006ED5C /* SPISettlement.h */,
 				273E9AF7205A30F90006ED5C /* SPISettlement.m */,
+				273E9AF3205A30F90006ED5C /* SPITransaction.h */,
+				273E9AFA205A30F90006ED5C /* SPITransaction.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -322,6 +334,8 @@
 		273E9B28205A310A0006ED5C /* Util */ = {
 			isa = PBXGroup;
 			children = (
+				27C8E48020EC74CC00E00EA9 /* SPIDeviceInfo.h */,
+				27C8E48120EC74CC00E00EA9 /* SPIDeviceInfo.m */,
 				273E9B29205A310A0006ED5C /* SPIGCDTimer.h */,
 				273E9B2B205A310A0006ED5C /* SPIGCDTimer.m */,
 				273E9B2C205A310A0006ED5C /* SPILogger.h */,
@@ -366,6 +380,7 @@
 				273E9B44205A316E0006ED5C /* SPIMessageTests.m */,
 				273E9B42205A316E0006ED5C /* SPIPairingHelperTests.m */,
 				29468C2720D738360095D3EC /* SPIPongHelperTests.m */,
+				27C8E47E20EC67EF00E00EA9 /* SPIPosInfoTests.m */,
 				29468BD820D6B1A90095D3EC /* SPIRefundTests.m */,
 				29468BDA20D6B2CB0095D3EC /* SPISettlementTests.m */,
 				29854DCE20D02D7000ABA629 /* SPITransactionTests.m */,
@@ -501,6 +516,7 @@
 				279BB730205B581E005ADECB /* tommath_class.h in Headers */,
 				279BB734205B581E005ADECB /* tommath.h in Headers */,
 				279BB72D205B581E005ADECB /* JKBigInteger.h in Headers */,
+				27C8E47C20EB4EB400E00EA9 /* SPIPosInfo.h in Headers */,
 				27C68F4320E32C7100D8268C /* SPIClient.h in Headers */,
 				27C68F4420E32C7500D8268C /* SPIModels.h in Headers */,
 				27599C3320E4A368006619A8 /* SPIClient+Internal.h in Headers */,
@@ -517,6 +533,7 @@
 				27C68F4F20E32CAD00D8268C /* SPIMessage.h in Headers */,
 				27C68F5020E32CB000D8268C /* SPIPairing.h in Headers */,
 				27C68F5120E32CB300D8268C /* SPIPairingHelper.h in Headers */,
+				27C8E48220EC74CC00E00EA9 /* SPIDeviceInfo.h in Headers */,
 				27C68F5220E32CB600D8268C /* SPIPayAtTable.h in Headers */,
 				27C68F5320E32CB800D8268C /* SPIPreAuth.h in Headers */,
 				27C68F5420E32CBC00D8268C /* SPITransaction.h in Headers */,
@@ -706,6 +723,7 @@
 				290A3C0220BEEF59006FD523 /* SPIPurchaseHelper.m in Sources */,
 				273E9B22205A31030006ED5C /* SPIPingHelper.m in Sources */,
 				273E9B20205A31030006ED5C /* SPIRequestIdHelper.m in Sources */,
+				27C8E48320EC74CC00E00EA9 /* SPIDeviceInfo.m in Sources */,
 				273E9B0D205A30F90006ED5C /* SPIKeyRollingHelper.m in Sources */,
 				273E9B09205A30F90006ED5C /* SPIPairing.m in Sources */,
 				273E9B5C205A34BF0006ED5C /* NSString+Util.m in Sources */,
@@ -716,6 +734,7 @@
 				273E9B64205A34BF0006ED5C /* NSData+Crypto.m in Sources */,
 				273E9B62205A34BF0006ED5C /* NSDateFormatter+Util.m in Sources */,
 				273E9B0B205A30F90006ED5C /* SPISettlement.m in Sources */,
+				27C8E47D20EB4EB400E00EA9 /* SPIPosInfo.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -745,6 +764,7 @@
 				29468C0E20D6DF790095D3EC /* SPIClientTests.m in Sources */,
 				273E9B31205A310A0006ED5C /* SPIGCDTimer.m in Sources */,
 				273E9B63205A34BF0006ED5C /* NSDateFormatter+Util.m in Sources */,
+				27C8E47F20EC67EF00E00EA9 /* SPIPosInfoTests.m in Sources */,
 				273E9B1F205A31030006ED5C /* SPIWebSocketConnection.m in Sources */,
 				273E9AB3205A2FDE0006ED5C /* SPIClient.m in Sources */,
 				29468BEE20D6BE650095D3EC /* JKBigInteger_iOSTests.m in Sources */,

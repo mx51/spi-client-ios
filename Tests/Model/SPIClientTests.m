@@ -18,7 +18,7 @@
 - (void)testSetPosId {
     NSString *posId = @"test";
     SPIClient *client = [[SPIClient alloc] init];
-    [client setPosId:posId];
+    client.posId = posId;
     
     XCTAssertTrue([client.posId isEqualToString:posId]);
 }
