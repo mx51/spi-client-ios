@@ -25,8 +25,7 @@
 }
 
 - (void)testGetVersion_can_return_sdkVersion {
-    SPIClient * client = [[SPIClient alloc] init];
-    NSString *version = [client getVersion];
+    NSString *version = [SPIClient getVersion];
     XCTAssertNotNil(version,"Version number not found");
     XCTAssertTrue([version containsString:@"."],@"Version number is not in a correct format");
 }
