@@ -12,9 +12,13 @@
 #import "SPIPairing.h"
 
 @interface SPIPublicKeyAndSecret : NSObject
+
 @property (nonatomic, readonly, copy) NSString *myPublicKey;
 @property (nonatomic, readonly, copy) NSString *sharedSecretKey;
-- (id)initWithMyPublicKey:(NSString *)myPublicKey secretKey:(NSString *)sharedSecretKey;
+
+- (id)initWithMyPublicKey:(NSString *)myPublicKey
+                secretKey:(NSString *)sharedSecretKey;
+
 @end
 
 /**
@@ -24,7 +28,6 @@
 @interface SPIPairingHelper : NSObject
 
 /**
- *
  * Generates a pairing Request.
  *
  * @return SPIPairingRequest
@@ -32,7 +35,6 @@
 + (SPIPairingRequest *)newPairRequest;
 
 /**
- *
  * Calculates/Generates Secrets and KeyResponse given an incoming KeyRequest.
  *
  * @param keyRequest SPIKeyRequest
@@ -41,9 +43,9 @@
 + (SPISecretsAndKeyResponse *)generateSecretsAndKeyResponseForKeyRequest:(SPIKeyRequest *)keyRequest;
 
 /**
- *
  * Converts an incoming A value into a BigInteger.
- * There are some "gotchyas" here which is why this piece of work is abstracted so it can be tested separately.
+ * There are some "gotchyas" here which is why this piece of work is abstracted
+ * so it can be tested separately.
  *
  * @param hexStringA NSString
  * @return JKBigInteger
@@ -51,10 +53,10 @@
 + (JKBigInteger *)spiAHexStringToBigIntegerForHexStringA:(NSString *)hexStringA;
 
 /**
- *
- * Converts the DH secret BigInteger into the hex-string to be used as the secret.
- * There are some "gotchyas" here which is why this piece of work is abstracted so it can be tested separately.
- * See: http://www.simplepaymentapi.com/#/api/pairing-process
+ * Converts the DH secret BigInteger into the hex-string to be used as the
+ * secret. There are some "gotchyas" here which is why this piece of work is
+ * abstracted so it can be tested separately. See:
+ * http://www.simplepaymentapi.com/#/api/pairing-process
  *
  * @param secretBI Secret as BigInteger
  * @return Secret as Hex-String
@@ -62,7 +64,6 @@
 + (NSString *)dhSecretToSPISecret:(JKBigInteger *)secretBI;
 
 /**
- *
  * Turns an incoming "A" value from the PIN pad into the outgoing "B" value
  * and the secret value using DiffieHelmman helper.
  *

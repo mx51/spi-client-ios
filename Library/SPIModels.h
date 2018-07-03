@@ -18,7 +18,7 @@
  * - SPIStatusPairedConnecting: Paired but trying to establish a connection
  * - SPIStatusPairedConnected: Paired and Connected
  */
-typedef NS_ENUM (NSUInteger, SPIStatus) {
+typedef NS_ENUM(NSUInteger, SPIStatus) {
     SPIStatusUnpaired,
     SPIStatusPairedConnecting,
     SPIStatusPairedConnected,
@@ -31,17 +31,22 @@ typedef NS_ENUM (NSUInteger, SPIStatus) {
  * - SPIFlowPairing: Currently going through the pairing process flow. Happens during the unpaired status.
  * - SPIFlowTransaction: Currently going through the transaction process flow. Cannot happen in the unpaired status.
  */
-typedef NS_ENUM (NSUInteger, SPIFlow) {
+typedef NS_ENUM(NSUInteger, SPIFlow) {
     SPIFlowIdle,
     SPIFlowPairing,
     SPIFlowTransaction,
 };
 
-typedef NS_ENUM (NSUInteger, SPITransactionType) {
+typedef NS_ENUM(NSUInteger, SPITransactionType) {
     SPITransactionTypePurchase,
     SPITransactionTypeRefund,
+    SPITransactionTypeCashoutOnly,
+    SPITransactionTypeMOTO,
     SPITransactionTypeSettle,
+    SPITransactionTypeSettleEnquiry,
     SPITransactionTypeGetLastTransaction,
+    SPITransactionTypePreAuth,
+    SPITransactionTypeAccountVerify,
 };
 
 /**
@@ -73,7 +78,6 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 @end
 
 /**
- *
  * Used as a return in the InitiateTx methods to signify whether
  * the transaction was initiated or not, and a reason to go with it.
  */
@@ -91,13 +95,25 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 
 @end
 
+@interface SPISubmitAuthCodeResult : NSObject
+
+@property (nonatomic, assign) BOOL isValidFormat;
+// Text that gives reason for Invalidity
+@property (nonatomic, copy) NSString *message;
+
+- (instancetype)initWithValidFormat:(BOOL)isValidFormat msg:(NSString *)message;
+
+@end
+
 /**
- * Represents the State during a TransactionFlow
+ * Represents the state during a transaction flow.
  */
 @interface SPITransactionFlowState : NSObject <NSCopying>
 
-//  The id given to this transaction
-@property (nonatomic, copy) NSString *tid;
+// The ID given to this transaction
+@property (nonatomic, copy) NSString *tid __deprecated_msg("Use posRefId instead.");
+
+@property (nonatomic, copy) NSString *posRefId;
 
 // Purchase/Refund/Settle/...
 @property (nonatomic, assign) SPITransactionType type;
@@ -126,6 +142,8 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 // transaction flow screen.
 @property (nonatomic, assign) BOOL isAwaitingSignatureCheck;
 
+@property (nonatomic, assign) BOOL isAwaitingPhoneForAuth;
+
 // Whether this transaction flow is over or not.
 @property (nonatomic, assign) BOOL isFinished;
 
@@ -142,6 +160,9 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 // The message the we received from EFTPOS that told us that signature is required.
 @property (nonatomic, strong) SPISignatureRequired *signatureRequiredMessage;
 
+// The message the we received from EFTPOS that told us that Phone For Auth is required.
+@property (nonatomic, strong) SPIPhoneForAuthRequired *phoneForAuthRequiredMessage;
+
 // The time when the cancel attempt was made.
 @property (nonatomic, strong) NSDate *cancelAttemptTime;
 
@@ -149,7 +170,7 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 @property (nonatomic, strong) SPIMessage *request;
 
 // Whether we're currently waiting for a Get Last Transaction response to get an update.
-@property (nonatomic, assign)  BOOL isAwaitingGltResponse;
+@property (nonatomic, assign) BOOL isAwaitingGltResponse;
 
 - (instancetype)initWithTid:(NSString *)tid
                        type:(SPITransactionType)type
@@ -171,11 +192,15 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 
 - (void)signatureResponded:(NSString *)msg;
 
+- (void)phoneForAuthRequired:(SPIPhoneForAuthRequired *)spiMessage msg:(NSString *)msg;
+
+- (void)authCodeSent:(NSString *)msg;
+
 - (void)completed:(SPIMessageSuccessState)state response:(SPIMessage *)response msg:(NSString *)msg;
 
 - (void)unknownCompleted:(NSString *)msg;
 
-+ (NSString *)txTypeString:(SPITransactionType)txType;
++ (NSString *)txTypeString:(SPITransactionType)type;
 
 @end
 
@@ -197,5 +222,14 @@ typedef NS_ENUM (NSUInteger, SPITransactionType) {
 @property (nonatomic, strong) SPITransactionFlowState *txFlowState;
 
 + (NSString *)flowString:(SPIFlow)flow;
+
+@end
+
+@interface SPIConfig : NSObject
+
+@property (nonatomic) BOOL promptForCustomerCopyOnEftpos;
+@property (nonatomic) BOOL signatureFlowOnEftpos;
+
+- (void)addReceiptConfig:(NSMutableDictionary *)data;
 
 @end

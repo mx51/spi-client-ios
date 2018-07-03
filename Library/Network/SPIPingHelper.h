@@ -11,9 +11,13 @@
 @class SPIMessage;
 
 @interface SPIPongHelper : NSObject
+
 + (SPIMessage *)generatePongRequest:(SPIMessage *)ping;
+
 @end
 
 @interface SPIPingHelper : NSObject
+
 + (SPIMessage *)generatePingRequest;
+
 @end

@@ -20,24 +20,16 @@ static unsigned char AesIV [] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 @implementation SPICrypto
 
 + (NSString *)aesEncryptMessage:(NSString *)message key:(NSData *)key {
-    
-    NSData *data = [[message dataUsingEncoding:NSUTF8StringEncoding] encryptForKey:key
-                                                                                iv:AesIV];
+    NSData *data = [[message dataUsingEncoding:NSUTF8StringEncoding] encryptForKey:key iv:AesIV];
     return [data hexString];
 }
 
 + (NSString *)aesDecryptEncMessage:(NSString *)enc key:(NSData *)key {
-    
     if (key == nil) {
         @throw [NSException exceptionWithName:@"Nil" reason:@"key is nil" userInfo:nil];
     }
     
-    NSData *data = [[enc dataFromHexEncoding] decryptForKey:key
-                                                         iv:AesIV];
-    
-    //NSLog(@"aesDecryptEncMessage  enc.dataFromHexEncoding=%@", [enc dataFromHexEncoding]);
-    //NSLog(@"aesDecryptEncMessage data=%ld",                    data.length);
-    
+    NSData *data = [[enc dataFromHexEncoding] decryptForKey:key iv:AesIV];
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 

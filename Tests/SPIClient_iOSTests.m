@@ -7,7 +7,7 @@
 //
 
 #import <XCTest/XCTest.h>
-
+#import "SPIClient.h"
 @interface SPIClient_iOSTests : XCTestCase
 
 @end
@@ -24,9 +24,10 @@
     [super tearDown];
 }
 
-- (void)testExample {
-    // This is an example of a functional test case.
-    // Use XCTAssert and related functions to verify your tests produce the correct results.
+- (void)testGetVersion_can_return_sdkVersion {
+    NSString *version = [SPIClient getVersion];
+    XCTAssertNotNil(version,"Version number not found");
+    XCTAssertTrue([version containsString:@"."],@"Version number is not in a correct format");
 }
 
 - (void)testPerformanceExample {

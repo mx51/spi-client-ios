@@ -6,12 +6,12 @@
 //  Copyright © 2017 Assembly Payments. All rights reserved.
 //
 
-#import <dispatch/dispatch.h>
 #import <Foundation/Foundation.h>
+#import <dispatch/dispatch.h>
 
 @interface SPIGCDTimer : NSObject
 
-@property (nonatomic, weak, readonly) id                 obj;
+@property (nonatomic, weak, readonly) id obj;
 @property (nonatomic, strong, readonly) dispatch_queue_t queue;
 
 - (instancetype)initWithObject:(id)obj queue:(char const *)queueLabel;

@@ -13,12 +13,14 @@
 #import "SPILogger.h"
 
 @interface SPIWebSocketConnection () <SRWebSocketDelegate>
+
 @property (nonatomic, strong) SRWebSocket *webSocket;
+
 @end
 
 @implementation SPIWebSocketConnection
 
-- (instancetype)initWithDelegate:(id <SPIConnectionDelegate> )delegate {
+- (instancetype)initWithDelegate:(id <SPIConnectionDelegate>)delegate {
     self = [super init];
     
     if (self) {
@@ -38,14 +40,26 @@
     NSLog(@"socket trying to connect to %@", self.url);
     self.state = SPIConnectionStateConnecting;
     
-    //Create a new socket instance specifying the url, SPI protocol and Websocket to use.
-    //The will create a TCP/IP socket connection to the provided URL and perform HTTP websocket negotiation
-    self.webSocket          = [[SRWebSocket alloc] initWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.url] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:8.0] protocols:@[@"spi.2.0.0"]];
+    // Create a new socket instance specifying the url, SPI protocol and Websocket to use.
+    // The will create a TCP/IP socket connection to the provided URL and perform HTTP websocket negotiation
+    self.webSocket          = [[SRWebSocket alloc] initWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.url] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:8.0] protocols:@[@"spi.2.1.0"]];
     self.webSocket.delegate = self;
     
     // Let's let our users know that we are now connecting...
     self.state = SPIConnectionStateConnecting;
     [self.webSocket open];
+    
+    // We have noticed that sometimes this websocket library, even when the network connectivivity is back,
+    // it never recovers nor gives up. So here is a crude way of timing out after 8 seconds.
+    __weak __typeof(&*self) weakSelf = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        sleep(8);
+        if (weakSelf.state == SPIConnectionStateConnecting) {
+            SPILog(@"Did not respond, disconnecting....");
+            [self disconnect];
+        }
+    });
+    
     [self.delegate onSpiConnectionStatusChanged:SPIConnectionStateConnecting];
 }
 
@@ -61,7 +75,6 @@
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message {
-    //NSLog(@"socket onSpiMessageReceived \"%@\"", message);
     [self.delegate onSpiMessageReceived:message];
 }
 
@@ -76,8 +89,6 @@
 }
 
 - (void)send:(NSString *)msg {
-    //NSLog(@"socket Send: %@", msg);
-    
     [self.webSocket send:msg];
 }
 
@@ -119,7 +130,6 @@
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didReceivePong:(NSData *)pongPayload {
-    //SPILog(@"WebSocket received pong");
 }
 
 @end

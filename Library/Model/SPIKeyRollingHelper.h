@@ -12,6 +12,7 @@
 #import "SPISecrets.h"
 
 @interface SPIKeyRollingResult : NSObject
+
 @property (nonatomic, readonly, strong) SPIMessage *keyRollingConfirmation;
 @property (nonatomic, readonly, strong) SPISecrets *secrets;
 

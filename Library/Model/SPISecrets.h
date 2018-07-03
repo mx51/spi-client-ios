@@ -16,7 +16,6 @@
 @property (nonatomic, copy) NSData *encKeyData;
 @property (nonatomic, copy) NSData *hmacKeyData;
 
-- (instancetype)initWithEncKey:(NSString *)encKey
-                       hmacKey:(NSString *)hmacKey;
+- (instancetype)initWithEncKey:(NSString *)encKey hmacKey:(NSString *)hmacKey;
 
 @end
