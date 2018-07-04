@@ -240,8 +240,6 @@ NSString *const SPIPayAtTableBillPaymentKey = @"bill_payment";        // incomin
 }
 
 + (SPIMessage *)fromJson:(NSString *)msgJson secrets:(SPISecrets *)secrets {
-    NSLog(@"\nSPIMessage fromJson: %@", msgJson);
-    
     NSError *error = nil;
     NSData *mJsonData = [msgJson dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *json = [NSJSONSerialization JSONObjectWithData:mJsonData options:0 error:&error];

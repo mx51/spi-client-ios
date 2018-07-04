@@ -50,6 +50,50 @@
     XCTAssertNotNil([request amountSummary]);
 }
 
+- (void)testPopulatePurchaseRequestWithOptions_present {
+    NSString *merchantReceiptHeader = @"";
+    NSString *merchantReceiptFooter = @"merchrecfoot";
+    NSString *customerReceiptHeader = @"custrechead";
+    NSString *customerReceiptFooter = @"";
+    
+    SPITransactionOptions *options = [[SPITransactionOptions alloc] init];
+    options.merchantReceiptFooter = merchantReceiptFooter;
+    options.customerReceiptHeader = customerReceiptHeader;
+    
+    SPIPurchaseRequest *request = [SPIPurchaseHelper createPurchaseRequest:@"test"
+                                                            purchaseAmount:10
+                                                                 tipAmount:10
+                                                                cashAmount:10
+                                                          promptForCashout:false];
+    request.options = options;
+    
+    SPIMessage *msg = [request toMessage];
+ 
+    XCTAssertTrue([[msg getDataStringValue:@"merchant_receipt_header"] isEqualToString:merchantReceiptHeader]);
+    XCTAssertTrue([[msg getDataStringValue:@"merchant_receipt_footer"] isEqualToString:merchantReceiptFooter]);
+    XCTAssertTrue([[msg getDataStringValue:@"customer_receipt_header"] isEqualToString:customerReceiptHeader]);
+    XCTAssertTrue([[msg getDataStringValue:@"customer_receipt_footer"] isEqualToString:customerReceiptFooter]);
+}
+
+- (void)testPopulatePurchaseRequestWithOptions_none {
+    SPIPurchaseRequest *request = [SPIPurchaseHelper createPurchaseRequest:@"test"
+                                                            purchaseAmount:10
+                                                                 tipAmount:10
+                                                                cashAmount:10
+                                                          promptForCashout:false];
+    
+    SPIMessage *msg = [request toMessage];
+    
+    XCTAssertNil(msg.data[@"merchant_receipt_header"]);
+    XCTAssertNil(msg.data[@"merchant_receipt_footer"]);
+    XCTAssertNil(msg.data[@"customer_receipt_header"]);
+    XCTAssertNil(msg.data[@"customer_receipt_footer"]);
+    XCTAssertTrue([[msg getDataStringValue:@"merchant_receipt_header"] isEqualToString:@""]);
+    XCTAssertTrue([[msg getDataStringValue:@"merchant_receipt_footer"] isEqualToString:@""]);
+    XCTAssertTrue([[msg getDataStringValue:@"customer_receipt_header"] isEqualToString:@""]);
+    XCTAssertTrue([[msg getDataStringValue:@"customer_receipt_footer"] isEqualToString:@""]);
+}
+
 - (void)testPopulatePurchaseResponse {
     NSString *jsonStr = @"{\"data\":{\"account_type\":\"CREDIT\",\"auth_code\":\"328885\",\"bank_date\":\"18062018\",\"bank_noncash_amount\":1000,\"bank_settlement_date\":\"18062018\",\"bank_time\":\"000145\",\"card_entry\":\"EMV_CTLS\",\"currency\":\"AUD\",\"customer_receipt\":\"EFTPOS FROM WESTPAC\\r\\nMerchant4\\r\\n213 Miller Street\\r\\nSydney 2060\\r\\nAustralia\\r\\n\\r\\nTIME 18JUN18   00:01\\r\\nMID         22341845\\r\\nTSP     100312348845\\r\\nRRN     180618000149\\r\\nMasterCard      \\r\\nMastercard(C)     CR\\r\\nCARD............2797\\r\\nAID   A0000000041010\\r\\nTVR       0000000000\\r\\nAUTH          328885\\r\\n\\r\\nPURCHASE    AUD10.00\\r\\n\\r\\n   (000) APPROVED\\r\\n\\r\\n  *CUSTOMER COPY*\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\",\"customer_receipt_printed\":true,\"emv_actioncode\":\"ARP\",\"emv_actioncode_values\":\"688E386C083F4E690012\",\"emv_pix\":\"1010\",\"emv_rid\":\"A000000004\",\"emv_tsi\":\"E800\",\"emv_tvr\":\"0000000000\",\"expiry_date\":\"0722\",\"host_response_code\":\"000\",\"host_response_text\":\"APPROVED\",\"informative_text\":\"                \",\"masked_pan\":\"............2797\",\"merchant_acquirer\":\"EFTPOS FROM WESTPAC\",\"merchant_addr\":\"213 Miller Street\",\"merchant_city\":\"Sydney\",\"merchant_country\":\"Australia\",\"merchant_id\":\"22341845\",\"merchant_name\":\"Merchant4\",\"merchant_postcode\":\"2060\",\"merchant_receipt\":\"EFTPOS FROM WESTPAC\\r\\nMerchant4\\r\\n213 Miller Street\\r\\nSydney 2060\\r\\nAustralia\\r\\n\\r\\nTIME 18JUN18   00:01\\r\\nMID         22341845\\r\\nTSP     100312348845\\r\\nRRN     180618000149\\r\\nMasterCard      \\r\\nMastercard(C)     CR\\r\\nCARD............2797\\r\\nAID   A0000000041010\\r\\nTVR       0000000000\\r\\nAUTH          328885\\r\\n\\r\\nPURCHASE    AUD10.00\\r\\n\\r\\n   (000) APPROVED\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\",\"merchant_receipt_printed\":true,\"online_indicator\":\"Y\",\"pos_ref_id\":\"kebab-18-06-2018-00-01-45\",\"purchase_amount\":1000,\"rrn\":\"180618000149\",\"scheme_app_name\":\"MasterCard\",\"scheme_name\":\"MasterCard\",\"stan\":\"000149\",\"success\":true,\"terminal_id\":\"100312348845\",\"terminal_ref_id\":\"12348845_18062018000208\",\"tip_amount\":0,\"transaction_type\":\"PURCHASE\"},\"datetime\":\"2018-06-18T00:02:08.107\",\"event\":\"purchase_response\",\"id\":\"prchs4\"}";
     NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:[jsonStr dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];

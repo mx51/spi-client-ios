@@ -153,11 +153,6 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     
     NSLog(@"start");
     
-    if (self.posId) {
-        // Our stamp for signing outgoing messages
-        self.spiMessageStamp =  [[SPIMessageStamp alloc] initWithPosId:self.posId secrets:self.secrets serverTimeDelta:0];
-    }
-    
     if (self.posVendorId.length == 0 || self.posVersion.length == 0) {
         // POS information is now required to be set
         [NSException raise:@"Missing POS vendor ID and version" format:@"posVendorId and posVersion are required before starting"];
@@ -217,6 +212,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     }
     if (self.state.flow == SPIFlowTransaction && self.state.txFlowState.isFinished) {
         self.state.flow = SPIFlowIdle;
+        completion(YES, self.state.copy);
         return;
     }
     
@@ -301,11 +297,11 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
 
 #pragma mark - Transactions
 
-- (void)initiatePurchaseTx:(NSString *)pid
+- (void)initiatePurchaseTx:(NSString *)posRefId
                amountCents:(NSInteger)amountCents
                 completion:(SPICompletionTxResult)completion {
     
-    [self initiatePurchaseTx:pid amountCents:amountCents completion:completion];
+    [self initiatePurchaseTx:posRefId amountCents:amountCents completion:completion];
 }
 
 - (void)initiatePurchaseTx:(NSString *)posRefId
@@ -313,6 +309,23 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                  tipAmount:(NSInteger)tipAmount
              cashoutAmount:(NSInteger)cashoutAmount
           promptForCashout:(BOOL)promptForCashout
+                completion:(SPICompletionTxResult)completion {
+    
+    [self initiatePurchaseTx:posRefId
+              purchaseAmount:purchaseAmount
+                   tipAmount:tipAmount
+               cashoutAmount:cashoutAmount
+            promptForCashout:promptForCashout
+                     options:nil
+                  completion:completion];
+}
+
+- (void)initiatePurchaseTx:(NSString *)posRefId
+            purchaseAmount:(NSInteger)purchaseAmount
+                 tipAmount:(NSInteger)tipAmount
+             cashoutAmount:(NSInteger)cashoutAmount
+          promptForCashout:(BOOL)promptForCashout
+                   options:(SPITransactionOptions *)options
                 completion:(SPICompletionTxResult)completion {
     
     if (tipAmount > 0 && (cashoutAmount > 0 || promptForCashout)) {
@@ -342,6 +355,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                                                                          cashAmount:cashoutAmount
                                                                    promptForCashout:promptForCashout];
             purchase.config = weakSelf.config;
+            purchase.options = options;
             
             SPIMessage *purchaseMsg = [purchase toMessage];
             
@@ -362,7 +376,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     });
 }
 
-- (void)initiateRefundTx:(NSString *)pid
+- (void)initiateRefundTx:(NSString *)posRefId
              amountCents:(NSInteger)amountCents
               completion:(SPICompletionTxResult)completion {
     
@@ -382,12 +396,12 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             
             weakSelf.state.flow = SPIFlowTransaction;
             
-            SPIRefundRequest *refund = [[SPIRefundRequest alloc] initWithPosRefId:pid amountCents:amountCents];
+            SPIRefundRequest *refund = [[SPIRefundRequest alloc] initWithPosRefId:posRefId amountCents:amountCents];
             refund.config = weakSelf.config;
             
             SPIMessage *refundMsg = [refund toMessage];
             
-            weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:pid
+            weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId
                                                                                  type:SPITransactionTypeRefund
                                                                           amountCents:amountCents
                                                                               message:refundMsg
@@ -572,7 +586,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     });
 }
 
-- (void)initiateSettleTx:(NSString *)pid completion:(SPICompletionTxResult)completion {
+- (void)initiateSettleTx:(NSString *)posRefId completion:(SPICompletionTxResult)completion {
     if (self.state.status == SPIStatusUnpaired) {
         completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
         return;
@@ -593,7 +607,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             
             SPIMessage *settleMessage = [settleRequest toMessage];
             
-            weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:pid
+            weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId
                                                                                  type:SPITransactionTypeSettle
                                                                           amountCents:0
                                                                               message:settleMessage
@@ -735,7 +749,6 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     }
     
     _eftposAddress = [url copy];
-    
     NSLog(@"setUrl: %@", _eftposAddress);
     
     [self.connection setUrl:url.copy];
@@ -745,11 +758,10 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     _posId = posId.copy;
     NSLog(@"setPosId: %@ and set spiMessageStamp", _posId);
     
-    if (_posId.length == 0) return;
-    
-    self.spiMessageStamp = [[SPIMessageStamp alloc] initWithPosId:posId secrets:nil serverTimeDelta:0];
-    
-    // FIXME(mike) is this needed? doubling up the work in start
+    if (_posId.length > 0) {
+        // Our stamp for signing outgoing messages
+        self.spiMessageStamp = [[SPIMessageStamp alloc] initWithPosId:posId secrets:nil serverTimeDelta:0];
+    }
 }
 
 /**
@@ -1171,6 +1183,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                     expectedAmount:(NSInteger)expectedAmount
                        requestDate:(NSDate *)requestDate
                           posRefId:(NSString *)posRefId {
+    
     return [self gltMatch:gltResponse posRefId:posRefId];
 }
 

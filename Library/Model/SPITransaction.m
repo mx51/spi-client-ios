@@ -42,12 +42,12 @@
     
     NSMutableDictionary *data = [[NSMutableDictionary alloc] initWithDictionary:originalData];
     [_config addReceiptConfig:data];
-
-    return [[SPIMessage alloc]
-                           initWithMessageId:[SPIRequestIdHelper idForString:@"prchs"]
-                           eventName:SPIPurchaseRequestKey
-                           data:data
-                           needsEncryption:true];
+    [_options addOptions:data];
+    
+    return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"prchs"]
+                                       eventName:SPIPurchaseRequestKey
+                                            data:data
+                                 needsEncryption:true];
 }
 
 - (NSString *)amountSummary {

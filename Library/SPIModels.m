@@ -272,6 +272,28 @@
     if (_signatureFlowOnEftpos) {
         [data setObject:[NSNumber numberWithBool:_signatureFlowOnEftpos] forKey:@"print_for_signature_required_transactions"];
     }
+    if (_printMerchantCopy) {
+        [data setObject:[NSNumber numberWithBool:_printMerchantCopy] forKey:@"print_merchant_copy"];
+    }
+}
+
+@end
+
+@implementation SPITransactionOptions : NSObject
+
+- (void)addOptions:(NSMutableDictionary *)data {
+    [self addOptionObject:_customerReceiptHeader forKey:@"customer_receipt_header" to:data];
+    [self addOptionObject:_customerReceiptFooter forKey:@"customer_receipt_footer" to:data];
+    [self addOptionObject:_merchantReceiptHeader forKey:@"merchant_receipt_header" to:data];
+    [self addOptionObject:_merchantReceiptFooter forKey:@"merchant_receipt_footer" to:data];
+}
+
+- (void)addOptionObject:(id)object forKey:(id)key to:(NSMutableDictionary *)data {
+    if (object != nil) {
+        [data setObject:object forKey:key];
+    } else {
+        [data removeObjectForKey:key];
+    }
 }
 
 @end
