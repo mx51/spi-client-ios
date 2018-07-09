@@ -8,6 +8,7 @@
 
 #import <XCTest/XCTest.h>
 #import "SPIClient.h"
+
 @interface SPIClient_iOSTests : XCTestCase
 
 @end
@@ -24,10 +25,12 @@
     [super tearDown];
 }
 
-- (void)testGetVersion_can_return_sdkVersion {
+- (void)testGetVersion {
     NSString *version = [SPIClient getVersion];
-    XCTAssertNotNil(version,"Version number not found");
-    XCTAssertTrue([version containsString:@"."],@"Version number is not in a correct format");
+    XCTAssertNotNil(version, "Version number not found");
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", @"^\\d+\\.\\d+\\.\\d+$"];
+    XCTAssertTrue([predicate evaluateWithObject:version], @"Version number is not in a correct format");
 }
 
 - (void)testPerformanceExample {

@@ -1,5 +1,5 @@
 //
-//  PongHelperTest.m
+//  SPIPongHelperTests.m
 //  Tests
 //
 //  Created by Amir Kamali on 18/6/18.
@@ -9,11 +9,12 @@
 #import <XCTest/XCTest.h>
 #import "SPIPingHelper.h"
 #import "SPIMessage.h"
-@interface PongHelperTest : XCTestCase
+
+@interface SPIPongHelperTests : XCTestCase
 
 @end
 
-@implementation PongHelperTest
+@implementation SPIPongHelperTests
 
 - (void)testGeneratePongRequest {
     NSString *testMessageId = @"testId";
@@ -24,12 +25,12 @@
     XCTAssertTrue([pongMsg.eventName isEqualToString:SPIPongKey]);
 
 }
+
 - (void)testGeneratePingRequest {
     SPIMessage *pingMessage = [SPIPingHelper generatePingRequest];
 
     XCTAssertNotNil(pingMessage.mid);
     XCTAssertTrue([pingMessage.eventName isEqualToString:SPIPingKey]);
 }
-
 
 @end

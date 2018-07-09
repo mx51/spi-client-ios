@@ -12,13 +12,13 @@
 #import "NSDate+Util.h"
 #import "SPIClient.h"
 #import "SPIClient+Internal.h"
+#import "SPITestUtils.h"
 
 @interface SPISettlementTests : XCTestCase
 
 @end
 
 @implementation SPISettlementTests
-
 
 - (void)testSettlementEnquiry {
     NSString *jsonStr = @"{\"data\":{\"accumulated_purchase_count\":\"1\",\"accumulated_purchase_value\":\"1000\",\"accumulated_refund_count\":\"1\",\"accumulated_refund_value\":\"-1000\",\"accumulated_settle_by_acquirer_count\":\"0\",\"accumulated_settle_by_acquirer_value\":\"0\",\"accumulated_total_count\":\"2\",\"accumulated_total_value\":\"0\",\"bank_date\":\"18062018\",\"bank_time\":\"011720\",\"host_response_code\":\"000\",\"host_response_text\":\"APPROVED\",\"merchant_acquirer\":\"EFTPOS FROM WESTPAC\",\"merchant_address\":\"213 Miller Street\",\"merchant_city\":\"Sydney\",\"merchant_country\":\"Australia\",\"merchant_name\":\"Merchant4\",\"merchant_postcode\":\"2060\",\"merchant_receipt\":\"EFTPOS FROM WESTPAC\\r\\nMerchant4\\r\\n213 Miller Street\\r\\nSydney 2060\\r\\n\\r\\nAustralia\\r\\n\\r\\n\\r\\n SETTLEMENT INQUIRY\\r\\nTSP     100312348845\\r\\nTIME   18JUN18 01:17\\r\\nTRAN   000148-000149\\r\\nFROM   17JUN18 20:15\\r\\nTO     18JUN18 01:17\\r\\n\\r\\nDebit\\r\\nREF     1    $-10.00\\r\\nTOT     1    $-10.00\\r\\n\\r\\nMasterCard\\r\\nPUR     1     $10.00\\r\\nTOT     1     $10.00\\r\\n\\r\\nVisa\\r\\nTOT     0      $0.00\\r\\n\\r\\nSTOTAL  0      $0.00\\r\\n\\r\\nAmex\\r\\nTOT     0      $0.00\\r\\n\\r\\nDiners\\r\\nTOT     0      $0.00\\r\\n\\r\\nJCB\\r\\nTOT     0      $0.00\\r\\n\\r\\nUnionPay\\r\\nTOT     0      $0.00\\r\\n\\r\\nTOTAL\\r\\nPUR     1     $10.00\\r\\nREF     1    $-10.00\\r\\nTOT     2      $0.00\\r\\n\\r\\n   (000) APPROVED\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\",\"schemes\":[{\"scheme_name\":\"Debit\",\"settle_by_acquirer\":\"Yes\",\"total_count\":\"1\",\"total_refund_count\":\"1\",\"total_refund_value\":\"-1000\",\"total_value\":\"-1000\"},{\"scheme_name\":\"MasterCard\",\"settle_by_acquirer\":\"Yes\",\"total_count\":\"1\",\"total_purchase_count\":\"1\",\"total_purchase_value\":\"1000\",\"total_value\":\"1000\"},{\"scheme_name\":\"Visa\",\"settle_by_acquirer\":\"Yes\",\"total_count\":\"0\",\"total_value\":\"0\"},{\"scheme_name\":\"Amex\",\"settle_by_acquirer\":\"No\",\"total_count\":\"0\",\"total_value\":\"0\"},{\"scheme_name\":\"Diners\",\"settle_by_acquirer\":\"No\",\"total_count\":\"0\",\"total_value\":\"0\"},{\"scheme_name\":\"JCB\",\"settle_by_acquirer\":\"No\",\"total_count\":\"0\",\"total_value\":\"0\"},{\"scheme_name\":\"UnionPay\",\"settle_by_acquirer\":\"No\",\"total_count\":\"0\",\"total_value\":\"0\"}],\"settlement_period_end_date\":\"18Jun18\",\"settlement_period_end_time\":\"01:17\",\"settlement_period_start_date\":\"17Jun18\",\"settlement_period_start_time\":\"20:15\",\"settlement_triggered_date\":\"18Jun18\",\"settlement_triggered_time\":\"01:17:20\",\"stan\":\"000000\",\"success\":true,\"terminal_id\":\"100312348845\",\"transaction_range\":\"000148-000149\"},\"datetime\":\"2018-06-18T01:17:32.291\",\"event\":\"settlement_enquiry_response\",\"id\":\"stlenq3\"}";
@@ -40,14 +40,10 @@
     XCTAssertTrue([[response getTransactionRange] isEqualToString:@"000148-000149"]);
     XCTAssertTrue([[response getTerminalId] isEqualToString:@"100312348845"]);
     XCTAssertGreaterThan([response getSchemeSettlementEntries].count, 0);
-
 }
 
-- (void)testClient_canHandle_settlement_response {
-    NSString *encKey = @"81CF9E6A14CDAF244A30B298D4CECB505C730CE352C6AF6E1DE61B3232E24D3F";
-    NSString *hmacKey = @"D35060723C9EECDB8AEA019581381CB08F64469FC61A5A04FE553EBDB5CD55B9";
-    SPIClient *client = [[SPIClient alloc] init];
-    [client setSecretEncKey:encKey hmacKey:hmacKey];
+- (void)testHandleSettlementResponse {
+    SPIClient *client = [SPITestUtils clientWithTestSecrets];
     
     // Initiate request
     client.state.status = SPIStatusPairedConnected;

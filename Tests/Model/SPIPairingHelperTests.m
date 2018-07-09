@@ -19,14 +19,14 @@
 @implementation SPIPairingHelperTests
 
 - (void)testPairingKeyResponse {
-    SPISecrets *secrets                = nil;
-    NSString  *incomingMessageJsonStr = [self incomingKeyRequestJson];
-    SPIMessage *incomingMessage        = [SPIMessage fromJson:incomingMessageJsonStr secrets:nil];
+    SPISecrets *secrets = nil;
+    NSString *incomingMessageJsonStr = [self incomingKeyRequestJson];
+    SPIMessage *incomingMessage = [SPIMessage fromJson:incomingMessageJsonStr secrets:nil];
 
     XCTAssertEqualObjects(@"key_request", incomingMessage.eventName);
 
-    SPIKeyRequest            *keyRequest = [[SPIKeyRequest alloc] initWithMessage:incomingMessage];
-    SPISecretsAndKeyResponse *result     = [SPIPairingHelper generateSecretsAndKeyResponseForKeyRequest:keyRequest];
+    SPIKeyRequest *keyRequest = [[SPIKeyRequest alloc] initWithMessage:incomingMessage];
+    SPISecretsAndKeyResponse *result = [SPIPairingHelper generateSecretsAndKeyResponseForKeyRequest:keyRequest];
 
     secrets = result.secrets;
 
@@ -36,12 +36,11 @@
     XCTAssertEqualObjects(@"62", keyResponse.requestId);
 
     SPIMessage *msgToSend = [keyResponse toMessage];
-    NSString  *enc       = [msgToSend getDataDictionaryValue:@"enc"][@"B"];
-    NSString  *hmac      = [msgToSend getDataDictionaryValue:@"hmac"][@"B"];
+    NSString *enc  = [msgToSend getDataDictionaryValue:@"enc"][@"B"];
+    NSString *hmac = [msgToSend getDataDictionaryValue:@"hmac"][@"B"];
 
     XCTAssertNotNil(enc);
     XCTAssertNotNil(hmac);
-
 }
 
 - (void)testCalculateMyPublicKeyAndSecret {
@@ -50,7 +49,6 @@
     SPIPublicKeyAndSecret *encPubAndSec = [SPIPairingHelper calculateMyPublicKeyAndSecret:theirPublicKey];
     XCTAssertTrue(![@"0" isEqualToString:encPubAndSec.myPublicKey]);
     XCTAssertTrue(![@"0" isEqualToString:encPubAndSec.sharedSecretKey]);
-
 }
 
 - (void)testSpiAHexStringToBigInteger {
@@ -74,17 +72,17 @@
 }
 
 - (void)testSecretConversion {
-    JKBigInteger *dhSecretBI       = [[JKBigInteger alloc] initWithString:@"17574532284595554228770542578145458081719781058045063175688772743423924399411406200223997425795977226735712284391179978852253613346926080761628802664085045531796220784085311215093471160914442692274980632286568900367895454304533334450617380428362254473222831478193415222881689923861172428575632214297967550826460508634891791127942687630353829719246724903147169063379750256523005309264102997944008112551383251560153285483075803832550164760264165682355751637761390244202226339540318827287797180863284173748514677579269180126947721499144727772986832223499738071139796968492815538042908414723947769999062186130240163854083"];
-    NSString     *expectedSecret   = @"7D3895D92143692B46AEB66C66D7023C008093F2D8E272954898918DF12AAAD7";
-    NSString     *calculatedSecret = [SPIPairingHelper dhSecretToSPISecret:dhSecretBI];
+    JKBigInteger *dhSecretBI = [[JKBigInteger alloc] initWithString:@"17574532284595554228770542578145458081719781058045063175688772743423924399411406200223997425795977226735712284391179978852253613346926080761628802664085045531796220784085311215093471160914442692274980632286568900367895454304533334450617380428362254473222831478193415222881689923861172428575632214297967550826460508634891791127942687630353829719246724903147169063379750256523005309264102997944008112551383251560153285483075803832550164760264165682355751637761390244202226339540318827287797180863284173748514677579269180126947721499144727772986832223499738071139796968492815538042908414723947769999062186130240163854083"];
+    NSString *expectedSecret = @"7D3895D92143692B46AEB66C66D7023C008093F2D8E272954898918DF12AAAD7";
+    NSString *calculatedSecret = [SPIPairingHelper dhSecretToSPISecret:dhSecretBI];
 
     XCTAssertEqualObjects(calculatedSecret, expectedSecret);
 }
 
 - (void)testSecretConversion2 {
-    JKBigInteger *dhSecretBI       = [[JKBigInteger alloc] initWithString:@"17574532284595554228770542578145458081719781058045063175688772743423924399411406200223997425795977226735712284391179978852253613"];
-    NSString     *expectedSecret   = @"238A19795053605B1995E678C7785FB1E2137E6F49F13CCAFFAC0CB9773AF3B1";
-    NSString     *calculatedSecret = [SPIPairingHelper dhSecretToSPISecret:dhSecretBI];
+    JKBigInteger *dhSecretBI = [[JKBigInteger alloc] initWithString:@"17574532284595554228770542578145458081719781058045063175688772743423924399411406200223997425795977226735712284391179978852253613"];
+    NSString *expectedSecret   = @"238A19795053605B1995E678C7785FB1E2137E6F49F13CCAFFAC0CB9773AF3B1";
+    NSString *calculatedSecret = [SPIPairingHelper dhSecretToSPISecret:dhSecretBI];
 
     XCTAssertEqualObjects(calculatedSecret, expectedSecret);
 
