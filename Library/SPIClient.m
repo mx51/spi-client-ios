@@ -301,7 +301,12 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                amountCents:(NSInteger)amountCents
                 completion:(SPICompletionTxResult)completion {
     
-    [self initiatePurchaseTx:posRefId amountCents:amountCents completion:completion];
+    [self initiatePurchaseTx:posRefId
+              purchaseAmount:amountCents
+                   tipAmount:0
+               cashoutAmount:0
+            promptForCashout:NO
+                  completion:completion];
 }
 
 - (void)initiatePurchaseTx:(NSString *)posRefId
