@@ -274,7 +274,13 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     if (_state.flow != SPIFlowPairing || _state.pairingFlowState.isFinished) return;
     
     if (_state.pairingFlowState.isAwaitingCheckFromPos && !_state.pairingFlowState.isAwaitingCheckFromEftpos) {
-        [self send:[[[SPIDropKeysRequest alloc] init] toMessage]];
+        SPIMessage *message = [[[SPIDropKeysRequest alloc] init] toMessage];
+        
+        __weak __typeof(& *self) weakSelf = self;
+        
+        dispatch_async(self.queue, ^{
+            [weakSelf send:message];
+        });
     }
     
     [self onPairingFailed];
