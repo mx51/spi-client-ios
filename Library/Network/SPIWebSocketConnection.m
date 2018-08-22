@@ -42,7 +42,7 @@
     
     // Create a new socket instance specifying the url, SPI protocol and Websocket to use.
     // The will create a TCP/IP socket connection to the provided URL and perform HTTP websocket negotiation
-    self.webSocket          = [[SRWebSocket alloc] initWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.url] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:4.0] protocols:@[@"spi.2.3.2"]];
+    self.webSocket          = [[SRWebSocket alloc] initWithURLRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.url] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:8.0] protocols:@[@"spi.2.3.0"]];
     self.webSocket.delegate = self;
     
     // Let's let our users know that we are now connecting...
@@ -53,7 +53,7 @@
     // it never recovers nor gives up. So here is a crude way of timing out after 4 seconds.
     __weak __typeof(&*self) weakSelf = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        sleep(8);
+        sleep(4);
         if (weakSelf.state == SPIConnectionStateConnecting) {
             SPILog(@"Socket did not respond, disconnecting...");
             [self disconnect];
