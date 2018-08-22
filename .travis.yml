@@ -5,9 +5,7 @@ xcode_destination: platform=iOS Simulator,OS=11.4,name=iPhone 8
 
 deploy:
 - provider: script
-  script: 
-    - ./scripts/checktag.sh $TRAVIS_TAG
-    - pod trunk push SPIClient-iOS.podspec
+  script: $TRAVIS_BUILD_DIR/scripts/checktag.sh $TRAVIS_TAG && pod trunk push SPIClient-iOS.podspec
   skip_cleanup: true
   on:
     tags: true
