@@ -1330,8 +1330,8 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                         if (weakSelf.connection == nil) return;
                         
-                        SPILog(@"Will try to reconnect in 5s...");
-                        sleep(5);
+                        SPILog(@"Will try to reconnect in 3s...");
+                        sleep(3);
                         
                         if (weakSelf.state.status != SPIStatusUnpaired) {
                             [weakSelf.connection connect];
