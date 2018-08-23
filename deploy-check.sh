@@ -15,5 +15,5 @@ VER_RE="s.version *= *'([0-9.]+)'"
 
 if [[ ! `cat $PODSPEC` =~ $VER_RE ]] || [ ${BASH_REMATCH[1]} != "$TAG_VER" ]; then
     echo "ERROR: Tag version '$TAG_VER' does not match podspec version!"
-    exit 1
+    exit 12
 fi
