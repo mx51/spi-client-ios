@@ -565,6 +565,8 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     
     dispatch_async(self.queue, ^{
         @synchronized(weakSelf.txLock) {
+            NSLog(@"cancelTransactionSynced");
+            
             if (weakSelf.state.flow != SPIFlowTransaction || weakSelf.state.txFlowState.isFinished) {
                 SPILog(@"ERROR: Asked to cancel transaction but I was not in the middle of one");
                 return;
