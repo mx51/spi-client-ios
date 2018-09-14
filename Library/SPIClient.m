@@ -1381,7 +1381,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     __weak __typeof(&*self) weakSelf = self;
 
     _pingTimer = [[SPIRepeatingTimer alloc] initWithQueue:"com.assemblypayments.ping"
-                                                 interval:pingFrequency
+                                                 interval:0
                                                     block:^{
         if (!weakSelf.connection.isConnected || weakSelf.secrets == nil) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -1411,6 +1411,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         }
         
         weakSelf.missedPongsCount = 0;
+        sleep(pingFrequency - pongTimeout);
     }];
 }
 

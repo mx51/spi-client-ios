@@ -15,6 +15,9 @@
 
 /// Your object should retain the returned value, and to avoid a leak, block should weakly reference your object.
 /// Your block will be called on a background thread/queue.
+/// This will happily work with an interval = 0, in which case the block is continually repeated, and is recommended
+/// to have sleep(N) inside to keep CPU usage reasonable. I've done tests, and with interval=0, you can still push
+/// async blocks onto the queue and they will get executed, so it's not like GCD enqueues a zillion copies of the block.
 - (instancetype)initWithQueue:(char const *)queueLabel interval:(NSTimeInterval)interval block:(dispatch_block_t)block;
 
 @end
