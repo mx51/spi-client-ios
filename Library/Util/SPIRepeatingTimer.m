@@ -14,7 +14,7 @@
     dispatch_source_t timer;
 }
 
-- (instancetype)initWithQueue:(char const *)queueLabel interval:(NSTimeInterval)interval scheduledBlock:(dispatch_block_t)block {
+- (instancetype)initWithQueue:(char const *)queueLabel interval:(NSTimeInterval)interval block:(dispatch_block_t)block {
     if (self = [super init]) {
         queue = dispatch_queue_create(queueLabel, DISPATCH_QUEUE_SERIAL);
         timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);

@@ -15,6 +15,6 @@
 
 /// Your object should retain the returned value, and to avoid a leak, block should weakly reference your object.
 /// Your block will be called on a background thread/queue.
-- (instancetype)initWithQueue:(char const *)queueLabel interval:(NSTimeInterval)interval scheduledBlock:(dispatch_block_t)block;
+- (instancetype)initWithQueue:(char const *)queueLabel interval:(NSTimeInterval)interval block:(dispatch_block_t)block;
 
 @end
