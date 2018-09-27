@@ -13,7 +13,6 @@
 #import "SPIClient.h"
 #import "SPIClient+Internal.h"
 #import "SPIConnection.h"
-#import "SPIGCDTimer.h"
 #import "SPIKeyRollingHelper.h"
 #import "SPILogger.h"
 #import "SPIMessage.h"
@@ -31,6 +30,7 @@
 #import "SPIPosInfo.h"
 #import "SPIDeviceInfo.h"
 #import "SPIManifest+Internal.h"
+#import "SPIRepeatingTimer.h"
 
 @interface SPIClient () <SPIConnectionDelegate>
 
@@ -43,8 +43,8 @@
 @property (nonatomic, strong) SPIPayAtTable *spiPat;
 @property (nonatomic, strong) SPIPreAuth *spiPreauth;
 
-@property (nonatomic, strong) SPIGCDTimer *pingTimer;
-@property (nonatomic, strong) SPIGCDTimer *transactionMonitoringTimer;
+@property (nonatomic, strong) SPIRepeatingTimer *pingTimer;
+@property (nonatomic, strong) SPIRepeatingTimer *transactionMonitoringTimer;
 
 @property (nonatomic, strong) SPIMessage *mostRecentPingSent;
 @property (nonatomic) NSTimeInterval mostRecentPingSentTime;
@@ -77,7 +77,6 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     
     if (self) {
         _queue = dispatch_queue_create("com.assemblypayments", dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_DEFAULT, 0));
-        _transactionMonitoringTimer = [[SPIGCDTimer alloc] initWithObject:self queue:"com.assemblypayments.txMonitor"];
         _config = [[SPIConfig alloc] init];
         _state = [SPIState new];
         
@@ -92,8 +91,6 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     [_connection disconnect];
     _connection.delegate = nil;
     _connection = nil;
-    [_pingTimer cancel];
-    [_transactionMonitoringTimer cancel];
 }
 
 - (SPIPreAuth *)enablePreauth {
@@ -158,11 +155,13 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     self.connection = [[SPIWebSocketConnection alloc] initWithDelegate:self];
     [self.connection setUrl:self.eftposAddress];
     
-    [self.transactionMonitoringTimer afterDelay:txMonitorCheckFrequency
-                                         repeat:YES
-                                          block:^(id self) {
-                                              [self transactionMonitoring];
-                                          }];
+    // Set up a weakly repeating timer that avoids memory leaks and automatically invalidates when dereferenced.
+    __weak SPIClient* weakSelf = self;
+    _transactionMonitoringTimer = [[SPIRepeatingTimer alloc] initWithQueue:"com.assemblypayments.txMonitor"
+                                                                  interval:txMonitorCheckFrequency
+                                                                     block:^{
+                                                                [weakSelf transactionMonitoring];
+                                                            }];
     
     self.state.flow = SPIFlowIdle;
     self.started = true;
@@ -1380,14 +1379,10 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
  */
 - (void)startPeriodicPing {
     __weak __typeof(&*self) weakSelf = self;
-    
-    if (_pingTimer != nil) {
-        [_pingTimer cancel];
-        _pingTimer = nil;
-    }
-    _pingTimer = [[SPIGCDTimer alloc] initWithObject:self queue:"com.assemblypayments.ping"];
-    
-    [_pingTimer afterDelay:0 repeat:true block:^(id self) {
+
+    _pingTimer = [[SPIRepeatingTimer alloc] initWithQueue:"com.assemblypayments.ping"
+                                                 interval:0
+                                                    block:^{
         if (!weakSelf.connection.isConnected || weakSelf.secrets == nil) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 [weakSelf stopPeriodPing];
@@ -1475,7 +1470,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     SPILog(@"stopPeriodPing");
 
     // If we were already set up, clean up before restarting.
-    [self.pingTimer cancel];
+    _pingTimer = nil;
     SPILog(@"stoppedPeriodPing");
 }
 
