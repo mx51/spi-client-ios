@@ -1508,7 +1508,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     }
     
     self.mostRecentPongReceived = m;
-    SPILog(@"Pong latency: %i", [NSDate date].timeIntervalSince1970 - _mostRecentPingSentTime);
+    SPILog(@"Pong latency: %f", [NSDate date].timeIntervalSince1970 - _mostRecentPingSentTime);
 }
 
 /**
