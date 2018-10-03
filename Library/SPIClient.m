@@ -1164,6 +1164,12 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                     // No need to publish txFlowStateChanged. Can return;
                     return;
                 }
+            } else if ([gltResponse wasTimeOutOfSyncError]) {
+                // Let's not give up based on a TOOS error.
+                // Let's log it, and ignore it.
+                SPILog(@"Time-Out-Of-Sync error in Get Last Transaction response. Let's ignore it and we'll try again.");
+                // No need to publish txFlowStateChanged. Can return;
+                return;
             } else {
                 // TH-4X - Unexpected Error when recovering
                 SPILog(@"Unexpected response in get last transaction during - received posRefId:%@ error: %@", [gltResponse getPosRefId], m.error);
