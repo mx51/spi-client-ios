@@ -1139,6 +1139,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         [txState gotGltResponse];
         
         SPIGetLastTransactionResponse *gltResponse = [[SPIGetLastTransactionResponse alloc] initWithMessage:m];
+        txState.gltResponsePosRefId = gltResponse.getPosRefId;
         if (!gltResponse.wasRetrievedSuccessfully) {
             if ([gltResponse isStillInProgress:txState.posRefId]) {
                 // TH-4E - Operation In Progress
