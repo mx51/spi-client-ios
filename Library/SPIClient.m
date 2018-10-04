@@ -1564,6 +1564,11 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         
         SPILog(@"Message received: %@", m.decryptedJson);
         
+        if ([self.spiPreauth isPreauthEvent:eventName]) {
+            [self.spiPreauth _handlePreauthMessage:m];
+            return;
+        }
+        
         // And then we switch on the event type.
         if ([eventName isEqualToString:SPIKeyRequestKey]) {
             [weakSelf handleKeyRequest:m];
