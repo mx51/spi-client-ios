@@ -117,25 +117,25 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
 
 - (void)statusChanged {
     [self callDelegate:^(id<SPIDelegate> delegate) {
-        [delegate spi:self statusChanged:self.state.copy];
+        [delegate spi:self statusChanged:self.state];
     }];
 }
 
 - (void)pairingFlowStateChanged {
     [self callDelegate:^(id<SPIDelegate> delegate) {
-        [delegate spi:self pairingFlowStateChanged:self.state.copy];
+        [delegate spi:self pairingFlowStateChanged:self.state];
     }];
 }
 
 - (void)transactionFlowStateChanged {
     [self callDelegate:^(id<SPIDelegate> delegate) {
-        [delegate spi:self transactionFlowStateChanged:self.state.copy];
+        [delegate spi:self transactionFlowStateChanged:self.state];
     }];
 }
 
 - (void)secretsChanged:(SPISecrets *)secrets {
     [self callDelegate:^(id<SPIDelegate> delegate) {
-        [delegate spi:self secretsChanged:secrets state:self.state.copy];
+        [delegate spi:self secretsChanged:secrets state:self.state];
     }];
 }
 
