@@ -55,6 +55,21 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
  */
 - (void)spi:(SPIClient *)spi secretsChanged:(SPISecrets *)secrets state:(SPIState *)state;
 
+/**
+ Subscribe to this event to know when the Printing response,
+ */
+- (void)printingResponse:(SPIMessage *)message;
+
+/**
+ Subscribe to this event to know when the Printing response,
+ */
+- (void)terminalStatusResponse:(SPIMessage *)message;
+
+/**
+ Subscribe to this event to know when the Battery Level changed,
+ */
+- (void)batteryLevelChanged:(SPIMessage *)message;
+
 @end
 
 /**
@@ -357,5 +372,19 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
  @return Configuration object handling the dispatch queue.
  */
 - (SPIPreAuth *)enablePreauth;
+
+/**
+ Printing Free Format Receipt
+ 
+ @param key The authentication token
+ @param payload The string of characters which represent the receipt that should be printed
+ */
+- (void)printReceipt:(NSString *)key
+             payload:(NSString *)payload;
+
+/**
+ Get Terminal Status, Charging, Battery Level
+ */
+- (void)getTerminalStatus;
 
 @end
