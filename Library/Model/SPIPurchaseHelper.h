@@ -21,6 +21,7 @@
                              promptForCashout:(BOOL)promptForCashout;
 
 + (SPIRefundRequest *)createRefundRequest:(NSInteger)amountCents
-                               purchaseId:(NSString *)purchaseId;
+                               purchaseId:(NSString *)purchaseId
+               isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword;
 
 @end

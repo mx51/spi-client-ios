@@ -354,7 +354,8 @@
 @implementation SPIRefundRequest : NSObject
 
 - (instancetype)initWithPosRefId:(NSString *)posRefId
-                     amountCents:(NSInteger)amountCents {
+                     amountCents:(NSInteger)amountCents
+      isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword {
     
     self = [super init];
     
@@ -362,6 +363,7 @@
         _refundId = [SPIRequestIdHelper idForString:@"refund"];
         _posRefId = posRefId;
         _amountCents = amountCents;
+        _isSuppressMerchantPassword = isSuppressMerchantPassword;
     }
     
     return self;
@@ -372,7 +374,8 @@
                                        eventName:SPIRefundRequestKey
                                             data:@{
                                                    @"refund_amount": @(self.amountCents),
-                                                   @"pos_ref_id": self.posRefId
+                                                   @"pos_ref_id": self.posRefId,
+                                                   @"suppress_merchant_password":@(self.isSuppressMerchantPassword)
                                                    }
                                  needsEncryption:true];
 }

@@ -160,8 +160,8 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
     _transactionMonitoringTimer = [[SPIRepeatingTimer alloc] initWithQueue:"com.assemblypayments.txMonitor"
                                                                   interval:txMonitorCheckFrequency
                                                                      block:^{
-                                                                [weakSelf transactionMonitoring];
-                                                            }];
+                                                                         [weakSelf transactionMonitoring];
+                                                                     }];
     
     self.state.flow = SPIFlowIdle;
     self.started = true;
@@ -375,6 +375,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
 
 - (void)initiateRefundTx:(NSString *)posRefId
              amountCents:(NSInteger)amountCents
+isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
               completion:(SPICompletionTxResult)completion {
     
     if (self.state.status == SPIStatusUnpaired) {
@@ -393,7 +394,9 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             
             weakSelf.state.flow = SPIFlowTransaction;
             
-            SPIRefundRequest *refund = [[SPIRefundRequest alloc] initWithPosRefId:posRefId amountCents:amountCents];
+            SPIRefundRequest *refund = [[SPIRefundRequest alloc] initWithPosRefId:posRefId
+                                                                      amountCents:amountCents
+                                                       isSuppressMerchantPassword:isSuppressMerchantPassword];
             refund.config = weakSelf.config;
             
             SPIMessage *refundMsg = [refund toMessage];
@@ -1386,40 +1389,40 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
  */
 - (void)startPeriodicPing {
     __weak __typeof(&*self) weakSelf = self;
-
+    
     _pingTimer = [[SPIRepeatingTimer alloc] initWithQueue:"com.assemblypayments.ping"
                                                  interval:0
                                                     block:^{
-        if (!weakSelf.connection.isConnected || weakSelf.secrets == nil) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [weakSelf stopPeriodPing];
-            });
-            return;
-        }
-        
-        [weakSelf doPing];
-        sleep(pongTimeout);
-        
-        if (weakSelf.mostRecentPingSent != nil && (weakSelf.mostRecentPongReceived == nil || weakSelf.mostRecentPongReceived.mid != weakSelf.mostRecentPingSent.mid)) {
-            weakSelf.missedPongsCount += 1;
-            SPILog(@"EFTPOS didn't reply to my ping. Missed count: %i", weakSelf.missedPongsCount / missedPongsToDisconnect);
-            if (weakSelf.missedPongsCount < missedPongsToDisconnect) {
-                SPILog(@"Trying another ping...");
-                return;
-            }
-            
-            // This means that we have reached missed pong limit.
-            // We consider this connection as broken.
-            // Let's disconnect.
-            SPILog(@"Disconnecting...");
-            [weakSelf.connection disconnect];
-            
-            return;
-        }
-        
-        weakSelf.missedPongsCount = 0;
-        sleep(pingFrequency - pongTimeout);
-    }];
+                                                        if (!weakSelf.connection.isConnected || weakSelf.secrets == nil) {
+                                                            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                                                                [weakSelf stopPeriodPing];
+                                                            });
+                                                            return;
+                                                        }
+                                                        
+                                                        [weakSelf doPing];
+                                                        sleep(pongTimeout);
+                                                        
+                                                        if (weakSelf.mostRecentPingSent != nil && (weakSelf.mostRecentPongReceived == nil || weakSelf.mostRecentPongReceived.mid != weakSelf.mostRecentPingSent.mid)) {
+                                                            weakSelf.missedPongsCount += 1;
+                                                            SPILog(@"EFTPOS didn't reply to my ping. Missed count: %i", weakSelf.missedPongsCount / missedPongsToDisconnect);
+                                                            if (weakSelf.missedPongsCount < missedPongsToDisconnect) {
+                                                                SPILog(@"Trying another ping...");
+                                                                return;
+                                                            }
+                                                            
+                                                            // This means that we have reached missed pong limit.
+                                                            // We consider this connection as broken.
+                                                            // Let's disconnect.
+                                                            SPILog(@"Disconnecting...");
+                                                            [weakSelf.connection disconnect];
+                                                            
+                                                            return;
+                                                        }
+                                                        
+                                                        weakSelf.missedPongsCount = 0;
+                                                        sleep(pingFrequency - pongTimeout);
+                                                    }];
 }
 
 /**
@@ -1475,7 +1478,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
  */
 - (void)stopPeriodPing {
     SPILog(@"stopPeriodPing");
-
+    
     // If we were already set up, clean up before restarting.
     _pingTimer = nil;
     SPILog(@"stoppedPeriodPing");
@@ -1486,7 +1489,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
  */
 - (void)doPing {
     NSLog(@"doPing");
-
+    
     SPIMessage *ping = [SPIPingHelper generatePingRequest];
     self.mostRecentPingSent = ping;
     [self send:ping];

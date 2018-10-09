@@ -176,9 +176,11 @@
 @property (nonatomic, readonly) NSInteger amountCents;
 @property (nonatomic, readonly, copy) NSString *posRefId;
 @property (nonatomic, retain) SPIConfig *config;
+@property (nonatomic, assign) BOOL isSuppressMerchantPassword;
 
 - (instancetype)initWithPosRefId:(NSString *)posRefId
-                     amountCents:(NSInteger)amountCents;
+                     amountCents:(NSInteger)amountCents
+      isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword;
 
 - (SPIMessage *)toMessage;
 

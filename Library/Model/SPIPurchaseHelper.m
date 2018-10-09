@@ -27,8 +27,12 @@
     return request;
 }
 
-+ (SPIRefundRequest *)createRefundRequest:(NSInteger)amountCents purchaseId:(NSString *)purchaseId {
-    return [[SPIRefundRequest alloc] initWithPosRefId:purchaseId amountCents:amountCents];
++ (SPIRefundRequest *)createRefundRequest:(NSInteger)amountCents
+                               purchaseId:(NSString *)purchaseId
+               isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword {
+    return [[SPIRefundRequest alloc] initWithPosRefId:purchaseId
+                                          amountCents:amountCents
+                           isSuppressMerchantPassword:isSuppressMerchantPassword];
 }
 
 @end

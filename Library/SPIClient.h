@@ -220,6 +220,7 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
  */
 - (void)initiateRefundTx:(NSString *)posRefId
              amountCents:(NSInteger)amountCents
+isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
               completion:(SPICompletionTxResult)completion;
 
 /**
