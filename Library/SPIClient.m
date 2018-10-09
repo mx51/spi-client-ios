@@ -310,6 +310,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                    tipAmount:tipAmount
                cashoutAmount:cashoutAmount
             promptForCashout:promptForCashout
+             surchargeAmount:0
                      options:nil
                   completion:completion];
 }
@@ -319,6 +320,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                  tipAmount:(NSInteger)tipAmount
              cashoutAmount:(NSInteger)cashoutAmount
           promptForCashout:(BOOL)promptForCashout
+           surchargeAmount:(NSInteger)surchargeAmount
                    options:(SPITransactionOptions *)options
                 completion:(SPICompletionTxResult)completion {
     
@@ -349,7 +351,8 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                                                                      purchaseAmount:purchaseAmount
                                                                           tipAmount:tipAmount
                                                                          cashAmount:cashoutAmount
-                                                                   promptForCashout:promptForCashout];
+                                                                   promptForCashout:promptForCashout
+                                                                    surchargeAmount:surchargeAmount];
             purchase.config = weakSelf.config;
             purchase.options = options;
             
@@ -449,6 +452,7 @@ isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
 
 - (void)initiateCashoutOnlyTx:(NSString *)posRefId
                   amountCents:(NSInteger)amountCents
+              surchargeAmount:(NSInteger)surchargeAmount
                    completion:(SPICompletionTxResult)completion {
     
     if (self.state.status == SPIStatusUnpaired) {
@@ -467,7 +471,9 @@ isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
             
             weakSelf.state.flow = SPIFlowTransaction;
             
-            SPICashoutOnlyRequest *cashoutOnlyRequest = [[SPICashoutOnlyRequest alloc] initWithAmountCents:amountCents posRefId:posRefId];
+            SPICashoutOnlyRequest *cashoutOnlyRequest = [[SPICashoutOnlyRequest alloc] initWithAmountCents:amountCents
+                                                                                                  posRefId:posRefId
+                                                                                           surchargeAmount:surchargeAmount];
             cashoutOnlyRequest.config = weakSelf.config;
             
             SPIMessage *cashoutMsg = [cashoutOnlyRequest toMessage];
@@ -480,7 +486,7 @@ isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
                                                                                    ((float)amountCents / 100.0)]];
             
             if ([weakSelf send:cashoutMsg]) {
-                [weakSelf.state.txFlowState sent:[NSString stringWithFormat:@"Asked EFTPOS to do cashout for $%.2f", ((float)amountCents / 100.0)]];
+                [weakSelf.state.txFlowState sent:[NSString stringWithFormat:@"Asked EFTPOS to do cashout for $%.2f Surcharge: $%.2f", ((float)amountCents / 100.0), ((float)surchargeAmount / 100.0)]];
             }
         }
         
@@ -491,6 +497,7 @@ isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
 
 - (void)initiateMotoPurchaseTx:(NSString *)posRefId
                    amountCents:(NSInteger)amountCents
+               surchargeAmount:(NSInteger)surchargeAmount
                     completion:(SPICompletionTxResult)completion {
     
     if (self.state.status == SPIStatusUnpaired) {
@@ -509,7 +516,7 @@ isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
             
             weakSelf.state.flow = SPIFlowTransaction;
             
-            SPIMotoPurchaseRequest *motoPurchaseRequest = [[SPIMotoPurchaseRequest alloc] initWithAmountCents:amountCents posRefId:posRefId];
+            SPIMotoPurchaseRequest *motoPurchaseRequest = [[SPIMotoPurchaseRequest alloc] initWithAmountCents:amountCents posRefId:posRefId surchargeAmount:surchargeAmount];
             motoPurchaseRequest.config = weakSelf.config;
             
             SPIMessage *cashoutMsg = [motoPurchaseRequest toMessage];
@@ -522,7 +529,7 @@ isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
                                                                                        ((float)amountCents) / 100]];
             
             if ([weakSelf send:cashoutMsg]) {
-                [weakSelf.state.txFlowState sent:[NSString stringWithFormat:@"Asked EFTPOS do MOTO for  %.2f", ((float)amountCents) / 100]];
+                [weakSelf.state.txFlowState sent:[NSString stringWithFormat:@"Asked EFTPOS do MOTO for %.2f Surcharge: %.2f", ((float)amountCents / 100), ((float)surchargeAmount / 100.0)]];
             }
         }
         

@@ -15,13 +15,15 @@
 @implementation SPIPurchaseRequest : NSObject
 
 - (instancetype)initWithAmountCents:(NSInteger)amountCents
-                           posRefId:(NSString *)posRefId {
+                           posRefId:(NSString *)posRefId
+                    surchargeAmount:(NSInteger)surchargeAmount {
     self = [super init];
     
     if (self) {
         _config = [[SPIConfig alloc] init];
         _posRefId = posRefId;
         _purchaseAmount = amountCents;
+        _surchargeAmount = surchargeAmount;
         
         // Library Backwards Compatibility
         _purchaseId = posRefId;
@@ -37,7 +39,8 @@
                                    @"purchase_amount" : @(self.purchaseAmount),
                                    @"tip_amount" : @(self.tipAmount),
                                    @"cash_amount" : @(self.cashoutAmount),
-                                   @"prompt_for_cashout" : @(self.promptForCashout)
+                                   @"prompt_for_cashout" : @(self.promptForCashout),
+                                   @"surcharge_amount" : @(self.surchargeAmount),
                                    };
     
     NSMutableDictionary *data = [[NSMutableDictionary alloc] initWithDictionary:originalData];
@@ -51,10 +54,11 @@
 }
 
 - (NSString *)amountSummary {
-    return [NSString stringWithFormat:@"Purchase: %.2f; Tip: %.2f; Cashout: %.2f;",
+    return [NSString stringWithFormat:@"Purchase: %.2f; Tip: %.2f; Cashout: %.2f; Surcharge: %.2f;",
             ((float)_purchaseAmount / 100.0),
             ((float)_tipAmount / 100.0),
-            ((float)_cashoutAmount / 100.0)];
+            ((float)_cashoutAmount / 100.0),
+            ((float)_surchargeAmount / 100.0)];
 }
 
 @end
@@ -564,7 +568,8 @@
 @implementation SPIMotoPurchaseRequest : NSObject
 
 - (instancetype)initWithAmountCents:(NSInteger)amountCents
-                           posRefId:(NSString *)posRefId {
+                           posRefId:(NSString *)posRefId
+                    surchargeAmount:(NSInteger)surchargeAmount {
     
     self = [super init];
     
@@ -572,6 +577,7 @@
         _config = [[SPIConfig alloc] init];
         _purchaseAmount = amountCents;
         _posRefId = posRefId;
+        _surchargeAmount = surchargeAmount;
     }
     
     return self;
@@ -581,6 +587,7 @@
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
     [data setValue:_posRefId forKey:@"pos_ref_id"];
     [data setValue:[NSNumber numberWithInteger:_purchaseAmount] forKey:@"purchase_amount"];
+    [data setValue:[NSNumber numberWithInteger:_surchargeAmount] forKey:@"surcharge_amount"];
     [_config addReceiptConfig:data];
     
     return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"moto"]

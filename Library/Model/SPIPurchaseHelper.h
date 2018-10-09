@@ -18,7 +18,8 @@
                                purchaseAmount:(NSInteger)purchaseAmount
                                     tipAmount:(NSInteger)tipAmount
                                    cashAmount:(NSInteger)cashAmount
-                             promptForCashout:(BOOL)promptForCashout;
+                             promptForCashout:(BOOL)promptForCashout
+                              surchargeAmount:(NSInteger)surchargeAmount;
 
 + (SPIRefundRequest *)createRefundRequest:(NSInteger)amountCents
                                purchaseId:(NSString *)purchaseId

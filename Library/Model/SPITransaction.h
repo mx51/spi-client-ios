@@ -22,12 +22,14 @@
 @property (nonatomic) NSInteger tipAmount;
 @property (nonatomic) NSInteger cashoutAmount;
 @property (nonatomic) BOOL promptForCashout;
+@property (nonatomic) NSInteger surchargeAmount;
 
 @property (nonatomic, retain) SPIConfig *config;
 @property (nonatomic, retain) SPITransactionOptions *options;
 
 - (instancetype)initWithAmountCents:(NSInteger)amountCents
-                           posRefId:(NSString *)posRefId;
+                           posRefId:(NSString *)posRefId
+                    surchargeAmount:(NSInteger)surchargeAmount;
 
 - (SPIMessage *)toMessage;
 - (NSString *)amountSummary;
@@ -274,9 +276,11 @@
 @property (nonatomic, readonly) NSInteger purchaseAmount;
 @property (nonatomic, readonly, copy) NSString *posRefId;
 @property (nonatomic, retain) SPIConfig *config;
+@property (nonatomic, readonly) NSInteger surchargeAmount;
 
 - (instancetype)initWithAmountCents:(NSInteger)amountCents
-                           posRefId:(NSString *)posRefId;
+                           posRefId:(NSString *)posRefId
+                    surchargeAmount:(NSInteger)surchargeAmount;
 
 - (SPIMessage *)toMessage;
 

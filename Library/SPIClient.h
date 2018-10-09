@@ -207,6 +207,7 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
                  tipAmount:(NSInteger)tipAmount
              cashoutAmount:(NSInteger)cashoutAmount
           promptForCashout:(BOOL)promptForCashout
+           surchargeAmount:(NSInteger)surchargeAmount
                    options:(SPITransactionOptions *)options
                 completion:(SPICompletionTxResult)completion;
 
@@ -232,6 +233,7 @@ isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
  */
 - (void)initiateMotoPurchaseTx:(NSString *)posRefId
                    amountCents:(NSInteger)amountCents
+               surchargeAmount:(NSInteger)surchargeAmount
                     completion:(SPICompletionTxResult)completion;
 
 /**
@@ -244,6 +246,7 @@ isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
  */
 - (void)initiateCashoutOnlyTx:(NSString *)posRefId
                   amountCents:(NSInteger)amountCents
+              surchargeAmount:(NSInteger)surchargeAmount
                    completion:(SPICompletionTxResult)completion;
 
 /**

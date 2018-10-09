@@ -11,10 +11,13 @@
 
 @implementation SPICashoutOnlyRequest : NSObject
 
-- (instancetype)initWithAmountCents:(NSInteger)amountCents posRefId:(NSString *)posRefId {
+- (instancetype)initWithAmountCents:(NSInteger)amountCents
+                           posRefId:(NSString *)posRefId
+                    surchargeAmount:(NSInteger)surchargeAmount {
     _config = [[SPIConfig alloc] init];
     _cashoutAmount = amountCents;
     _posRefId = posRefId;
+    _surchargeAmount = surchargeAmount;
     return self;
 }
 
@@ -22,6 +25,7 @@
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
     [data setValue:_posRefId forKey:@"pos_ref_id"];
     [data setValue:[NSNumber numberWithInteger:_cashoutAmount] forKey:@"cash_amount"];
+    [data setValue:[NSNumber numberWithInteger:_surchargeAmount] forKey:@"surcharge_amount"];
     [_config addReceiptConfig:data];
     
     return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"cshout"]
@@ -114,6 +118,10 @@
 
 - (BOOL)wasCustomerReceiptPrinted {
     return [_message getDataBoolValue:@"customer_receipt_printed" defaultIfNotFound:false];
+}
+
+- (NSInteger)getSurchargeAmount {
+    return [self.message getDataIntegerValue:@"surcharge_amount"];
 }
 
 - (NSString *)getResponseValue:(NSString *)attribute {
