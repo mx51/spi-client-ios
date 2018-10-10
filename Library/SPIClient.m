@@ -310,6 +310,23 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                    tipAmount:tipAmount
                cashoutAmount:cashoutAmount
             promptForCashout:promptForCashout
+                     options:nil
+                  completion:completion];
+}
+
+- (void)initiatePurchaseTx:(NSString *)posRefId
+            purchaseAmount:(NSInteger)purchaseAmount
+                 tipAmount:(NSInteger)tipAmount
+             cashoutAmount:(NSInteger)cashoutAmount
+          promptForCashout:(BOOL)promptForCashout
+                   options:(SPITransactionOptions *)options
+                completion:(SPICompletionTxResult)completion {
+    
+    [self initiatePurchaseTx:posRefId
+              purchaseAmount:purchaseAmount
+                   tipAmount:tipAmount
+               cashoutAmount:cashoutAmount
+            promptForCashout:promptForCashout
              surchargeAmount:0
                      options:nil
                   completion:completion];
@@ -374,6 +391,15 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         [self transactionFlowStateChanged];
         completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Purchase initiated"]);
     });
+}
+
+- (void)initiateRefundTx:(NSString *)posRefId
+             amountCents:(NSInteger)amountCents
+              completion:(SPICompletionTxResult)completion {
+    [self initiateRefundTx:posRefId
+               amountCents:amountCents
+isSuppressMerchantPassword:false
+                completion:completion];
 }
 
 - (void)initiateRefundTx:(NSString *)posRefId
@@ -452,6 +478,15 @@ isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
 
 - (void)initiateCashoutOnlyTx:(NSString *)posRefId
                   amountCents:(NSInteger)amountCents
+                   completion:(SPICompletionTxResult)completion {
+    [self initiateCashoutOnlyTx:posRefId
+                    amountCents:amountCents
+                surchargeAmount:0
+                     completion:completion];
+}
+
+- (void)initiateCashoutOnlyTx:(NSString *)posRefId
+                  amountCents:(NSInteger)amountCents
               surchargeAmount:(NSInteger)surchargeAmount
                    completion:(SPICompletionTxResult)completion {
     
@@ -493,6 +528,15 @@ isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
         [self transactionFlowStateChanged];
         completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Cashout initiated"]);
     });
+}
+
+- (void)initiateMotoPurchaseTx:(NSString *)posRefId
+                   amountCents:(NSInteger)amountCents
+                    completion:(SPICompletionTxResult)completion {
+    [self initiateMotoPurchaseTx:posRefId
+                     amountCents:amountCents
+                 surchargeAmount:0
+                      completion:completion];
 }
 
 - (void)initiateMotoPurchaseTx:(NSString *)posRefId
