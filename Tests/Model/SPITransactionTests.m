@@ -68,7 +68,7 @@
     request.options = options;
     
     SPIMessage *msg = [request toMessage];
- 
+    
     XCTAssertTrue([[msg getDataStringValue:@"merchant_receipt_header"] isEqualToString:merchantReceiptHeader]);
     XCTAssertTrue([[msg getDataStringValue:@"merchant_receipt_footer"] isEqualToString:merchantReceiptFooter]);
     XCTAssertTrue([[msg getDataStringValue:@"customer_receipt_header"] isEqualToString:customerReceiptHeader]);
@@ -92,6 +92,31 @@
     XCTAssertTrue([[msg getDataStringValue:@"merchant_receipt_footer"] isEqualToString:@""]);
     XCTAssertTrue([[msg getDataStringValue:@"customer_receipt_header"] isEqualToString:@""]);
     XCTAssertTrue([[msg getDataStringValue:@"customer_receipt_footer"] isEqualToString:@""]);
+}
+
+- (void)testPopulatePurchaseRequestWithSurchargeAmount_full {
+    NSString *posRefId = @"test";
+    int amountCents = 10;
+    int tipamount = 10;
+    int cashamount = 10;
+    BOOL promptForCash = true;
+    int surchargeAmount = 1;
+    
+    SPIPurchaseRequest *request = [SPIPurchaseHelper createPurchaseRequest:posRefId
+                                                            purchaseAmount:amountCents
+                                                                 tipAmount:tipamount
+                                                                cashAmount:cashamount
+                                                          promptForCashout:promptForCash
+                                                           surchargeAmount:surchargeAmount];
+    
+    SPIMessage *msg = [request toMessage];
+    
+    XCTAssertEqual([msg getDataStringValue:@"pos_ref_id"],posRefId);
+    XCTAssertEqual([msg getDataIntegerValue:@"purchase_amount"],amountCents );
+    XCTAssertEqual([msg getDataIntegerValue:@"tip_amount"], tipamount);
+    XCTAssertEqual([msg getDataBoolValue:@"prompt_for_cashout" defaultIfNotFound:false],promptForCash);
+    XCTAssertEqual([msg getDataBoolValue:@"surcharge_amount" defaultIfNotFound:false],surchargeAmount);
+    XCTAssertNotNil([request amountSummary]);
 }
 
 - (void)testPopulatePurchaseResponse {
@@ -141,11 +166,29 @@
     }];
 }
 
+- (void)testInitiateMotoPurchaseRequestWithSurchargeAmount {
+    SPIClient *client = [SPITestUtils clientWithTestSecrets];
+    
+    client.state.status = SPIStatusPairedConnected;
+    [client initiateMotoPurchaseTx:@"test" amountCents:19 surchargeAmount:1 completion:^(SPIInitiateTxResult *result) {
+        XCTAssertNotNil(result);
+    }];
+}
+
 - (void)testInitiateCashOutOnlyRequest {
     SPIClient *client = [SPITestUtils clientWithTestSecrets];
     
     client.state.status = SPIStatusPairedConnected;
     [client initiateCashoutOnlyTx:@"test" amountCents:10 completion:^(SPIInitiateTxResult *result) {
+        XCTAssertNotNil(result);
+    }];
+}
+
+- (void)testInitiateCashOutOnlyRequestWithSurcharge {
+    SPIClient *client = [SPITestUtils clientWithTestSecrets];
+    
+    client.state.status = SPIStatusPairedConnected;
+    [client initiateCashoutOnlyTx:@"test" amountCents:10 surchargeAmount:1 completion:^(SPIInitiateTxResult *result) {
         XCTAssertNotNil(result);
     }];
 }

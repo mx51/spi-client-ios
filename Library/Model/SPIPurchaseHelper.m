@@ -11,7 +11,15 @@
 @implementation SPIPurchaseHelper
 
 + (SPIPurchaseRequest *)createPurchaseRequest:(NSInteger)amountCents purchaseId:(NSString *)purchaseId {
-    return [SPIPurchaseHelper createPurchaseRequest:purchaseId purchaseAmount:amountCents tipAmount:0 cashAmount:0 promptForCashout:false surchargeAmount:0];
+    return [SPIPurchaseHelper createPurchaseRequest:purchaseId purchaseAmount:amountCents tipAmount:0 cashAmount:0 promptForCashout:false];
+}
+
++ (SPIPurchaseRequest *)createPurchaseRequest:(NSString *)posRefId
+                               purchaseAmount:(NSInteger)purchaseAmount
+                                    tipAmount:(NSInteger)tipAmount
+                                   cashAmount:(NSInteger)cashAmount
+                             promptForCashout:(BOOL)promptForCashout{
+    return [SPIPurchaseHelper createPurchaseRequest:posRefId purchaseAmount:purchaseAmount tipAmount:tipAmount cashAmount:cashAmount promptForCashout:promptForCashout surchargeAmount:0];
 }
 
 + (SPIPurchaseRequest *)createPurchaseRequest:(NSString *)posRefId
@@ -28,6 +36,11 @@
     request.promptForCashout = promptForCashout;
     request.surchargeAmount = surchargeAmount;
     return request;
+}
+
++ (SPIRefundRequest *)createRefundRequest:(NSInteger)amountCents
+                               purchaseId:(NSString *)purchaseId {
+    return [SPIPurchaseHelper createRefundRequest:amountCents purchaseId:purchaseId isSuppressMerchantPassword:false];
 }
 
 + (SPIRefundRequest *)createRefundRequest:(NSInteger)amountCents
