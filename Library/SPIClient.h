@@ -211,6 +211,30 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
                 completion:(SPICompletionTxResult)completion;
 
 /**
+ Initiates a purchase transaction. Be subscribed to TxFlowStateChanged event to
+ get updates on the process.
+ 
+ NOTE: Tip and cashout are not allowed simultaneously.
+ 
+ @param posRefId The unique identifier for the transaction.
+ @param purchaseAmount The purchase amount in cents.
+ @param tipAmount The tip amount in cents.
+ @param cashoutAmount The cashout amount in cents.
+ @param promptForCashout Whether to prompt your customer for cashout on the EFTPOS.
+ @param surchargeAmount The surcharge amount in cents
+ @param options Additional options applied on per-transaction basis.
+ @param completion The completion block returning SPICompletionTxResult asynchronously.
+ */
+- (void)initiatePurchaseTx:(NSString *)posRefId
+            purchaseAmount:(NSInteger)purchaseAmount
+                 tipAmount:(NSInteger)tipAmount
+             cashoutAmount:(NSInteger)cashoutAmount
+          promptForCashout:(BOOL)promptForCashout
+           surchargeAmount:(NSInteger)surchargeAmount
+                   options:(SPITransactionOptions *)options
+                completion:(SPICompletionTxResult)completion;
+
+/**
  Initiates a refund transaction. Be subscribed to TxFlowStateChanged event to
  get updates on the process.
  
@@ -220,6 +244,20 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
  */
 - (void)initiateRefundTx:(NSString *)posRefId
              amountCents:(NSInteger)amountCents
+              completion:(SPICompletionTxResult)completion;
+
+/**
+ Initiates a refund transaction. Be subscribed to TxFlowStateChanged event to
+ get updates on the process.
+ 
+ @param posRefId The unique identifier for the transaction.
+ @param amountCents The refund amount in cents.
+ @param isSuppressMerchantPassword Ability to suppress Merchant Password from POS.
+ @param completion The completion block returning SPICompletionTxResult asynchronously.
+ */
+- (void)initiateRefundTx:(NSString *)posRefId
+             amountCents:(NSInteger)amountCents
+isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
               completion:(SPICompletionTxResult)completion;
 
 /**
@@ -234,6 +272,19 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
                     completion:(SPICompletionTxResult)completion;
 
 /**
+ Initiates a Mail Order / Telephone Order Purchase Transaction
+ 
+ @param posRefId The unique identifier for the transaction.
+ @param amountCents The purchase amount in cents.
+ @param surchargeAmount The surcharge amount in cents
+ @param completion The completion block returning SPICompletionTxResult asynchronously.
+ */
+- (void)initiateMotoPurchaseTx:(NSString *)posRefId
+                   amountCents:(NSInteger)amountCents
+               surchargeAmount:(NSInteger)surchargeAmount
+                    completion:(SPICompletionTxResult)completion;
+
+/**
  Initiates a cashout only transaction. Be subscribed to TxFlowStateChanged
  event to get updates on the process.
  
@@ -243,6 +294,20 @@ typedef void (^SPICompletionState)(BOOL alreadyMovedToIdleState, SPIState *state
  */
 - (void)initiateCashoutOnlyTx:(NSString *)posRefId
                   amountCents:(NSInteger)amountCents
+                   completion:(SPICompletionTxResult)completion;
+
+/**
+ Initiates a cashout only transaction. Be subscribed to TxFlowStateChanged
+ event to get updates on the process.
+ 
+ @param posRefId The unique identifier for the transaction.
+ @param amountCents The cashout amount in cents.
+ @param surchargeAmount The surcharge amount in cents
+ @param completion The completion block returning SPICompletionTxResult asynchronously.
+ */
+- (void)initiateCashoutOnlyTx:(NSString *)posRefId
+                  amountCents:(NSInteger)amountCents
+              surchargeAmount:(NSInteger)surchargeAmount
                    completion:(SPICompletionTxResult)completion;
 
 /**

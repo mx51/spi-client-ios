@@ -18,17 +18,37 @@
                                purchaseAmount:(NSInteger)purchaseAmount
                                     tipAmount:(NSInteger)tipAmount
                                    cashAmount:(NSInteger)cashAmount
-                             promptForCashout:(BOOL)promptForCashout {
-    
-    SPIPurchaseRequest *request = [[SPIPurchaseRequest alloc] initWithAmountCents:purchaseAmount posRefId:posRefId];
+                             promptForCashout:(BOOL)promptForCashout{
+    return [SPIPurchaseHelper createPurchaseRequest:posRefId purchaseAmount:purchaseAmount tipAmount:tipAmount cashAmount:cashAmount promptForCashout:promptForCashout surchargeAmount:0];
+}
+
++ (SPIPurchaseRequest *)createPurchaseRequest:(NSString *)posRefId
+                               purchaseAmount:(NSInteger)purchaseAmount
+                                    tipAmount:(NSInteger)tipAmount
+                                   cashAmount:(NSInteger)cashAmount
+                             promptForCashout:(BOOL)promptForCashout
+                              surchargeAmount:(NSInteger)surchargeAmount {
+    SPIPurchaseRequest *request = [[SPIPurchaseRequest alloc] initWithAmountCents:purchaseAmount
+                                                                         posRefId:posRefId
+                                                                  surchargeAmount:surchargeAmount];
     request.cashoutAmount = cashAmount;
     request.tipAmount = tipAmount;
     request.promptForCashout = promptForCashout;
+    request.surchargeAmount = surchargeAmount;
     return request;
 }
 
-+ (SPIRefundRequest *)createRefundRequest:(NSInteger)amountCents purchaseId:(NSString *)purchaseId {
-    return [[SPIRefundRequest alloc] initWithPosRefId:purchaseId amountCents:amountCents];
++ (SPIRefundRequest *)createRefundRequest:(NSInteger)amountCents
+                               purchaseId:(NSString *)purchaseId {
+    return [SPIPurchaseHelper createRefundRequest:amountCents purchaseId:purchaseId isSuppressMerchantPassword:false];
+}
+
++ (SPIRefundRequest *)createRefundRequest:(NSInteger)amountCents
+                               purchaseId:(NSString *)purchaseId
+               isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword {
+    return [[SPIRefundRequest alloc] initWithPosRefId:purchaseId
+                                          amountCents:amountCents
+                           isSuppressMerchantPassword:isSuppressMerchantPassword];
 }
 
 @end
