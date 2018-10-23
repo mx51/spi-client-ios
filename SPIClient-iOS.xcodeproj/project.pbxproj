@@ -121,9 +121,9 @@
 		29E3CC9720D68E9300C69BEC /* NSObjectDynamicDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 29E3CC9620D68E9300C69BEC /* NSObjectDynamicDescription.m */; };
 		29E3CC9920D6935A00C69BEC /* NSStringUtilTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 29E3CC9820D6935A00C69BEC /* NSStringUtilTests.m */; };
 		374E391C9434FCEFB65A705F /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34C6A04AE4CE4C33D490562D /* libPods-Tests.a */; };
+		49024DD4217ED7E300ACD54B /* SPITerminal.m in Sources */ = {isa = PBXBuildFile; fileRef = 49024DD2217ED7E300ACD54B /* SPITerminal.m */; };
+		49024DD5217ED7E300ACD54B /* SPITerminal.h in Headers */ = {isa = PBXBuildFile; fileRef = 49024DD3217ED7E300ACD54B /* SPITerminal.h */; };
 		49A61854215CBFC50068C537 /* SPIPrinting.m in Sources */ = {isa = PBXBuildFile; fileRef = 49A61853215CBFC50068C537 /* SPIPrinting.m */; };
-		49A61857215CC19E0068C537 /* SPITerminalStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 49A61856215CC19E0068C537 /* SPITerminalStatus.m */; };
-		49A6185B215CC31A0068C537 /* SPITerminalBattery.m in Sources */ = {isa = PBXBuildFile; fileRef = 49A6185A215CC31A0068C537 /* SPITerminalBattery.m */; };
 		831D3C04214B62F40038B3E3 /* SPIRepeatingTimer.h in Headers */ = {isa = PBXBuildFile; fileRef = 831D3C02214B62F40038B3E3 /* SPIRepeatingTimer.h */; };
 		831D3C05214B62F40038B3E3 /* SPIRepeatingTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 831D3C03214B62F40038B3E3 /* SPIRepeatingTimer.m */; };
 		871DB6791A60B8722827A9CA /* libPods-SPIClient-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6673653AFE9DCEDEE3BF7940 /* libPods-SPIClient-iOS.a */; };
@@ -239,12 +239,10 @@
 		29E3CC9620D68E9300C69BEC /* NSObjectDynamicDescription.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSObjectDynamicDescription.m; sourceTree = "<group>"; };
 		29E3CC9820D6935A00C69BEC /* NSStringUtilTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSStringUtilTests.m; sourceTree = "<group>"; };
 		34C6A04AE4CE4C33D490562D /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		49024DD2217ED7E300ACD54B /* SPITerminal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPITerminal.m; sourceTree = "<group>"; };
+		49024DD3217ED7E300ACD54B /* SPITerminal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPITerminal.h; sourceTree = "<group>"; };
 		49A61853215CBFC50068C537 /* SPIPrinting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIPrinting.m; sourceTree = "<group>"; };
 		49A61855215CBFE10068C537 /* SPIPrinting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPIPrinting.h; sourceTree = "<group>"; };
-		49A61856215CC19E0068C537 /* SPITerminalStatus.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPITerminalStatus.m; sourceTree = "<group>"; };
-		49A61858215CC1AA0068C537 /* SPITerminalStatus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPITerminalStatus.h; sourceTree = "<group>"; };
-		49A61859215CC30A0068C537 /* SPITerminalBattery.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPITerminalBattery.h; sourceTree = "<group>"; };
-		49A6185A215CC31A0068C537 /* SPITerminalBattery.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPITerminalBattery.m; sourceTree = "<group>"; };
 		5A44F061A056AA8B851EA052 /* Pods-Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Tests/Pods-Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		6673653AFE9DCEDEE3BF7940 /* libPods-SPIClient-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SPIClient-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		831D3C02214B62F40038B3E3 /* SPIRepeatingTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPIRepeatingTimer.h; sourceTree = "<group>"; };
@@ -297,6 +295,8 @@
 		273E9AED205A30F90006ED5C /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				49024DD3217ED7E300ACD54B /* SPITerminal.h */,
+				49024DD2217ED7E300ACD54B /* SPITerminal.m */,
 				29534F5920BD991F0048C0E0 /* SPICashout.h */,
 				29534F5A20BD991F0048C0E0 /* SPICashout.m */,
 				273E9AF1205A30F90006ED5C /* SPIKeyRollingHelper.h */,
@@ -321,10 +321,6 @@
 				273E9AFC205A30F90006ED5C /* SPISecrets.m */,
 				273E9AEE205A30F90006ED5C /* SPISettlement.h */,
 				273E9AF7205A30F90006ED5C /* SPISettlement.m */,
-				49A61859215CC30A0068C537 /* SPITerminalBattery.h */,
-				49A6185A215CC31A0068C537 /* SPITerminalBattery.m */,
-				49A61858215CC1AA0068C537 /* SPITerminalStatus.h */,
-				49A61856215CC19E0068C537 /* SPITerminalStatus.m */,
 				273E9AF3205A30F90006ED5C /* SPITransaction.h */,
 				273E9AFA205A30F90006ED5C /* SPITransaction.m */,
 			);
@@ -541,6 +537,7 @@
 				27C68F4820E32C9100D8268C /* NSObject+Util.h in Headers */,
 				27C68F4920E32C9700D8268C /* NSString+Crypto.h in Headers */,
 				27C68F4A20E32C9900D8268C /* NSString+Util.h in Headers */,
+				49024DD5217ED7E300ACD54B /* SPITerminal.h in Headers */,
 				27C68F4B20E32C9B00D8268C /* SPICrypto.h in Headers */,
 				27C68F4C20E32C9E00D8268C /* SPIDiffieHellman.h in Headers */,
 				27C68F4D20E32CA200D8268C /* SPICashout.h in Headers */,
@@ -727,6 +724,7 @@
 				290EBBAA20C55E3000D98C3A /* SPIPreAuth.m in Sources */,
 				279BB736205B581E005ADECB /* JKBigInteger.m in Sources */,
 				273E9B06205A30F90006ED5C /* SPIPairingHelper.m in Sources */,
+				49024DD4217ED7E300ACD54B /* SPITerminal.m in Sources */,
 				273E9B03205A30F90006ED5C /* SPIMessage.m in Sources */,
 				273E9B13205A30F90006ED5C /* SPISecrets.m in Sources */,
 				273E9B1E205A31030006ED5C /* SPIWebSocketConnection.m in Sources */,
@@ -745,12 +743,10 @@
 				273E9AEA205A30EC0006ED5C /* SPICrypto.m in Sources */,
 				273E9B10205A30F90006ED5C /* SPITransaction.m in Sources */,
 				273E9AE8205A30EC0006ED5C /* SPIDiffieHellman.m in Sources */,
-				49A61857215CC19E0068C537 /* SPITerminalStatus.m in Sources */,
 				273E9B64205A34BF0006ED5C /* NSData+Crypto.m in Sources */,
 				831D3C05214B62F40038B3E3 /* SPIRepeatingTimer.m in Sources */,
 				273E9B62205A34BF0006ED5C /* NSDateFormatter+Util.m in Sources */,
 				273E9B0B205A30F90006ED5C /* SPISettlement.m in Sources */,
-				49A6185B215CC31A0068C537 /* SPITerminalBattery.m in Sources */,
 				27C8E47D20EB4EB400E00EA9 /* SPIPosInfo.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
