@@ -690,6 +690,8 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                                                                               message:gltMessage
                                                                                   msg:@"Waiting for EFTPOS connection to make a get last transaction request"];
             
+            [weakSelf.state.txFlowState callingGlt:gltMessage.mid];
+            
             if ([weakSelf send:gltMessage]) {
                 [weakSelf.state.txFlowState sent:@"Asked EFTPOS to get last transaction"];
             }
@@ -1144,7 +1146,17 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
         SPITransactionFlowState *txState = self.state.txFlowState;
         
         if (self.state.flow != SPIFlowTransaction || txState.isFinished) {
-            // We were not in the middle of a transaction, who cares?
+            SPILog(@"Received glt response but we were not in the middle of a tx. ignoring.");
+            return;
+        }
+        
+        if (!txState.isAwaitingGltResponse) {
+            SPILog(@"received a glt response but we had not asked for one within this transaction. Perhaps leftover from previous one. ignoring.");
+            return;
+        }
+        
+        if (txState.lastGltRequestId != m.mid) {
+            SPILog(@"received a glt response but the message id does not match the glt request that we sent. strange. ignoring.");
             return;
         }
         
@@ -1299,7 +1311,6 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                 } else if (state.isRequestSent && [now compare:[state.lastStateRequestTime dateByAddingTimeInterval: checkOnTxFrequency]] ==  NSOrderedDescending) {
                     // TH-1T, TH-4T - It's been a while since we received an update, let's call a GLT
                     SPILog(@"Checking on our transaction. Last we asked was at %@...", [state.lastStateRequestTime toString]);
-                    [txState callingGlt];
                     [weakSelf callGetLastTransaction];
                 }
             }
@@ -1476,8 +1487,6 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
                 // Let's get the last transaction to check what we might have
                 // missed out on.
                 
-                [self.state.txFlowState callingGlt];
-                
                 dispatch_async(self.queue, ^{
                     [weakSelf callGetLastTransaction];
                 });
@@ -1576,7 +1585,9 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
  * Ask the PIN pad to tell us what the Most Recent Transaction was
  */
 - (void)callGetLastTransaction {
-    [self send:[[SPIGetLastTransactionRequest new] toMessage]];
+    SPIMessage *gltMessage = [[SPIGetLastTransactionRequest new] toMessage];
+    [self.state.txFlowState callingGlt:gltMessage.mid];
+    [self send:gltMessage];
 }
 
 /**
