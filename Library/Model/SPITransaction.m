@@ -368,12 +368,17 @@
 }
 
 - (SPIMessage *)toMessage {
+    NSDictionary *originalData = @{
+                                   @"refund_amount": @(self.amountCents),
+                                   @"pos_ref_id": self.posRefId
+                                   };
+    
+    NSMutableDictionary *data = [[NSMutableDictionary alloc] initWithDictionary:originalData];
+    [_config addReceiptConfig:data];
+    
     return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"refund"]
                                        eventName:SPIRefundRequestKey
-                                            data:@{
-                                                   @"refund_amount": @(self.amountCents),
-                                                   @"pos_ref_id": self.posRefId
-                                                   }
+                                            data:data
                                  needsEncryption:true];
 }
 
