@@ -1201,7 +1201,6 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
             } else {
                 // TH-4X - Unexpected Error when recovering
                 SPILog(@"Unexpected response in get last transaction during - received posRefId:%@ error: %@", [gltResponse getPosRefId], m.error);
-                [txState unknownCompleted:@"Unexpected error when recovering transaction status. Check EFTPOS."];
             }
         } else {
             if (txState.type == SPITransactionTypeGetLastTransaction) {
