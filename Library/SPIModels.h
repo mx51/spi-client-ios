@@ -10,6 +10,7 @@
 
 #import "SPIMessage.h"
 #import "SPITransaction.h"
+#import "SPIDeviceService.h"
 
 /**
  Represents the 3 pairing statuses that the SPI instance can be in.
@@ -307,6 +308,11 @@ typedef NS_ENUM(NSUInteger, SPITransactionType) {
  When flow is Transaction, this represents the state of the transaction process.
  */
 @property (nonatomic, strong) SPITransactionFlowState *txFlowState;
+
+/**
+ When flow is AutoIP, this represents the state of the device service.
+ */
+@property (nonatomic, strong) SPIDeviceAddressStatus *deviceAddressStatus;
 
 + (NSString *)flowString:(SPIFlow)flow;
 
