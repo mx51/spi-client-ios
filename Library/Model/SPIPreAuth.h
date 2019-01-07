@@ -189,4 +189,6 @@ typedef void (^SPICompletionTxResult)(SPIInitiateTxResult *result);
 
 - (NSInteger)getCompletionAmount;
 
+- (NSInteger)getSurchargeAmountForPreauthCompletion;
+
 @end
