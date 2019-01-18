@@ -182,6 +182,11 @@ typedef NS_ENUM(NSUInteger, SPITransactionType) {
 @property (nonatomic, strong) NSDate *lastStateRequestTime;
 
 /**
+ The id of the last glt request message that was sent. used to match with the response.
+ */
+@property (nonatomic, copy) NSString *lastGltRequestId;
+
+/**
  Whether we're currently attempting to cancel the transaction.
  */
 @property (nonatomic, assign) BOOL isAttemptingToCancel;
@@ -256,7 +261,7 @@ typedef NS_ENUM(NSUInteger, SPITransactionType) {
 
 - (void)cancelFailed:(NSString *)msg;
 
-- (void)callingGlt;
+- (void)callingGlt:(NSString *)gltRequestId;
 
 - (void)gotGltResponse;
 
