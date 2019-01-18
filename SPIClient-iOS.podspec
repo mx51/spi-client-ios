@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.source_files = 'Library/**/*.{h,m,c}'
   s.requires_arc = true
   s.platform     = :ios, '8.0'
-  
+
   s.dependency 'RNCryptor-objc'
   s.dependency 'SocketRocket'
 end
