@@ -55,7 +55,7 @@
 - (SPIMessage *)toMessage:(NSString *)messageId {
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
     BOOL success = _result == BillRetrievalResultSuccess;
-    [data setValue:[NSNumber numberWithBool:success] forKey:@"success"];
+    [data setValue:@(success) forKey:@"success"];
     if (_billId.length > 0) {
         [data setValue:_billId forKey:@"bill_id"];
     }
@@ -63,8 +63,8 @@
         [data setValue:_tableId forKey:@"table_id"];
     }
     if (_result == BillRetrievalResultSuccess) {
-        [data setValue:[NSNumber numberWithInteger:_totalAmount] forKey:@"bill_total_amount"];
-        [data setValue:[NSNumber numberWithInteger:_outstandingAmount] forKey:@"bill_outstanding_amount"];
+        [data setValue:@(_totalAmount) forKey:@"bill_total_amount"];
+        [data setValue:@(_outstandingAmount) forKey:@"bill_outstanding_amount"];
 
         NSMutableArray<SPIPaymentHistoryEntry*> *existingHistoryJson = [[NSMutableArray alloc] init];
         for (SPIPaymentHistoryEntry *response in self.getBillPaymentHistory) {
@@ -131,7 +131,7 @@
         _paymentType = SPIPaymentTypeCash;
     }
     
-    NSDictionary<NSString *,NSObject *> *data = (NSDictionary *)[message.data valueForKey:@"payment_details"];
+    NSDictionary<NSString *,NSObject *> *data = (NSDictionary *)message.data[@"payment_details"];
 
     // this is when we ply the sub object "payment_details" into a purchase response for convenience.
     SPIMessage *purchaseMsg = [[SPIMessage alloc] initWithMessageId:message.mid eventName:@"payment_details" data:data needsEncryption:false];
@@ -201,7 +201,7 @@
 
 - (instancetype)initWithClient:(SPIClient *)spi {
     _spi = spi;
-    _config = [SPIPayAtTableConfig alloc];
+    _config = [[SPIPayAtTableConfig alloc] init];
     _config.payAtTableEnabled = true;
     _config.operatorIdEnabled = true;
     _config.allowedOperatorIds = [NSArray array];

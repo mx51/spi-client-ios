@@ -105,7 +105,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
 
 - (SPIPayAtTable *)disablePayAtTable {
     _spiPat = [[SPIPayAtTable alloc] initWithClient:self];
-    _spiPat.config.payAtTableEnabled = true;
+    _spiPat.config.payAtTableEnabled = false;
     return _spiPat;
 }
 
