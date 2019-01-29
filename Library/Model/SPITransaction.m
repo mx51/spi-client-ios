@@ -585,8 +585,9 @@
 - (SPIMessage *)toMessage {
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
     [data setValue:_posRefId forKey:@"pos_ref_id"];
-    [data setValue:[NSNumber numberWithInteger:_purchaseAmount] forKey:@"purchase_amount"];
-    [data setValue:[NSNumber numberWithInteger:_surchargeAmount] forKey:@"surcharge_amount"];
+    [data setValue:@(_purchaseAmount) forKey:@"purchase_amount"];
+    [data setValue:@(_surchargeAmount) forKey:@"surcharge_amount"];
+    [data setValue:@(_isSuppressMerchantPassword) forKey:@"suppress_merchant_password"];
     [_config addReceiptConfig:data];
     
     return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"moto"]

@@ -558,6 +558,17 @@ isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
                    amountCents:(NSInteger)amountCents
                surchargeAmount:(NSInteger)surchargeAmount
                     completion:(SPICompletionTxResult)completion {
+    [self initiateMotoPurchaseTx:posRefId
+                     amountCents:amountCents
+                 surchargeAmount:surchargeAmount
+      isSuppressMerchantPassword:false completion:completion];
+}
+
+- (void)initiateMotoPurchaseTx:(NSString *)posRefId
+                   amountCents:(NSInteger)amountCents
+               surchargeAmount:(NSInteger)surchargeAmount
+    isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
+                    completion:(SPICompletionTxResult)completion {
     
     if (self.state.status == SPIStatusUnpaired) {
         completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
@@ -579,6 +590,7 @@ isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
                                                                                                      posRefId:posRefId];
             motoPurchaseRequest.surchargeAmount = surchargeAmount;
             motoPurchaseRequest.config = weakSelf.config;
+            motoPurchaseRequest.isSuppressMerchantPassword = isSuppressMerchantPassword;
             
             SPIMessage *cashoutMsg = [motoPurchaseRequest toMessage];
             

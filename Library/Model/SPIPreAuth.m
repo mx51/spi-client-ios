@@ -186,7 +186,7 @@ NSString *const SPIPreauthCompleteResponseKey = @"completion_response";
 - (void)initiateCancelTx:(NSString *)posRefId
                preauthId:(NSString *)preauthId
               completion:(SPICompletionTxResult)completion {
-    SPIPreauthCancelRequest *preauthRequest = [[SPIPreauthCancelRequest alloc] initWithPreauthID:preauthId posRefId:posRefId];    
+    SPIPreauthCancelRequest *preauthRequest = [[SPIPreauthCancelRequest alloc] initWithPreauthID:preauthId posRefId:posRefId];
     preauthRequest.config = _client.config;
     
     SPIMessage *preauthMsg = [preauthRequest toMessage];
