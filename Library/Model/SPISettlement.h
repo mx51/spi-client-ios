@@ -9,10 +9,12 @@
 #import <Foundation/Foundation.h>
 
 @class SPIMessage;
+@class SPIConfig;
 
 @interface SPISettleRequest : NSObject
 
 @property (nonatomic, readonly, copy) NSString *settleId;
+@property (nonatomic, retain) SPIConfig *config;
 
 - (instancetype)initWithSettleId:(NSString *)settleId;
 
@@ -68,11 +70,16 @@
 
 - (NSArray<SPISchemeSettlementEntry *> *)getSchemeSettlementEntries;
 
+- (BOOL)wasMerchantReceiptPrinted;
+
+- (BOOL)wasCustomerReceiptPrinted;
+
 @end
 
 @interface SPISettlementEnquiryRequest : NSObject
 
 @property (nonatomic, readonly, copy) NSString *requestId;
+@property (nonatomic, retain) SPIConfig *config;
 
 - (instancetype)initWithRequestId:(NSString *)requestId;
 

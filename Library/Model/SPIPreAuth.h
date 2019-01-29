@@ -191,4 +191,8 @@ typedef void (^SPICompletionTxResult)(SPIInitiateTxResult *result);
 
 - (NSInteger)getSurchargeAmountForPreauthCompletion;
 
+- (BOOL)wasMerchantReceiptPrinted;
+
+- (BOOL)wasCustomerReceiptPrinted;
+
 @end

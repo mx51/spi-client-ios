@@ -675,6 +675,7 @@ isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
             weakSelf.state.flow = SPIFlowTransaction;
             
             SPISettleRequest *settleRequest = [[SPISettleRequest alloc] initWithSettleId:[SPIRequestIdHelper idForString:@"settle"]];
+            settleRequest.config = weakSelf.config;
             
             SPIMessage *settleMessage = [settleRequest toMessage];
             
@@ -711,7 +712,10 @@ isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
             
             weakSelf.state.flow = SPIFlowTransaction;
             
-            SPIMessage *stlEnqMsg = [[[SPISettlementEnquiryRequest alloc] initWithRequestId:[SPIRequestIdHelper idForString:@"stlenq"]] toMessage];
+            SPISettlementEnquiryRequest *settleEnqRequest = [[SPISettlementEnquiryRequest alloc] initWithRequestId:[SPIRequestIdHelper idForString:@"stlenq"]];
+            settleEnqRequest.config = weakSelf.config;
+            
+            SPIMessage *stlEnqMsg = [settleEnqRequest toMessage];
             
             weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId
                                                                                  type:SPITransactionTypeSettleEnquiry
@@ -978,14 +982,14 @@ isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
 
 - (BOOL)hasSerialNumberChanged:(NSString *)updatedSerialNumber {
     if ([_serialNumber isEqualToString:updatedSerialNumber])
-        return false;
+    return false;
     
     return true;
 }
 
 - (BOOL)hasEftposAddressChanged:(NSString *)updatedEftposAddress {
     if ([_eftposAddress isEqualToString:updatedEftposAddress])
-        return false;
+    return false;
     
     return true;
 }
@@ -1558,11 +1562,11 @@ isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
     
     dispatch_async(self.queue, ^{
         switch (newConnectionState) {
-            case SPIConnectionStateConnecting:
+                case SPIConnectionStateConnecting:
                 SPILog(@"I'm connecting to the EFTPOS at %@...", weakSelf.eftposAddress);
                 break;
                 
-            case SPIConnectionStateConnected:
+                case SPIConnectionStateConnected:
                 self->_retriesSinceLastDeviceAddressResolution = 0;
                 
                 if (weakSelf.state.flow == SPIFlowPairing && weakSelf.state.status == SPIStatusUnpaired) {
@@ -1578,7 +1582,7 @@ isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
                 }
                 break;
                 
-            case SPIConnectionStateDisconnected:
+                case SPIConnectionStateDisconnected:
                 SPILog(@"I'm disconnected from %@", weakSelf.eftposAddress);
                 // Let's reset some lifecycle related state, ready for next connection
                 weakSelf.mostRecentPingSent = nil;
