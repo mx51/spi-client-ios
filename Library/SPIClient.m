@@ -108,6 +108,12 @@ static NSInteger retriesBeforeResolvingDeviceAddress = 5; // How many retries be
     return _spiPat;
 }
 
+- (SPIPayAtTable *)disablePayAtTable {
+    _spiPat = [[SPIPayAtTable alloc] initWithClient:self];
+    _spiPat.config.payAtTableEnabled = false;
+    return _spiPat;
+}
+
 #pragma mark - Delegate
 
 - (void)callDelegate:(void (^)(id<SPIDelegate>))block {
@@ -1807,6 +1813,11 @@ isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
         NSString *eventName = m.eventName;
         
         SPILog(@"Message received: %@", m.decryptedJson);
+        
+        if ([self.spiPreauth isPreauthEvent:eventName]) {
+            [self.spiPreauth _handlePreauthMessage:m];
+            return;
+        }
         
         // And then we switch on the event type.
         if ([eventName isEqualToString:SPIKeyRequestKey]) {
