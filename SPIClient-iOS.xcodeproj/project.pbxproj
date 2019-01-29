@@ -123,6 +123,8 @@
 		374E391C9434FCEFB65A705F /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34C6A04AE4CE4C33D490562D /* libPods-Tests.a */; };
 		49024DD4217ED7E300ACD54B /* SPITerminal.m in Sources */ = {isa = PBXBuildFile; fileRef = 49024DD2217ED7E300ACD54B /* SPITerminal.m */; };
 		49024DD5217ED7E300ACD54B /* SPITerminal.h in Headers */ = {isa = PBXBuildFile; fileRef = 49024DD3217ED7E300ACD54B /* SPITerminal.h */; };
+		49A6067221DDAE1800B6C706 /* SPIDeviceService.h in Headers */ = {isa = PBXBuildFile; fileRef = 49A6067021DDAE1800B6C706 /* SPIDeviceService.h */; };
+		49A6067321DDAE1800B6C706 /* SPIDeviceService.m in Sources */ = {isa = PBXBuildFile; fileRef = 49A6067121DDAE1800B6C706 /* SPIDeviceService.m */; };
 		49A61854215CBFC50068C537 /* SPIPrinting.m in Sources */ = {isa = PBXBuildFile; fileRef = 49A61853215CBFC50068C537 /* SPIPrinting.m */; };
 		831D3C04214B62F40038B3E3 /* SPIRepeatingTimer.h in Headers */ = {isa = PBXBuildFile; fileRef = 831D3C02214B62F40038B3E3 /* SPIRepeatingTimer.h */; };
 		831D3C05214B62F40038B3E3 /* SPIRepeatingTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 831D3C03214B62F40038B3E3 /* SPIRepeatingTimer.m */; };
@@ -241,6 +243,8 @@
 		34C6A04AE4CE4C33D490562D /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		49024DD2217ED7E300ACD54B /* SPITerminal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPITerminal.m; sourceTree = "<group>"; };
 		49024DD3217ED7E300ACD54B /* SPITerminal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPITerminal.h; sourceTree = "<group>"; };
+		49A6067021DDAE1800B6C706 /* SPIDeviceService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPIDeviceService.h; path = Library/Service/SPIDeviceService.h; sourceTree = SOURCE_ROOT; };
+		49A6067121DDAE1800B6C706 /* SPIDeviceService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPIDeviceService.m; path = Library/Service/SPIDeviceService.m; sourceTree = SOURCE_ROOT; };
 		49A61853215CBFC50068C537 /* SPIPrinting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIPrinting.m; sourceTree = "<group>"; };
 		49A61855215CBFE10068C537 /* SPIPrinting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPIPrinting.h; sourceTree = "<group>"; };
 		5A44F061A056AA8B851EA052 /* Pods-Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Tests/Pods-Tests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -471,6 +475,7 @@
 				273E9AE2205A30EC0006ED5C /* Crypto */,
 				273E9AED205A30F90006ED5C /* Model */,
 				273E9B16205A31030006ED5C /* Network */,
+				49A6066F21DDADD700B6C706 /* Service */,
 				273E9B28205A310A0006ED5C /* Util */,
 				279BB723205B581E005ADECB /* JKBigInteger */,
 				273E9B6B205A379D0006ED5C /* SPIClient_iOS.h */,
@@ -502,6 +507,16 @@
 				29468BEC20D6BE650095D3EC /* JKBigInteger_iOSTests.m */,
 			);
 			path = JKDecimal;
+			sourceTree = "<group>";
+		};
+		49A6066F21DDADD700B6C706 /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				49A6067021DDAE1800B6C706 /* SPIDeviceService.h */,
+				49A6067121DDAE1800B6C706 /* SPIDeviceService.m */,
+			);
+			name = Service;
+			path = "New Group";
 			sourceTree = "<group>";
 		};
 		786F0B30F75E71B9A8439A92 /* Pods */ = {
@@ -555,6 +570,7 @@
 				27C68F5820E32CC900D8268C /* SPIConnection.h in Headers */,
 				27C68F5920E32CCD00D8268C /* SPIPingHelper.h in Headers */,
 				27C68F5A20E32CD300D8268C /* SPIRequestIdHelper.h in Headers */,
+				49A6067221DDAE1800B6C706 /* SPIDeviceService.h in Headers */,
 				27C68F5B20E32CD600D8268C /* SPIWebSocketConnection.h in Headers */,
 				27C68F5D20E32CE000D8268C /* SPILogger.h in Headers */,
 				27C68F5E20E32CE600D8268C /* SPIClient_iOS.h in Headers */,
@@ -716,6 +732,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49A6067321DDAE1800B6C706 /* SPIDeviceService.m in Sources */,
 				279BB731205B581E005ADECB /* tommath.c in Sources */,
 				273E9B2E205A310A0006ED5C /* SPILogger.m in Sources */,
 				29534F5C20BD991F0048C0E0 /* SPICashout.m in Sources */,

@@ -257,6 +257,7 @@
     state.flow = self.flow;
     state.pairingFlowState = self.pairingFlowState.copy;
     state.txFlowState = self.txFlowState.copy;
+    state.deviceAddressStatus = self.deviceAddressStatus.copy;
     return state;
 }
 
