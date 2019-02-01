@@ -1902,6 +1902,9 @@ isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
             
         } else if ([eventName isEqualToString:SPIPayAtTableBillPaymentKey]) {
             [weakSelf.spiPat handleBillPaymentAdvice:m];
+
+        } else if ([eventName isEqualToString:SPIPayAtTableBillPaymentFlowEnded]) {
+            [weakSelf.spiPat handleBillPaymentFlowEnded:m];
             
         } else if ([eventName isEqualToString:SPIPrintingResponseKey]) {
             [weakSelf handlePrintingResponse:m];

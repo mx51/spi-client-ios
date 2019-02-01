@@ -37,9 +37,13 @@ NSString *const SPIPreauthCompleteResponseKey = @"completion_response";
 @implementation SPIPreAuth
 
 - (instancetype)init:(SPIClient *)client queue:(dispatch_queue_t)queue {
-    _client = client;
-    _queue = queue;
-    _txLock = [[NSObject alloc] init];
+    self = [super init];
+    
+    if (self) {
+        _client = client;
+        _queue = queue;
+        _txLock = [[NSObject alloc] init];
+    }
     
     return self;
 }

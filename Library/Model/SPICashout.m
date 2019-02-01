@@ -13,9 +13,14 @@
 
 - (instancetype)initWithAmountCents:(NSInteger)amountCents
                            posRefId:(NSString *)posRefId {
-    _config = [[SPIConfig alloc] init];
-    _cashoutAmount = amountCents;
-    _posRefId = posRefId;
+    self = [super init];
+    
+    if (self) {
+        _config = [[SPIConfig alloc] init];
+        _cashoutAmount = amountCents;
+        _posRefId = posRefId;
+    }
+    
     return self;
 }
 

@@ -58,7 +58,8 @@ typedef NS_ENUM(NSUInteger, SPIPaymentType) {
  * The waiter will enter it on the Eftpos at the start of the PayAtTable flow
  * and the Eftpos will retrieve the bill using the table id.
  */
-@property (nonatomic, retain) NSString *tableId; //
+@property (nonatomic, retain) NSString *tableId;
+@property (nonatomic, retain) NSString *operatorId;
 
 /**
  * Your POS is required to persist some state on behalf of the Eftpos so the
@@ -73,6 +74,7 @@ typedef NS_ENUM(NSUInteger, SPIPaymentType) {
 
 /// The currently outsanding amount on this bill, in cents.
 @property (nonatomic) NSInteger outstandingAmount;
+@property (nonatomic, assign) BOOL paymentFlowStarted;
 
 - (NSArray<SPIPaymentHistoryEntry *> *)getBillPaymentHistory;
 
@@ -84,8 +86,6 @@ typedef NS_ENUM(NSUInteger, SPIPaymentType) {
 
 @interface SPIBillPayment : NSObject
 
-- (instancetype)initWithMessage:(SPIMessage *)message;
-
 @property (nonatomic, retain) NSString *billId;
 @property (nonatomic, retain) NSString *tableId;
 @property (nonatomic, retain) NSString *operatorId;
@@ -93,6 +93,9 @@ typedef NS_ENUM(NSUInteger, SPIPaymentType) {
 @property (nonatomic) NSInteger purchaseAmount;
 @property (nonatomic) NSInteger tipAmount;
 @property (nonatomic, readonly, copy) SPIPurchaseResponse *purchaseResponse;
+@property (nonatomic) BOOL paymentFlowStarted;
+
+- (instancetype)initWithMessage:(SPIMessage *)message;
 
 + (NSString *)paymentTypeString:(SPIPaymentType)ptype;
 
@@ -121,10 +124,13 @@ typedef NS_ENUM(NSUInteger, SPIPaymentType) {
 
 - (SPIBillStatusResponse *)payAtTableGetBillStatus:(NSString *)billId
                                            tableId:(NSString *)tableId
-                                        operatorId:(NSString *)operatorId;
+                                        operatorId:(NSString *)operatorId
+                                paymentFlowStarted:(BOOL)paymentFlowStarted;
 
 - (SPIBillStatusResponse *)payAtTableBillPaymentReceived:(SPIBillPayment *)billPayment
                                          updatedBillData:(NSString *)updatedBillData;
+
+- (void)payAtTableBillPaymentFlowEnded:(SPIMessage *)message;
 
 @end
 
@@ -142,5 +148,23 @@ typedef NS_ENUM(NSUInteger, SPIPaymentType) {
 - (void)handleGetBillDetailsRequest:(SPIMessage *)message;
 
 - (void)handleBillPaymentAdvice:(SPIMessage *)message;
+
+- (void)handleBillPaymentFlowEnded:(SPIMessage *)message;
+
+@end
+
+@interface SPIBillPaymentFlowEndedResponse : NSObject
+
+@property (nonatomic, retain) NSString *billId;
+@property (nonatomic, retain) NSString *tableId;
+@property (nonatomic, retain) NSString *operatorId;
+@property (nonatomic) NSInteger billTotalAmount;
+@property (nonatomic) NSInteger billOutstandingAmount;
+@property (nonatomic) NSInteger cardTotalCount;
+@property (nonatomic) NSInteger cardTotalAmount;
+@property (nonatomic) NSInteger cashTotalCount;
+@property (nonatomic) NSInteger cashTotalAmount;
+
+- (instancetype)initWithMessage:(SPIMessage *)message;
 
 @end
