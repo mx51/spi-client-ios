@@ -1903,7 +1903,10 @@ isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
         } else if ([eventName isEqualToString:SPIPayAtTableBillPaymentKey]) {
             [weakSelf.spiPat handleBillPaymentAdvice:m];
 
-        } else if ([eventName isEqualToString:SPIPayAtTableBillPaymentFlowEnded]) {
+        } else if ([eventName isEqualToString:SPIPayAtTableGetOpenTablesKey]) {
+            [weakSelf.spiPat handleGetOpenTablesRequest:m];
+            
+        } else if ([eventName isEqualToString:SPIPayAtTableBillPaymentFlowEndedKey]) {
             [weakSelf.spiPat handleBillPaymentFlowEnded:m];
             
         } else if ([eventName isEqualToString:SPIPrintingResponseKey]) {

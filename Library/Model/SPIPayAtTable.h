@@ -84,6 +84,28 @@ typedef NS_ENUM(NSUInteger, SPIPaymentType) {
 
 @end
 
+@interface SPIOpenTablesEntry : NSObject
+
+@property (nonatomic, retain) NSString *tableId;
+@property (nonatomic, retain) NSString *label;
+@property (nonatomic) NSInteger outstandingAmount;
+
+- (instancetype)initWithDictionary:(NSDictionary *)data;
+
+- (NSDictionary *)toJsonObject;
+
+@end
+
+@interface SPIGetOpenTablesResponse : NSObject
+
+@property (nonatomic, retain) NSString *tableData;
+
+- (NSArray<SPIOpenTablesEntry *> *)getOpenTables;
+
+- (SPIMessage *)toMessage:(NSString *)messageId;
+
+@end
+
 @interface SPIBillPayment : NSObject
 
 @property (nonatomic, retain) NSString *billId;
@@ -130,6 +152,8 @@ typedef NS_ENUM(NSUInteger, SPIPaymentType) {
 - (SPIBillStatusResponse *)payAtTableBillPaymentReceived:(SPIBillPayment *)billPayment
                                          updatedBillData:(NSString *)updatedBillData;
 
+- (SPIGetOpenTablesResponse *)payAtTableGetOpenTables:(NSString *)operatorId;
+
 - (void)payAtTableBillPaymentFlowEnded:(SPIMessage *)message;
 
 @end
@@ -150,6 +174,8 @@ typedef NS_ENUM(NSUInteger, SPIPaymentType) {
 - (void)handleBillPaymentAdvice:(SPIMessage *)message;
 
 - (void)handleBillPaymentFlowEnded:(SPIMessage *)message;
+
+- (void)handleGetOpenTablesRequest:(SPIMessage *)message;
 
 @end
 
