@@ -29,7 +29,7 @@
     [data setValue:_posRefId forKey:@"pos_ref_id"];
     [data setValue:[NSNumber numberWithInteger:_cashoutAmount] forKey:@"cash_amount"];
     [data setValue:[NSNumber numberWithInteger:_surchargeAmount] forKey:@"surcharge_amount"];
-    [_config addReceiptConfig:data];
+    [_config addReceiptConfig:data enabledPromptForCustomerCopyOnEftpos:true enabledSignatureFlowOnEftpos:true enabledPrintMerchantCopy:true];
     
     return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"cshout"]
                                        eventName:SPICashoutOnlyRequestKey

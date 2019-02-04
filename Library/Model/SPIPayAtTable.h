@@ -86,8 +86,8 @@ typedef NS_ENUM(NSUInteger, SPIPaymentType) {
 
 @interface SPIOpenTablesEntry : NSObject
 
-@property (nonatomic, retain) NSString *tableId;
-@property (nonatomic, retain) NSString *label;
+@property (nonatomic, copy) NSString *tableId;
+@property (nonatomic, copy) NSString *label;
 @property (nonatomic) NSInteger outstandingAmount;
 
 - (instancetype)initWithDictionary:(NSDictionary *)data;
@@ -98,7 +98,7 @@ typedef NS_ENUM(NSUInteger, SPIPaymentType) {
 
 @interface SPIGetOpenTablesResponse : NSObject
 
-@property (nonatomic, retain) NSString *tableData;
+@property (nonatomic, copy) NSString *tableData;
 
 - (NSArray<SPIOpenTablesEntry *> *)getOpenTables;
 
@@ -181,9 +181,9 @@ typedef NS_ENUM(NSUInteger, SPIPaymentType) {
 
 @interface SPIBillPaymentFlowEndedResponse : NSObject
 
-@property (nonatomic, retain) NSString *billId;
-@property (nonatomic, retain) NSString *tableId;
-@property (nonatomic, retain) NSString *operatorId;
+@property (nonatomic, copy) NSString *billId;
+@property (nonatomic, copy) NSString *tableId;
+@property (nonatomic, copy) NSString *operatorId;
 @property (nonatomic) NSInteger billTotalAmount;
 @property (nonatomic) NSInteger billOutstandingAmount;
 @property (nonatomic) NSInteger cardTotalCount;

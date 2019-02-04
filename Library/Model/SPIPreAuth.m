@@ -313,7 +313,7 @@ NSString *const SPIPreauthCompleteResponseKey = @"completion_response";
 - (SPIMessage *)toMessage {
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
     [data setValue:_posRefId forKey:@"pos_ref_id"];
-    [_config addReceiptConfig:data];
+    [_config addReceiptConfig:data enabledPromptForCustomerCopyOnEftpos:true enabledSignatureFlowOnEftpos:true enabledPrintMerchantCopy:true];
     
     return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"prav"]
                                        eventName:SPIAccountVerifyRequestKey
@@ -358,7 +358,7 @@ NSString *const SPIPreauthCompleteResponseKey = @"completion_response";
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
     [data setValue:_posRefId forKey:@"pos_ref_id"];
     [data setValue:[NSNumber numberWithInteger:_preauthAmount] forKey:@"preauth_amount"];
-    [_config addReceiptConfig:data];
+    [_config addReceiptConfig:data enabledPromptForCustomerCopyOnEftpos:true enabledSignatureFlowOnEftpos:true enabledPrintMerchantCopy:true];
     
     return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"prac"]
                                        eventName:SPIPreauthOpenRequestKey
@@ -390,7 +390,7 @@ NSString *const SPIPreauthCompleteResponseKey = @"completion_response";
     [data setValue:_posRefId forKey:@"pos_ref_id"];
     [data setValue:_preauthId forKey:@"preauth_id"];
     [data setValue:[NSNumber numberWithInteger:_topupAmount] forKey:@"topup_amount"];
-    [_config addReceiptConfig:data];
+    [_config addReceiptConfig:data enabledPromptForCustomerCopyOnEftpos:true enabledSignatureFlowOnEftpos:true enabledPrintMerchantCopy:true];
     
     return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"prtu"]
                                        eventName:SPIPreauthTopupRequestKey
@@ -422,7 +422,7 @@ NSString *const SPIPreauthCompleteResponseKey = @"completion_response";
     [data setValue:_posRefId forKey:@"pos_ref_id"];
     [data setValue:_preauthId forKey:@"preauth_id"];
     [data setValue:[NSNumber numberWithInteger:_partialCancellationAmount] forKey:@"preauth_cancel_amount"];
-    [_config addReceiptConfig:data];
+    [_config addReceiptConfig:data enabledPromptForCustomerCopyOnEftpos:true enabledSignatureFlowOnEftpos:true enabledPrintMerchantCopy:true];
     
     return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"prpc"]
                                        eventName:SPIPreauthPartialCancellationRequestKey
@@ -451,7 +451,7 @@ NSString *const SPIPreauthCompleteResponseKey = @"completion_response";
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
     [data setValue:_posRefId forKey:@"pos_ref_id"];
     [data setValue:_preauthId forKey:@"preauth_id"];
-    [_config addReceiptConfig:data];
+    [_config addReceiptConfig:data enabledPromptForCustomerCopyOnEftpos:true enabledSignatureFlowOnEftpos:true enabledPrintMerchantCopy:true];
     
     return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"prext"]
                                        eventName:SPIPreauthExtendRequestKey
@@ -480,7 +480,7 @@ NSString *const SPIPreauthCompleteResponseKey = @"completion_response";
     NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
     [data setValue:_posRefId forKey:@"pos_ref_id"];
     [data setValue:_preauthId forKey:@"preauth_id"];
-    [_config addReceiptConfig:data];
+    [_config addReceiptConfig:data enabledPromptForCustomerCopyOnEftpos:true enabledSignatureFlowOnEftpos:true enabledPrintMerchantCopy:true];
     
     return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"prac"]
                                        eventName:SPIPreauthCancellationRequestKey
@@ -513,7 +513,7 @@ NSString *const SPIPreauthCompleteResponseKey = @"completion_response";
     [data setValue:_preauthId forKey:@"preauth_id"];
     [data setValue:[NSNumber numberWithInteger:_completionAmount] forKey:@"completion_amount"];
     [data setValue:[NSNumber numberWithInteger:_surchargeAmount] forKey:@"surcharge_amount"];
-    [_config addReceiptConfig:data];
+    [_config addReceiptConfig:data enabledPromptForCustomerCopyOnEftpos:true enabledSignatureFlowOnEftpos:true enabledPrintMerchantCopy:true];
     
     return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"prac"]
                                        eventName:SPIPreauthCompleteRequestKey
