@@ -126,8 +126,12 @@
     return [self.message getDataStringValue:@"host_response_text"];
 }
 
-- (NSString *)getReceipt {
+- (NSString *)getMerchantReceipt {
     return [self.message getDataStringValue:@"merchant_receipt"];
+}
+
+- (NSString *)getCustomerReceipt {
+    return [self.message getDataStringValue:@"customer_receipt"];
 }
 
 - (NSString *)getTransactionRange {
@@ -145,14 +149,6 @@
         [entries addObject:[[SPISchemeSettlementEntry alloc] initWithData:item]];
     }
     return entries;
-}
-
-- (NSString *)getMerchantReceipt {
-    return [self.message getDataStringValue:@"merchant_receipt"];
-}
-
-- (NSString *)getCustomerReceipt {
-    return [self.message getDataStringValue:@"customer_receipt"];
 }
 
 - (BOOL)wasMerchantReceiptPrinted {
