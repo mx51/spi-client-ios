@@ -130,10 +130,6 @@
     return [self.message getDataStringValue:@"merchant_receipt"];
 }
 
-- (NSString *)getCustomerReceipt {
-    return [self.message getDataStringValue:@"customer_receipt"];
-}
-
 - (NSString *)getTransactionRange {
     return [self.message getDataStringValue:@"transaction_range"];
 }
@@ -153,10 +149,6 @@
 
 - (BOOL)wasMerchantReceiptPrinted {
     return [self.message getDataBoolValue:@"merchant_receipt_printed" defaultIfNotFound:false];
-}
-
-- (BOOL)wasCustomerReceiptPrinted {
-    return [self.message getDataBoolValue:@"customer_receipt_printed" defaultIfNotFound:false];
 }
 
 @end

@@ -62,8 +62,6 @@
 
 - (NSString *)getResponseText;
 
-- (NSString *)getCustomerReceipt;
-
 - (NSString *)getMerchantReceipt;
 
 - (NSString *)getTransactionRange;
@@ -73,8 +71,6 @@
 - (NSArray<SPISchemeSettlementEntry *> *)getSchemeSettlementEntries;
 
 - (BOOL)wasMerchantReceiptPrinted;
-
-- (BOOL)wasCustomerReceiptPrinted;
 
 @end
 
