@@ -70,6 +70,10 @@
 
 - (NSArray<SPISchemeSettlementEntry *> *)getSchemeSettlementEntries;
 
+- (NSString *)getCustomerReceipt;
+
+- (NSString *)getMerchantReceipt;
+
 - (BOOL)wasMerchantReceiptPrinted;
 
 - (BOOL)wasCustomerReceiptPrinted;

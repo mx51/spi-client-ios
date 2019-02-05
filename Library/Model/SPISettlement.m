@@ -147,6 +147,14 @@
     return entries;
 }
 
+- (NSString *)getMerchantReceipt {
+    return [self.message getDataStringValue:@"merchant_receipt"];
+}
+
+- (NSString *)getCustomerReceipt {
+    return [self.message getDataStringValue:@"customer_receipt"];
+}
+
 - (BOOL)wasMerchantReceiptPrinted {
     return [self.message getDataBoolValue:@"merchant_receipt_printed" defaultIfNotFound:false];
 }
