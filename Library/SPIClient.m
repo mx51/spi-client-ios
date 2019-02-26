@@ -1520,25 +1520,25 @@ isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
 }
 
 - (void)handlePrintingResponse:(SPIMessage *)m {
-    if([_delegate conformsToProtocol:@protocol(SPIDelegate)] && [_delegate respondsToSelector:@selector(printingResponse:)]) {
+    if([_delegate respondsToSelector:@selector(printingResponse:)]) {
         [_delegate printingResponse:m];
     }
 }
 
 - (void)handleTerminalStatusResponse:(SPIMessage *)m {
-    if([_delegate conformsToProtocol:@protocol(SPIDelegate)] && [_delegate respondsToSelector:@selector(terminalStatusResponse:)]) {
+    if([_delegate respondsToSelector:@selector(terminalStatusResponse:)]) {
         [_delegate terminalStatusResponse:m];
     }
 }
 
 - (void)handleTerminalConfigurationResponse:(SPIMessage *)m {
-    if([_delegate conformsToProtocol:@protocol(SPIDelegate)] && [_delegate respondsToSelector:@selector(terminalConfigurationResponse:)]) {
+    if([_delegate respondsToSelector:@selector(terminalConfigurationResponse:)]) {
         [_delegate terminalConfigurationResponse:m];
     }
 }
 
 - (void)handleBatteryLevelChanged:(SPIMessage *)m {
-    if([_delegate conformsToProtocol:@protocol(SPIDelegate)] && [_delegate respondsToSelector:@selector(batteryLevelChanged:)]) {
+    if([_delegate respondsToSelector:@selector(batteryLevelChanged:)]) {
         [_delegate batteryLevelChanged:m];
     }
 }
