@@ -50,15 +50,15 @@
                                purchaseId:(NSString *)purchaseId {
     return [SPIPurchaseHelper createRefundRequest:amountCents
                                        purchaseId:purchaseId
-                         suppressMerchantPassword:false];
+                       isSuppressMerchantPassword:false];
 }
 
 + (SPIRefundRequest *)createRefundRequest:(NSInteger)amountCents
                                purchaseId:(NSString *)purchaseId
-                 suppressMerchantPassword:(BOOL)suppressMerchantPassword {
+               isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword {
     SPIRefundRequest *request =  [[SPIRefundRequest alloc] initWithPosRefId:purchaseId
                                                                 amountCents:amountCents];
-    request.suppressMerchantPassword = suppressMerchantPassword;
+    request.isSuppressMerchantPassword = isSuppressMerchantPassword;
     return request;
 }
 

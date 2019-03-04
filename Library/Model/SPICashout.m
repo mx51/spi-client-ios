@@ -13,14 +13,9 @@
 
 - (instancetype)initWithAmountCents:(NSInteger)amountCents
                            posRefId:(NSString *)posRefId {
-    self = [super init];
-    
-    if (self) {
-        _config = [[SPIConfig alloc] init];
-        _cashoutAmount = amountCents;
-        _posRefId = posRefId;
-    }
-    
+    _config = [[SPIConfig alloc] init];
+    _cashoutAmount = amountCents;
+    _posRefId = posRefId;
     return self;
 }
 
@@ -29,8 +24,7 @@
     [data setValue:_posRefId forKey:@"pos_ref_id"];
     [data setValue:[NSNumber numberWithInteger:_cashoutAmount] forKey:@"cash_amount"];
     [data setValue:[NSNumber numberWithInteger:_surchargeAmount] forKey:@"surcharge_amount"];
-    [_config addReceiptConfig:data enabledPromptForCustomerCopyOnEftpos:true enabledSignatureFlowOnEftpos:true enabledPrintMerchantCopy:true];
-    [_options addOptions:data];
+    [_config addReceiptConfig:data];
     
     return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"cshout"]
                                        eventName:SPICashoutOnlyRequestKey

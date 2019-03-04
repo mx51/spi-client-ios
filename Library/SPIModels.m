@@ -269,17 +269,14 @@
 
 @implementation SPIConfig
 
-- (void)addReceiptConfig:(NSMutableDictionary *)data
-enabledPromptForCustomerCopyOnEftpos:(BOOL)enabledPromptForCustomerCopyOnEftpos
- enabledSignatureFlowOnEftpos:(BOOL)enabledSignatureFlowOnEftpos
-     enabledPrintMerchantCopy:(BOOL)enabledPrintMerchantCopy{
-    if (_promptForCustomerCopyOnEftpos && enabledPromptForCustomerCopyOnEftpos) {
+- (void)addReceiptConfig:(NSMutableDictionary *)data {
+    if (_promptForCustomerCopyOnEftpos) {
         [data setObject:[NSNumber numberWithBool:_promptForCustomerCopyOnEftpos] forKey:@"prompt_for_customer_copy"];
     }
-    if (_signatureFlowOnEftpos && enabledSignatureFlowOnEftpos) {
+    if (_signatureFlowOnEftpos) {
         [data setObject:[NSNumber numberWithBool:_signatureFlowOnEftpos] forKey:@"print_for_signature_required_transactions"];
     }
-    if (_printMerchantCopy && enabledPrintMerchantCopy) {
+    if (_printMerchantCopy) {
         [data setObject:[NSNumber numberWithBool:_printMerchantCopy] forKey:@"print_merchant_copy"];
     }
 }

@@ -11,7 +11,6 @@
 #import "SPIMessage.h"
 #import "SPIRequestIdHelper.h"
 #import "SPISettlement.h"
-#import "SPIClient.h"
 
 @implementation SPISettleRequest
 
@@ -20,20 +19,15 @@
     
     if (self) {
         _settleId = [settleId copy];
-        _config = [[SPIConfig alloc] init];
     }
     
     return self;
 }
 
 - (SPIMessage *)toMessage {
-    NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
-    [_config addReceiptConfig:data enabledPromptForCustomerCopyOnEftpos:false enabledSignatureFlowOnEftpos:false enabledPrintMerchantCopy:true];
-    [_options addOptions:data];
-    
     return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"stl"]
                                        eventName:SPISettleRequestKey
-                                            data:data
+                                            data:nil
                                  needsEncryption:YES];
 }
 
@@ -127,7 +121,7 @@
     return [self.message getDataStringValue:@"host_response_text"];
 }
 
-- (NSString *)getMerchantReceipt {
+- (NSString *)getReceipt {
     return [self.message getDataStringValue:@"merchant_receipt"];
 }
 
@@ -148,10 +142,6 @@
     return entries;
 }
 
-- (BOOL)wasMerchantReceiptPrinted {
-    return [self.message getDataBoolValue:@"merchant_receipt_printed" defaultIfNotFound:false];
-}
-
 @end
 
 @implementation SPISettlementEnquiryRequest
@@ -161,20 +151,15 @@
     
     if (self) {
         _requestId = requestId;
-        _config = [[SPIConfig alloc] init];
     }
     
     return self;
 }
 
 - (SPIMessage *)toMessage {
-    NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
-    [_config addReceiptConfig:data enabledPromptForCustomerCopyOnEftpos:false enabledSignatureFlowOnEftpos:false enabledPrintMerchantCopy:true];
-    [_options addOptions:data];
-    
     return [[SPIMessage alloc] initWithMessageId:_requestId
                                        eventName:SPISettlementEnquiryRequestKey
-                                            data:data
+                                            data:nil
                                  needsEncryption:true];
 }
 

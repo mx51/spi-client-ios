@@ -414,25 +414,13 @@ static NSInteger retriesBeforeResolvingDeviceAddress = 5; // How many retries be
               completion:(SPICompletionTxResult)completion {
     [self initiateRefundTx:posRefId
                amountCents:amountCents
-  suppressMerchantPassword:false
+isSuppressMerchantPassword:false
                 completion:completion];
 }
 
 - (void)initiateRefundTx:(NSString *)posRefId
              amountCents:(NSInteger)amountCents
-suppressMerchantPassword:(BOOL)suppressMerchantPassword
-              completion:(SPICompletionTxResult)completion {
-    [self initiateRefundTx:posRefId
-               amountCents:amountCents
-  suppressMerchantPassword:suppressMerchantPassword
-                   options:nil
-                completion:completion];
-}
-
-- (void)initiateRefundTx:(NSString *)posRefId
-             amountCents:(NSInteger)amountCents
-suppressMerchantPassword:(BOOL)suppressMerchantPassword
-                 options:(SPITransactionOptions *)options
+isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword
               completion:(SPICompletionTxResult)completion {
     
     if (self.state.status == SPIStatusUnpaired) {
@@ -453,9 +441,8 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             
             SPIRefundRequest *refund = [[SPIRefundRequest alloc] initWithPosRefId:posRefId
                                                                       amountCents:amountCents];
-            refund.suppressMerchantPassword = suppressMerchantPassword;
+            refund.isSuppressMerchantPassword = isSuppressMerchantPassword;
             refund.config = weakSelf.config;
-            refund.options = options;
             
             SPIMessage *refundMsg = [refund toMessage];
             
@@ -518,18 +505,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                   amountCents:(NSInteger)amountCents
               surchargeAmount:(NSInteger)surchargeAmount
                    completion:(SPICompletionTxResult)completion {
-    [self initiateCashoutOnlyTx:posRefId
-                    amountCents:amountCents
-                surchargeAmount:surchargeAmount
-                        options:nil
-                     completion:completion];
-}
-
-- (void)initiateCashoutOnlyTx:(NSString *)posRefId
-                  amountCents:(NSInteger)amountCents
-              surchargeAmount:(NSInteger)surchargeAmount
-                      options:(SPITransactionOptions *)options
-                   completion:(SPICompletionTxResult)completion {
+    
     if (self.state.status == SPIStatusUnpaired) {
         completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
         return;
@@ -550,7 +526,6 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                                                                                                   posRefId:posRefId];
             cashoutOnlyRequest.surchargeAmount = surchargeAmount;
             cashoutOnlyRequest.config = weakSelf.config;
-            cashoutOnlyRequest.options = options;
             
             SPIMessage *cashoutMsg = [cashoutOnlyRequest toMessage];
             
@@ -583,32 +558,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                    amountCents:(NSInteger)amountCents
                surchargeAmount:(NSInteger)surchargeAmount
                     completion:(SPICompletionTxResult)completion {
-    [self initiateMotoPurchaseTx:posRefId
-                     amountCents:amountCents
-                 surchargeAmount:surchargeAmount
-        suppressMerchantPassword:false
-                      completion:completion];
-}
-
-- (void)initiateMotoPurchaseTx:(NSString *)posRefId
-                   amountCents:(NSInteger)amountCents
-               surchargeAmount:(NSInteger)surchargeAmount
-      suppressMerchantPassword:(BOOL)suppressMerchantPassword
-                    completion:(SPICompletionTxResult)completion {
-    [self initiateMotoPurchaseTx:posRefId
-                     amountCents:amountCents
-                 surchargeAmount:surchargeAmount
-        suppressMerchantPassword:suppressMerchantPassword
-                         options:nil
-                      completion:completion];
-}
-
-- (void)initiateMotoPurchaseTx:(NSString *)posRefId
-                   amountCents:(NSInteger)amountCents
-               surchargeAmount:(NSInteger)surchargeAmount
-      suppressMerchantPassword:(BOOL)suppressMerchantPassword
-                       options:(SPITransactionOptions *)options
-                    completion:(SPICompletionTxResult)completion {
+    
     if (self.state.status == SPIStatusUnpaired) {
         completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
         return;
@@ -629,8 +579,6 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                                                                                                      posRefId:posRefId];
             motoPurchaseRequest.surchargeAmount = surchargeAmount;
             motoPurchaseRequest.config = weakSelf.config;
-            motoPurchaseRequest.suppressMerchantPassword = suppressMerchantPassword;
-            motoPurchaseRequest.options = options;
             
             SPIMessage *cashoutMsg = [motoPurchaseRequest toMessage];
             
@@ -709,16 +657,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     });
 }
 
-- (void)initiateSettleTx:(NSString *)posRefId
-              completion:(SPICompletionTxResult)completion {
-    [self initiateSettleTx:posRefId
-                   options:nil
-                completion:completion];
-}
-
-- (void)initiateSettleTx:(NSString *)posRefId
-                 options:(SPITransactionOptions *)options
-              completion:(SPICompletionTxResult)completion {
+- (void)initiateSettleTx:(NSString *)posRefId completion:(SPICompletionTxResult)completion {
     if (self.state.status == SPIStatusUnpaired) {
         completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
         return;
@@ -736,8 +675,6 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             weakSelf.state.flow = SPIFlowTransaction;
             
             SPISettleRequest *settleRequest = [[SPISettleRequest alloc] initWithSettleId:[SPIRequestIdHelper idForString:@"settle"]];
-            settleRequest.config = weakSelf.config;
-            settleRequest.options = options;
             
             SPIMessage *settleMessage = [settleRequest toMessage];
             
@@ -757,16 +694,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     });
 }
 
-- (void)initiateSettlementEnquiry:(NSString *)posRefId
-                       completion:(SPICompletionTxResult)completion {
-    [self initiateSettlementEnquiry:posRefId
-                            options:nil
-                         completion:completion];
-}
-
-- (void)initiateSettlementEnquiry:(NSString *)posRefId
-                          options:(SPITransactionOptions *)options
-                       completion:(SPICompletionTxResult)completion {
+- (void)initiateSettlementEnquiry:(NSString *)posRefId completion:(SPICompletionTxResult)completion {
     if (self.state.status == SPIStatusUnpaired) {
         completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
         return;
@@ -783,11 +711,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             
             weakSelf.state.flow = SPIFlowTransaction;
             
-            SPISettlementEnquiryRequest *settleEnqRequest = [[SPISettlementEnquiryRequest alloc] initWithRequestId:[SPIRequestIdHelper idForString:@"stlenq"]];
-            settleEnqRequest.config = weakSelf.config;
-            settleEnqRequest.options = options;
-            
-            SPIMessage *stlEnqMsg = [settleEnqRequest toMessage];
+            SPIMessage *stlEnqMsg = [[[SPISettlementEnquiryRequest alloc] initWithRequestId:[SPIRequestIdHelper idForString:@"stlenq"]] toMessage];
             
             weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId
                                                                                  type:SPITransactionTypeSettleEnquiry
@@ -1054,14 +978,14 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 
 - (BOOL)hasSerialNumberChanged:(NSString *)updatedSerialNumber {
     if ([_serialNumber isEqualToString:updatedSerialNumber])
-    return false;
+        return false;
     
     return true;
 }
 
 - (BOOL)hasEftposAddressChanged:(NSString *)updatedEftposAddress {
     if ([_eftposAddress isEqualToString:updatedEftposAddress])
-    return false;
+        return false;
     
     return true;
 }
@@ -1642,11 +1566,11 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     
     dispatch_async(self.queue, ^{
         switch (newConnectionState) {
-                case SPIConnectionStateConnecting:
+            case SPIConnectionStateConnecting:
                 SPILog(@"I'm connecting to the EFTPOS at %@...", weakSelf.eftposAddress);
                 break;
                 
-                case SPIConnectionStateConnected:
+            case SPIConnectionStateConnected:
                 self->_retriesSinceLastDeviceAddressResolution = 0;
                 
                 if (weakSelf.state.flow == SPIFlowPairing && weakSelf.state.status == SPIStatusUnpaired) {
@@ -1662,7 +1586,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                 }
                 break;
                 
-                case SPIConnectionStateDisconnected:
+            case SPIConnectionStateDisconnected:
                 SPILog(@"I'm disconnected from %@", weakSelf.eftposAddress);
                 // Let's reset some lifecycle related state, ready for next connection
                 weakSelf.mostRecentPingSent = nil;
@@ -1970,12 +1894,6 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             
         } else if ([eventName isEqualToString:SPIPayAtTableBillPaymentKey]) {
             [weakSelf.spiPat handleBillPaymentAdvice:m];
-
-        } else if ([eventName isEqualToString:SPIPayAtTableGetOpenTablesKey]) {
-            [weakSelf.spiPat handleGetOpenTablesRequest:m];
-            
-        } else if ([eventName isEqualToString:SPIPayAtTableBillPaymentFlowEndedKey]) {
-            [weakSelf.spiPat handleBillPaymentFlowEnded:m];
             
         } else if ([eventName isEqualToString:SPIPrintingResponseKey]) {
             [weakSelf handlePrintingResponse:m];

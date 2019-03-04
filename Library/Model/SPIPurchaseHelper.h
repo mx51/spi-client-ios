@@ -32,6 +32,6 @@
 
 + (SPIRefundRequest *)createRefundRequest:(NSInteger)amountCents
                                purchaseId:(NSString *)purchaseId
-               suppressMerchantPassword:(BOOL)suppressMerchantPassword;
+               isSuppressMerchantPassword:(BOOL)isSuppressMerchantPassword;
 
 @end

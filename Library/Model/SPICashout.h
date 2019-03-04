@@ -15,7 +15,6 @@
 @property (nonatomic, readonly, copy) NSString *posRefId;
 @property (nonatomic, retain) SPIConfig *config;
 @property (nonatomic) NSInteger surchargeAmount;
-@property (nonatomic, retain) SPITransactionOptions *options;
 
 - (SPIMessage *)toMessage;
 
