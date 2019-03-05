@@ -29,17 +29,17 @@
     XCTAssertEqual([msg getDataIntegerValue:@"refund_amount"],amountCents);
 }
 
-- (void)testPopulateRefundRequestWithIsSuppressMerchantPassword {
+- (void)testPopulateRefundRequestWithSuppressMerchantPassword {
     NSString *posRefId = @"test";
     int amountCents = 10;
-    BOOL isSuppressMerchantPassword = true;
-    SPIRefundRequest *request = [SPIPurchaseHelper createRefundRequest:amountCents purchaseId:posRefId isSuppressMerchantPassword:isSuppressMerchantPassword];
+    BOOL suppressMerchantPassword = true;
+    SPIRefundRequest *request = [SPIPurchaseHelper createRefundRequest:amountCents purchaseId:posRefId suppressMerchantPassword:suppressMerchantPassword];
     
     SPIMessage *msg = [request toMessage];
     
     XCTAssertEqual([msg getDataStringValue:@"pos_ref_id"],posRefId);
     XCTAssertEqual([msg getDataIntegerValue:@"refund_amount"],amountCents);
-    XCTAssertEqual([msg getDataIntegerValue:@"suppress_merchant_password"],isSuppressMerchantPassword);
+    XCTAssertEqual([msg getDataIntegerValue:@"suppress_merchant_password"],suppressMerchantPassword);
 }
 
 - (void)testPopulateRefundResponse {
