@@ -36,7 +36,7 @@
     XCTAssertTrue([[[response getPeriodEndTime] toString] isEqualToString:@"2018-06-18T01:17:00.000"]);
     XCTAssertNotNil([response getTriggeredTime]);
     XCTAssertTrue([[response getResponseText] isEqualToString:@"APPROVED"]);
-    XCTAssertNotNil([response getReceipt]);
+    XCTAssertNotNil([response getMerchantReceipt]);
     XCTAssertTrue([[response getTransactionRange] isEqualToString:@"000148-000149"]);
     XCTAssertTrue([[response getTerminalId] isEqualToString:@"100312348845"]);
     XCTAssertGreaterThan([response getSchemeSettlementEntries].count, 0);
