@@ -282,7 +282,7 @@
 }
 
 - (BOOL)isStillInProgress:(NSString *)posRefId {
-    return ([self wasOperationInProgressError] && [posRefId isEqualToString:[self getPosRefId]]);
+    return ([self wasOperationInProgressError] && ([posRefId isEqualToString:[self getPosRefId]] || [self getPosRefId] == nil));
 }
 
 - (SPIMessageSuccessState)getSuccessState {
