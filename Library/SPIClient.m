@@ -1537,7 +1537,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         return SPIMessageSuccessStateUnknown;
     }
     
-    if ([[gltResponse getTxType] isEqual: @"PURCHASE"] && [gltResponse getBankNonCashAmount] != expectedAmount && compare > 0) {
+    if ([[[gltResponse getTxType] uppercaseString] isEqual: @"PURCHASE"] && [gltResponse getBankNonCashAmount] != expectedAmount && compare > 0) {
         return SPIMessageSuccessStateUnknown;
     }
     
