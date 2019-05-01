@@ -301,6 +301,10 @@
     return [self.message getDataStringValue:@"pos_ref_id"];
 }
 
+- (NSInteger)getBankNonCashAmount {
+    return [self.message getDataStringValue:@"bank_noncash_amount"];
+}
+
 - (NSString *)getSchemeApp {
     return [self.message getDataStringValue:@"scheme_name"];
 }
