@@ -109,12 +109,6 @@ static NSInteger retriesBeforeResolvingDeviceAddress = 5; // How many retries be
     return _spiPat;
 }
 
-- (SPIPayAtTable *)disablePayAtTable {
-    _spiPat = [[SPIPayAtTable alloc] initWithClient:self];
-    _spiPat.config.payAtTableEnabled = false;
-    return _spiPat;
-}
-
 #pragma mark - Delegate
 
 - (void)callDelegate:(void (^)(id<SPIDelegate>))block {
@@ -999,13 +993,16 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     NSString *was = _serialNumber;
     _serialNumber = serialNumber.copy;
     
-    if (_autoAddressResolutionEnable && [self hasSerialNumberChanged:was]) {
+    if ([self hasSerialNumberChanged:was]) {
         __weak __typeof(&*self) weakSelf = self;
         
         dispatch_async(self.queue, ^{
             // we're turning it on
             [weakSelf autoResolveEftposAddress];
         });
+    } else {
+        self.state.deviceAddressStatus.responseCode = DeviceAddressResponceCodeSerialNumberNotChanged;
+        [self deviceAddressChanged];
     }
 }
 
@@ -1080,10 +1077,18 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     
     [[SPIDeviceService alloc] retrieveServiceWithSerialNumber:_serialNumber apiKey:_deviceApiKey acquirerCode:_acquirerCode isTestMode:_testMode completion:^(SPIDeviceAddressStatus *addressResponse) {
         if (addressResponse.address.length == 0) {
+            SPIDeviceAddressStatus *currentDeviceAddressStatus = [SPIDeviceAddressStatus new];
+            currentDeviceAddressStatus.responseCode = DeviceAddressResponceCodeError;
+            self.state.deviceAddressStatus = currentDeviceAddressStatus;
+            [self deviceAddressChanged];
             return;
         }
         
         if (![self hasEftposAddressChanged:addressResponse.address]) {
+            SPIDeviceAddressStatus *currentDeviceAddressStatus = [SPIDeviceAddressStatus new];
+            currentDeviceAddressStatus.responseCode = DeviceAddressResponceCodeAddressNotChanged;
+            self.state.deviceAddressStatus = currentDeviceAddressStatus;
+            [self deviceAddressChanged];
             return;
         }
         
@@ -1094,6 +1099,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         SPIDeviceAddressStatus *currentDeviceAddressStatus = [SPIDeviceAddressStatus new];
         currentDeviceAddressStatus.address = addressResponse.address;
         currentDeviceAddressStatus.lastUpdated = addressResponse.lastUpdated;
+        currentDeviceAddressStatus.responseCode = DeviceAddressResponceCodeSuccess;
         self.state.deviceAddressStatus = currentDeviceAddressStatus;
         [self deviceAddressChanged];
     }];

@@ -556,12 +556,12 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 
 @param gltResponse The gltResponse message to check.
 @param expectedAmount The expected amount in cents.
-@param requestDateTime The time you made your request.
+ @param requestDate The time you made your request.
 @param posRefId The reference ID that you passed in with the original request. Currently not used.
 */
 - (SPIMessageSuccessState)gltMatch:(SPIGetLastTransactionResponse *)gltResponse
                     expectedAmount:(NSInteger)expectedAmount
-                   requestDate:(NSDate *)requestDate
+                       requestDate:(NSDate *)requestDate
                           posRefId:(NSString *)posRefId;
 
 /**
@@ -570,13 +570,6 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
  @return Configuration object handling table and bill requests and responses.
  */
 - (SPIPayAtTable *)enablePayAtTable;
-
-/**
- Disables Pay-at-Table feature and returns the configuration object.
- 
- @return Configuration object handling table and bill requests and responses.
- */
-- (SPIPayAtTable *)disablePayAtTable;
 
 /**
  Enables Preauth feature and returns the configuration object.
