@@ -1001,7 +1001,11 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             [weakSelf autoResolveEftposAddress];
         });
     } else {
-        self.state.deviceAddressStatus.responseCode = DeviceAddressResponceCodeSerialNumberNotChanged;
+        if (self.state.deviceAddressStatus == nil) {
+            self.state.deviceAddressStatus = [[SPIDeviceAddressStatus alloc] init];
+        }
+        
+        self.state.deviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponceCodeSerialNumberNotChanged;
         [self deviceAddressChanged];
     }
 }
@@ -1076,17 +1080,33 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     }
     
     [[SPIDeviceService alloc] retrieveServiceWithSerialNumber:_serialNumber apiKey:_deviceApiKey acquirerCode:_acquirerCode isTestMode:_testMode completion:^(SPIDeviceAddressStatus *addressResponse) {
-        if (addressResponse.address.length == 0) {
+        if (addressResponse == nil) {
             SPIDeviceAddressStatus *currentDeviceAddressStatus = [SPIDeviceAddressStatus new];
-            currentDeviceAddressStatus.responseCode = DeviceAddressResponceCodeError;
+            currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponceCodeDeviceError;
             self.state.deviceAddressStatus = currentDeviceAddressStatus;
             [self deviceAddressChanged];
             return;
         }
         
+        if (addressResponse.address.length == 0) {
+            if (addressResponse.responseCode == 404) {
+                SPIDeviceAddressStatus *currentDeviceAddressStatus = [SPIDeviceAddressStatus new];
+                currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponceCodeInvalidSerialNumber;
+                self.state.deviceAddressStatus = currentDeviceAddressStatus;
+                [self deviceAddressChanged];
+                return;
+            } else {
+                SPIDeviceAddressStatus *currentDeviceAddressStatus = [SPIDeviceAddressStatus new];
+                currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponceCodeDeviceError;
+                self.state.deviceAddressStatus = currentDeviceAddressStatus;
+                [self deviceAddressChanged];
+                return;
+            }
+        }
+        
         if (![self hasEftposAddressChanged:addressResponse.address]) {
             SPIDeviceAddressStatus *currentDeviceAddressStatus = [SPIDeviceAddressStatus new];
-            currentDeviceAddressStatus.responseCode = DeviceAddressResponceCodeAddressNotChanged;
+            currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponceCodeAddressNotChanged;
             self.state.deviceAddressStatus = currentDeviceAddressStatus;
             [self deviceAddressChanged];
             return;
@@ -1099,7 +1119,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         SPIDeviceAddressStatus *currentDeviceAddressStatus = [SPIDeviceAddressStatus new];
         currentDeviceAddressStatus.address = addressResponse.address;
         currentDeviceAddressStatus.lastUpdated = addressResponse.lastUpdated;
-        currentDeviceAddressStatus.responseCode = DeviceAddressResponceCodeSuccess;
+        currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponceCodeSuccess;
         self.state.deviceAddressStatus = currentDeviceAddressStatus;
         [self deviceAddressChanged];
     }];
@@ -1671,11 +1691,11 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     
     dispatch_async(self.queue, ^{
         switch (newConnectionState) {
-                case SPIConnectionStateConnecting:
+            case SPIConnectionStateConnecting:
                 SPILog(@"I'm connecting to the EFTPOS at %@...", weakSelf.eftposAddress);
                 break;
                 
-                case SPIConnectionStateConnected:
+            case SPIConnectionStateConnected:
                 self->_retriesSinceLastDeviceAddressResolution = 0;
                 
                 if (weakSelf.state.flow == SPIFlowPairing && weakSelf.state.status == SPIStatusUnpaired) {
@@ -1691,7 +1711,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                 }
                 break;
                 
-                case SPIConnectionStateDisconnected:
+            case SPIConnectionStateDisconnected:
                 SPILog(@"I'm disconnected from %@", weakSelf.eftposAddress);
                 // Let's reset some lifecycle related state, ready for next connection
                 weakSelf.mostRecentPingSent = nil;
