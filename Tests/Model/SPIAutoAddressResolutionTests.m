@@ -49,6 +49,7 @@
     [[SPIDeviceService alloc] retrieveServiceWithSerialNumber:serialNumber apiKey:apiKey acquirerCode:acquirerCode isTestMode:true completion:^(SPIDeviceAddressStatus *addressResponse) {
         XCTAssertNotNil(addressResponse);
         XCTAssertNotNil(addressResponse.address);
+        XCTAssertEqual(addressResponse.deviceAddressResponseCode, DeviceAddressResponceCodeSuccess);
     }];
 }
 
