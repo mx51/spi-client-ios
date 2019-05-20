@@ -33,11 +33,11 @@
     XCTAssertTrue([predicate evaluateWithObject:version], @"Version number is not in a correct format");
 }
 
-//- (void)testPerformanceExample {
-//    // This is an example of a performance test case.
-//    [self measureBlock:^{
-//        // Put the code you want to measure the time of here.
-//    }];
-//}
+- (void)testPerformanceExample {
+    // This is an example of a performance test case.
+    [self measureBlock:^{
+        // Put the code you want to measure the time of here.
+    }];
+}
 
 @end
