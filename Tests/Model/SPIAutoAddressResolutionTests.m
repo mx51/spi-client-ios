@@ -37,8 +37,11 @@
     NSString *serialNumber = @"111-111-111";
     
     [[SPIDeviceService alloc] retrieveServiceWithSerialNumber:serialNumber apiKey:apiKey acquirerCode:acquirerCode isTestMode:true completion:^(SPIDeviceAddressStatus *addressResponse) {
-        XCTAssertNil(addressResponse);
+        XCTAssertEqual(addressResponse.responseCode, 404);
     }];
+    
+    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"test expectation"];
+    (void) [XCTWaiter waitForExpectations:@[expectation] timeout:1];
 }
 
 - (void)testAutoResolveEftposAddressWithValidSerialNumberAsync {
@@ -51,6 +54,9 @@
         XCTAssertNotNil(addressResponse.address);
         XCTAssertEqual(addressResponse.deviceAddressResponseCode, DeviceAddressResponceCodeSuccess);
     }];
+    
+    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"test expectation"];
+    (void) [XCTWaiter waitForExpectations:@[expectation] timeout:1];
 }
 
 @end
