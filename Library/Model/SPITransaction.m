@@ -302,7 +302,7 @@
 }
 
 - (NSInteger)getBankNonCashAmount {
-    return [self.message getDataStringValue:@"bank_noncash_amount"];
+    return [self.message getDataIntegerValue:@"bank_noncash_amount"];
 }
 
 - (NSString *)getSchemeApp {

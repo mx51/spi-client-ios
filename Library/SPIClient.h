@@ -556,7 +556,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 
 @param gltResponse The gltResponse message to check.
 @param expectedAmount The expected amount in cents.
-@param requestDateTime The time you made your request.
+ @param requestDate The time you made your request.
 @param posRefId The reference ID that you passed in with the original request. Currently not used.
 */
 - (SPIMessageSuccessState)gltMatch:(SPIGetLastTransactionResponse *)gltResponse
