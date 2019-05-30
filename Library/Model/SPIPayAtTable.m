@@ -350,6 +350,13 @@
 
 @implementation SPIOpenTablesEntry
 
+- (instancetype)initWithDictionary:(NSDictionary *)data {
+    _tableId = [data valueForKey:@"table_id"];
+    _label = [data valueForKey:@"label"];
+    _outstandingAmount = [[data valueForKey:@"bill_outstanding_amount"] integerValue];
+    return self;
+}
+
 - (NSDictionary *)toJsonObject {
     NSMutableDictionary * data = [[NSMutableDictionary alloc] init];
     [data setValue: _tableId forKey:@"table_id"];
