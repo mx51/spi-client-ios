@@ -146,6 +146,7 @@
     XCTAssertTrue([[response getTerminalId] isEqualToString:@"100312348845"]);
     XCTAssertEqual([response wasCustomerReceiptPrinted], true);
     XCTAssertEqual([response wasMerchantReceiptPrinted], true);
+    XCTAssertTrue([[response getResponseValueWithAttribute:@"pos_ref_id"] isEqualToString:@ "kebab-18-06-2018-00-01-45"]);
 }
 
 - (void)testInitiatePurchaseRequest {
@@ -338,6 +339,41 @@
     NSString *displayMessage = client.state.txFlowState.displayMessage;
     XCTAssertTrue([displayMessage isEqualToString:@"Purchase transaction ended"],
                   @"Unexpected display message: '%@'", displayMessage);
+}
+
+- (void)testCancelTransactionRequest {
+    SPICancelTransactionRequest *request = [[SPICancelTransactionRequest alloc] init];
+    SPIMessage *msg = [request toMessage];
+    
+    XCTAssertTrue([msg.eventName isEqualToString:@"cancel_transaction"]);
+}
+
+- (void)testCancelTransactionResponse {
+    NSString *jsonStr = @"{\"event\": \"cancel_response\", \"id\": \"0\", \"datetime\": \"2018-02-06T15:16:44.094\", \"data\": {\"pos_ref_id\": \"123456abc\", \"success\": false, \"error_reason\": \"txn_past_point_of_no_return\", \"error_detail\":\"Too late to cancel transaction\"}}";
+    NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:[jsonStr dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+    
+    SPIMessage *msg = [[SPIMessage alloc] initWithDict:jsonObject];
+    SPICancelTransactionResponse *response  = [[SPICancelTransactionResponse alloc] initWithMessage:msg];
+    
+    XCTAssertTrue([msg.eventName isEqualToString:@"cancel_response"]);
+    XCTAssertFalse([response isSuccess]);
+    XCTAssertTrue([response.posRefId isEqualToString:@"123456abc"]);
+    XCTAssertTrue([response.getErrorReason isEqualToString:@"txn_past_point_of_no_return"]);
+    XCTAssertNotNil([response getErrorDetail]);
+    XCTAssertTrue([[response getResponseValueWithAttribute:@"pos_ref_id"] isEqualToString:@"123456abc"]);
+}
+
+- (void)testGetLastTransactionResponse_TimeOutOfSyncError {
+    NSString *jsonStr = @"{\"data\":{\"account_type\":\"NOT-SET\",\"bank_date\":\"07062019\",\"bank_settlement_date\":\"06062019\",\"bank_time\":\"143821\",\"card_entry\":\"NOT-SET\",\"error_detail\":\"see 'host_response_text' for details\",\"error_reason\":\"TIME_OUT_OF_SYNC\",\"host_response_code\":\"511\",\"host_response_text\":\"TRANS CANCELLED\",\"pos_ref_id\":\"prchs-07-06-2019-14-38-20\",\"rrn\":\"190606000000\",\"scheme_name\":\"TOTAL\",\"stan\":\"000000\",\"success\":false,\"terminal_ref_id\":\"12348842_07062019144136\"},\"datetime\":\"2019-06-07T14:41:36.857\",\"event\":\"last_transaction\",\"id\":\"glt18\"}";
+    NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:[jsonStr dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+    
+    SPIMessage *msg = [[SPIMessage alloc] initWithDict:jsonObject];
+    SPIGetLastTransactionResponse *response  = [[SPIGetLastTransactionResponse alloc] initWithMessage:msg];
+    
+    XCTAssertTrue([msg.eventName isEqualToString:@"last_transaction"]);
+    XCTAssertTrue([msg.errorDetail isEqualToString:@"see 'host_response_text' for details"]);
+    XCTAssertTrue([response wasTimeOutOfSyncError]);
+    XCTAssertEqual([response getSuccessState], SPIMessageSuccessStateFailed);
 }
 
 @end
