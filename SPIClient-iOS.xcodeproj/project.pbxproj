@@ -129,6 +129,9 @@
 		49B68925228A8BCE00E576A0 /* SPIAutoAddressResolutionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B68924228A8BCE00E576A0 /* SPIAutoAddressResolutionTests.m */; };
 		49B68927228A9CF100E576A0 /* SPIPayAtTableConfigTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B68926228A9CF100E576A0 /* SPIPayAtTableConfigTests.m */; };
 		49F3906B229BC6E5000517C8 /* SPIPayAtTableTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 49F3906A229BC6E5000517C8 /* SPIPayAtTableTests.m */; };
+		49D2B21122E09CF600510278 /* SPIPreauthTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 49D2B21022E09CF600510278 /* SPIPreauthTests.m */; };
+		49D2B21322E0A94A00510278 /* SPITerminalTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 49D2B21222E0A94A00510278 /* SPITerminalTests.m */; };
+		49D2B21522E11F1A00510278 /* SPIPrintingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 49D2B21422E11F1A00510278 /* SPIPrintingTests.m */; };
 		831D3C04214B62F40038B3E3 /* SPIRepeatingTimer.h in Headers */ = {isa = PBXBuildFile; fileRef = 831D3C02214B62F40038B3E3 /* SPIRepeatingTimer.h */; };
 		831D3C05214B62F40038B3E3 /* SPIRepeatingTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 831D3C03214B62F40038B3E3 /* SPIRepeatingTimer.m */; };
 		871DB6791A60B8722827A9CA /* libPods-SPIClient-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6673653AFE9DCEDEE3BF7940 /* libPods-SPIClient-iOS.a */; };
@@ -253,6 +256,9 @@
 		49B68924228A8BCE00E576A0 /* SPIAutoAddressResolutionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIAutoAddressResolutionTests.m; sourceTree = "<group>"; };
 		49B68926228A9CF100E576A0 /* SPIPayAtTableConfigTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIPayAtTableConfigTests.m; sourceTree = "<group>"; };
 		49F3906A229BC6E5000517C8 /* SPIPayAtTableTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIPayAtTableTests.m; sourceTree = "<group>"; };
+		49D2B21022E09CF600510278 /* SPIPreauthTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIPreauthTests.m; sourceTree = "<group>"; };
+		49D2B21222E0A94A00510278 /* SPITerminalTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPITerminalTests.m; sourceTree = "<group>"; };
+		49D2B21422E11F1A00510278 /* SPIPrintingTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIPrintingTests.m; sourceTree = "<group>"; };
 		5A44F061A056AA8B851EA052 /* Pods-Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Tests/Pods-Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		6673653AFE9DCEDEE3BF7940 /* libPods-SPIClient-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SPIClient-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		831D3C02214B62F40038B3E3 /* SPIRepeatingTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPIRepeatingTimer.h; sourceTree = "<group>"; };
@@ -407,6 +413,9 @@
 				49B68924228A8BCE00E576A0 /* SPIAutoAddressResolutionTests.m */,
 				49B68926228A9CF100E576A0 /* SPIPayAtTableConfigTests.m */,
 				49F3906A229BC6E5000517C8 /* SPIPayAtTableTests.m */,
+				49D2B21022E09CF600510278 /* SPIPreauthTests.m */,
+				49D2B21222E0A94A00510278 /* SPITerminalTests.m */,
+				49D2B21422E11F1A00510278 /* SPIPrintingTests.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -799,6 +808,7 @@
 				29468C0C20D6CCB80095D3EC /* SPICashoutOnlyTests.m in Sources */,
 				29854DCF20D02D7000ABA629 /* SPITransactionTests.m in Sources */,
 				273E9B38205A315A0006ED5C /* NSDateFormatterUtilTest.m in Sources */,
+				49D2B21322E0A94A00510278 /* SPITerminalTests.m in Sources */,
 				273E9B39205A315A0006ED5C /* NSStringUtilsTest.m in Sources */,
 				273E9B5F205A34BF0006ED5C /* NSString+Crypto.m in Sources */,
 				273E9B14205A30F90006ED5C /* SPISecrets.m in Sources */,
@@ -830,6 +840,8 @@
 				273E9B11205A30F90006ED5C /* SPITransaction.m in Sources */,
 				273E9AE9205A30EC0006ED5C /* SPIDiffieHellman.m in Sources */,
 				273E9B61205A34BF0006ED5C /* NSObject+Util.m in Sources */,
+				49D2B21122E09CF600510278 /* SPIPreauthTests.m in Sources */,
+				49D2B21522E11F1A00510278 /* SPIPrintingTests.m in Sources */,
 				273E9B3E205A31640006ED5C /* SPICryptoTest.m in Sources */,
 				29468BD920D6B1A90095D3EC /* SPIRefundTests.m in Sources */,
 				273E9B0C205A30F90006ED5C /* SPISettlement.m in Sources */,
