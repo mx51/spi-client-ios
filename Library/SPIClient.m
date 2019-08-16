@@ -74,7 +74,7 @@ static NSTimeInterval maxWaitForCancelTx = 10;  // How long do we wait for cance
 static NSTimeInterval pongTimeout = 5; // How long do we wait for a pong to come back
 static NSTimeInterval pingFrequency = 18; // How often we send pings
 static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before disconnecting
-static NSInteger retriesBeforeResolvingDeviceAddress = 5; // How many retries before resolving Device Address
+static NSInteger retriesBeforeResolvingDeviceAddress = 3; // How many retries before resolving Device Address
 
 @implementation SPIClient
 
