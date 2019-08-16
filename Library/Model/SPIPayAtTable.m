@@ -304,6 +304,7 @@
     
     if (openTablesResponse.openTablesEntries.count <= 0) {
         SPILog(@"There is no open table.");
+        openTablesResponse = [[SPIGetOpenTablesResponse alloc] init];
     }
     
     [_spi send:[openTablesResponse toMessage:message.mid]];
@@ -357,7 +358,7 @@
 - (NSMutableArray<SPIOpenTablesEntry *> *)getOpenTables {
     NSMutableArray<SPIOpenTablesEntry*> *getOpenTablesJson = [[NSMutableArray alloc] init];
     
-    if (self.openTablesEntries.count <= 0) {
+    if (self.openTablesEntries == nil || self.openTablesEntries.count <= 0) {
         return getOpenTablesJson;
     }
     
