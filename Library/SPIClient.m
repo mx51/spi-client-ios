@@ -76,6 +76,9 @@ static NSTimeInterval pingFrequency = 18; // How often we send pings
 static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before disconnecting
 static NSInteger retriesBeforeResolvingDeviceAddress = 3; // How many retries before resolving Device Address
 
+static NSString *regexItemsForPosId = @"^[a-zA-Z0-9 ]*$";
+static NSString *regexItemsForEftposAddress = @"^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$";
+
 @implementation SPIClient
 
 - (instancetype)init {
@@ -911,6 +914,8 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         return;
     }
     
+    [self validateEftposAddress:url];
+    
     if (![url hasPrefix:@"ws://"]) {
         url = [NSString stringWithFormat:@"ws://%@", url];
     }
@@ -922,7 +927,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 }
 
 - (void)setPosId:(NSString *)posId {
-    _posId = posId.copy;
+    _posId = [self validatePosId:posId.copy];
     NSLog(@"setPosId: %@ and set spiMessageStamp", _posId);
     
     if (_posId.length > 0) {
@@ -2055,6 +2060,33 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     dispatch_async(self.queue, ^{
         SPILog(@"ERROR: Received WS error: %@", error);
     });
+}
+
+#pragma mark - Internals for Validations
+
+- (NSString *)validatePosId:(NSString *)posId {
+    if (posId.length  > 16) {
+        posId = [posId substringWithRange:NSMakeRange(0, 16)];
+        NSLog(@"The Pos Id should be equal or less than 16 characters! It has been truncated");
+    }
+    
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexItemsForPosId options:NSRegularExpressionCaseInsensitive error:nil];
+    NSUInteger match = [regex numberOfMatchesInString:posId options:0 range:NSMakeRange(0, [posId length])];
+    
+    if (posId.length != 0 && match == 0) {
+        NSLog(@"The Pos Id can not include special characters!");
+    }
+    
+    return posId;
+}
+
+- (void)validateEftposAddress:(NSString *)eftposAddress {
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexItemsForEftposAddress options:NSRegularExpressionCaseInsensitive error:nil];
+    NSUInteger match = [regex numberOfMatchesInString:eftposAddress options:0 range:NSMakeRange(0, [eftposAddress length])];
+    
+    if (eftposAddress.length != 0 && match == 0) {
+        NSLog(@"The Eftpos Address is not in correct format!");
+    }
 }
 
 @end
