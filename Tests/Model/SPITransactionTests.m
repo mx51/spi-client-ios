@@ -349,7 +349,7 @@
 }
 
 - (void)testCancelTransactionResponse {
-    NSString *jsonStr = @"{\"event\": \"cancel_response\", \"id\": \"0\", \"datetime\": \"2018-02-06T15:16:44.094\", \"data\": {\"pos_ref_id\": \"123456abc\", \"success\": false, \"error_reason\": \"txn_past_point_of_no_return\", \"error_detail\":\"Too late to cancel transaction\"}}";
+    NSString *jsonStr = @"{\"event\": \"cancel_response\", \"id\": \"0\", \"datetime\": \"2018-02-06T15:16:44.094\", \"data\": {\"pos_ref_id\": \"123456abc\", \"success\": false, \"error_reason\": \"TXN_PAST_POINT_OF_NO_RETURN\", \"error_detail\":\"Too late to cancel transaction\"}}";
     NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:[jsonStr dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
     
     SPIMessage *msg = [[SPIMessage alloc] initWithDict:jsonObject];
@@ -358,7 +358,8 @@
     XCTAssertTrue([msg.eventName isEqualToString:@"cancel_response"]);
     XCTAssertFalse([response isSuccess]);
     XCTAssertTrue([response.posRefId isEqualToString:@"123456abc"]);
-    XCTAssertTrue([response.getErrorReason isEqualToString:@"txn_past_point_of_no_return"]);
+    XCTAssertTrue([response.getErrorReason isEqualToString:@"TXN_PAST_POINT_OF_NO_RETURN"]);
+    XCTAssertTrue(response.wasTxnPastPointOfNoReturn);
     XCTAssertNotNil([response getErrorDetail]);
     XCTAssertTrue([[response getResponseValueWithAttribute:@"pos_ref_id"] isEqualToString:@"123456abc"]);
 }

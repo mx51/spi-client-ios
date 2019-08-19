@@ -1407,8 +1407,17 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     
     if (self.state.flow != SPIFlowTransaction || txState.isFinished || !posRefIdMatched) {
         NSString *trace = checkPosRefId ? [@"Incoming Pos Ref ID: " stringByAppendingString:incomingPosRefId] : m.decryptedJson;
-        SPILog(@"ERROR: Received %@ response but I was not waiting for one. %@", typeName, trace);
-        return YES;
+        if ([typeName  isEqual: @"Cancel"]) {
+            SPICancelTransactionResponse *response = [[SPICancelTransactionResponse alloc] initWithMessage:m];
+            if (!response.wasTxnPastPointOfNoReturn) {
+                SPILog(@"ERROR: Received %@ response but I was not waiting for one. %@", typeName, trace);
+                return YES;
+            }
+        }
+        else {
+            SPILog(@"ERROR: Received %@ response but I was not waiting for one. %@", typeName, trace);
+            return YES;
+        }
     }
     return NO;
 }

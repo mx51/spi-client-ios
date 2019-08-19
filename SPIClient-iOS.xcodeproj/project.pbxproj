@@ -399,23 +399,23 @@
 		273E9B3F205A316E0006ED5C /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				49B68924228A8BCE00E576A0 /* SPIAutoAddressResolutionTests.m */,
 				29468C0B20D6CCB80095D3EC /* SPICashoutOnlyTests.m */,
 				29468C0D20D6DF790095D3EC /* SPIClientTests.m */,
 				273E9B40205A316E0006ED5C /* SPIGetLastTransactionTests.m */,
 				273E9B41205A316E0006ED5C /* SPIKeyRollingTest.m */,
 				273E9B44205A316E0006ED5C /* SPIMessageTests.m */,
 				273E9B42205A316E0006ED5C /* SPIPairingHelperTests.m */,
-				29468C2720D738360095D3EC /* SPIPongHelperTests.m */,
-				27C8E47E20EC67EF00E00EA9 /* SPIPosInfoTests.m */,
-				29468BD820D6B1A90095D3EC /* SPIRefundTests.m */,
-				29468BDA20D6B2CB0095D3EC /* SPISettlementTests.m */,
-				29854DCE20D02D7000ABA629 /* SPITransactionTests.m */,
-				49B68924228A8BCE00E576A0 /* SPIAutoAddressResolutionTests.m */,
 				49B68926228A9CF100E576A0 /* SPIPayAtTableConfigTests.m */,
 				49F3906A229BC6E5000517C8 /* SPIPayAtTableTests.m */,
+				29468C2720D738360095D3EC /* SPIPongHelperTests.m */,
+				27C8E47E20EC67EF00E00EA9 /* SPIPosInfoTests.m */,
 				49D2B21022E09CF600510278 /* SPIPreauthTests.m */,
-				49D2B21222E0A94A00510278 /* SPITerminalTests.m */,
 				49D2B21422E11F1A00510278 /* SPIPrintingTests.m */,
+				29468BD820D6B1A90095D3EC /* SPIRefundTests.m */,
+				29468BDA20D6B2CB0095D3EC /* SPISettlementTests.m */,
+				49D2B21222E0A94A00510278 /* SPITerminalTests.m */,
+				29854DCE20D02D7000ABA629 /* SPITransactionTests.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
