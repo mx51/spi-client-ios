@@ -64,6 +64,8 @@
 
 @property (nonatomic, strong) NSObject *txLock;
 
+@property (nonatomic, assign) NSInteger retriesSinceLastPairing;
+
 @end
 
 static NSTimeInterval txMonitorCheckFrequency = 1; // How often do we check on the tx state from our tx monitoring thread
@@ -78,6 +80,9 @@ static NSInteger retriesBeforeResolvingDeviceAddress = 3; // How many retries be
 
 static NSString *regexItemsForPosId = @"^[a-zA-Z0-9 ]*$";
 static NSString *regexItemsForEftposAddress = @"^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$";
+
+
+static NSInteger retriesBeforePairing = 3; // How many retries before resolving Device Address
 
 @implementation SPIClient
 
@@ -932,7 +937,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     
     if (_posId.length > 0) {
         // Our stamp for signing outgoing messages
-        self.spiMessageStamp = [[SPIMessageStamp alloc] initWithPosId:posId secrets:nil serverTimeDelta:0];
+        self.spiMessageStamp = [[SPIMessageStamp alloc] initWithPosId:_posId secrets:nil serverTimeDelta:0];
     }
 }
 
@@ -1711,6 +1716,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                 
             case SPIConnectionStateConnected:
                 self->_retriesSinceLastDeviceAddressResolution = 0;
+                self->_retriesSinceLastPairing = 0;
                 
                 if (weakSelf.state.flow == SPIFlowPairing && weakSelf.state.status == SPIStatusUnpaired) {
                     weakSelf.state.pairingFlowState.message = @"Requesting to pair...";
@@ -1763,12 +1769,26 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                         }
                     });
                 } else if (weakSelf.state.flow == SPIFlowPairing) {
-                    SPILog(@"Lost connection during pairing.");
-                    weakSelf.state.pairingFlowState.message = @"Could not connect to pair. Check network/EFTPOS and try again...";
-                    [weakSelf onPairingFailed];
-                    [weakSelf pairingFlowStateChanged];
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                        if (weakSelf.state.pairingFlowState.isFinished) return;
+                        
+                        if (self->_retriesSinceLastPairing >= retriesBeforePairing) {
+                            self->_retriesSinceLastPairing = 0;
+                            SPILog(@"Lost connection during pairing.");
+                            [weakSelf onPairingFailed];
+                            [weakSelf pairingFlowStateChanged];
+                            return;
+                        } else {
+                            SPILog(@"Will try to re-pair in 3s...");
+                            sleep(3);
+                            
+                            if (weakSelf.state.status != SPIStatusPairedConnected) {
+                                [weakSelf.connection connect];
+                            }
+                            self->_retriesSinceLastPairing += 1;
+                        }
+                    });
                 }
-                
                 break;
         }
     });
