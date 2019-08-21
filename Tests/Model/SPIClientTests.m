@@ -15,7 +15,7 @@
 
 @implementation SPIClientTests
 
-- (void)testSetPosIdOnValidCharactersIsSet {
+- (void)testSetPosId_OnValidCharacters_IsSet {
     // arrange
     static NSString *posId = @"test";
     static NSString *regexItemsForPosId = @"^[a-zA-Z0-9 ]*$";
@@ -31,7 +31,7 @@
     XCTAssertEqual(1, match);
 }
 
-- (void)testSetPosIdOnInvalidLengthIsSet {
+- (void)testSetPosId_OnInvalidLength_IsSet {
     // arrange
     static NSString *posId = @"12345678901234567";
     static NSUInteger lengthOfPosId = 16;
@@ -45,7 +45,7 @@
     XCTAssertNotEqual(lengthOfPosId, posId.length);
 }
 
-- (void)testSetPosIdOnInvalidCharactersIsSet {
+- (void)testSetPosId_OnInvalidCharacters_IsSet {
     // arrange
     static NSString *posId = @"test@";
     static NSString *regexItemsForPosId = @"^[a-zA-Z0-9 ]*$";
@@ -60,7 +60,7 @@
     XCTAssertNotEqual(1, match);
 }
 
-- (void)testSetPosAddressOnValidCharactersIsSet {
+- (void)testSetPosAddress_OnValidCharacters_IsSet {
     // arrange
     static NSString *posAddress = @"127.0.0.1";
     static NSString *regexItemsForEftposAddress = @"^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$";
@@ -77,7 +77,7 @@
     XCTAssertEqual(1, match);
 }
 
-- (void)testSetPosAddressOnInvalidCharactersIsSet {
+- (void)testSetPosAddress_OnInvalidCharacters_IsSet {
     // arrange
     NSString *posAddress = @"127.0.0.1@";
     static NSString *regexItemsForEftposAddress = @"^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$";
@@ -94,7 +94,7 @@
     XCTAssertNotEqual(1, match);
 }
 
-- (void)testUnpair {
+- (void)testUnpair_OnValid_IsSet {
     //Initiate Client and set status
     SPIClient *client = [[SPIClient alloc] init];
     [client setSecretEncKey:@"1" hmacKey:@"2"];

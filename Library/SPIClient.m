@@ -81,7 +81,6 @@ static NSInteger retriesBeforeResolvingDeviceAddress = 3; // How many retries be
 static NSString *regexItemsForPosId = @"^[a-zA-Z0-9 ]*$";
 static NSString *regexItemsForEftposAddress = @"^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$";
 
-
 static NSInteger retriesBeforePairing = 3; // How many retries before resolving Device Address
 
 @implementation SPIClient

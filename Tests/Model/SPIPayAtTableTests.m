@@ -16,7 +16,8 @@
 
 @implementation SPIPayAtTableTests
 
-- (void)testBillStatusResponseOnValidResponseReturnObjects {
+- (void)testBillStatusResponse_OnValidResponse_ReturnObjects {
+    // arrange
     SPIBillStatusResponse *billStatusResponse = [[SPIBillStatusResponse alloc] init];
     billStatusResponse.billId = @"1";
     billStatusResponse.operatorId = @"12";
@@ -28,6 +29,7 @@
     // act
     SPIMessage *msg = [billStatusResponse toMessage:@"d"];
     
+    // assert
     XCTAssertTrue([msg.eventName isEqualToString: @"bill_details"]);
     XCTAssertEqual(billStatusResponse.billId, [msg getDataStringValue: @"bill_id"]);
     XCTAssertEqual(billStatusResponse.tableId, [msg getDataStringValue: @"table_id"]);
@@ -36,7 +38,7 @@
     XCTAssertTrue([[billStatusResponse getBillPaymentHistory][0].getTerminalRefId isEqualToString: @"some string"]);
 }
 
-- (void)testGetOpenTablesResponseOnValidResponseReturnObjects {
+- (void)testGetOpenTablesResponse_OnValidResponse_ReturnObjects {
     // arrange
     SPIOpenTablesEntry *openTablesEntry = [[SPIOpenTablesEntry alloc] init];
     openTablesEntry.tableId = @"1";
@@ -71,7 +73,7 @@
     }
 }
 
-- (void)testGetOpenTablesOnValidResponseIsSet {
+- (void)testGetOpenTables_OnValidResponse_IsSet {
     // arrange
     SPIOpenTablesEntry *openTablesEntry = [[SPIOpenTablesEntry alloc] init];
     openTablesEntry.tableId = @"1";
@@ -88,7 +90,7 @@
     XCTAssertEqual(openTablesEntries.count, openTablesEntriesResponse.count);
 }
 
-- (void)testGetOpenTablesOnValidResponseNullIsSet {
+- (void)testGetOpenTables_OnValidResponseNull_IsSet {
     // arrange
     SPIGetOpenTablesResponse *getOpenTablesResponse = [[SPIGetOpenTablesResponse alloc] init];
     
@@ -100,7 +102,7 @@
     XCTAssertNil([getOpenTablesResponse openTablesEntries]);
 }
 
-- (void)testBillPaymentFlowEndedResponseOnValidResponseReturnObjects {
+- (void)testBillPaymentFlowEndedResponse_OnValidResponse_ReturnObjects {
     // arrange
     SPISecrets *secrets = [SPITestUtils setTestSecrets:@"" hmacKey:@""];
     NSString *jsonStr = @"{\"message\":{\"data\":{\"bill_id\":\"1554246591041.23\",\"bill_outstanding_amount\":1000,\"bill_total_amount\":1000,\"card_total_amount\":0,\"card_total_count\":0,\"cash_total_amount\":0,\"cash_total_count\":0,\"operator_id\":\"1\",\"table_id\":\"1\"},\"datetime\":\"2019-04-03T10:11:21.328\",\"event\":\"bill_payment_flow_ended\",\"id\":\"C12.4\"}}";
@@ -128,7 +130,7 @@
     XCTAssertEqual(0, response.billOutstandingAmount);
 }
 
-- (void)testSpiPayAtTableOnValidRequestReturnStatus {
+- (void)testSpiPayAtTable_OnValidRequest_ReturnStatus {
     // arrange
     SPIClient *client = [[SPIClient alloc] init];
     

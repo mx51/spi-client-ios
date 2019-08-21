@@ -15,28 +15,41 @@
 
 @implementation SPIAutoAddressResolutionTests
 
-- (void)testSetSerialNumber {
-    NSString *serialNumber = @"111-111-111";
+- (void)testSetSerialNumber_ValidSerialNumber_IsSet {
+    // arrange
+    static NSString *serialNumber = @"111-111-111";
     SPIClient *client = [[SPIClient alloc] init];
     client.state.status = SPIStatusUnpaired;
+    
+    // act
     [client setSerialNumber:serialNumber];
+    
+    // assert
     XCTAssertTrue([client.serialNumber isEqualToString:serialNumber]);
 }
 
-- (void)testSetAutoAddressResolution {
-    BOOL autoAddressResolutionEnable = true;
+- (void)testSetAutoAddressResolution_TurnOnAutoAddress_Enabled {
+    // arrange
+    static BOOL autoAddressResolutionEnable = true;
     SPIClient *client = [[SPIClient alloc] init];
     client.state.status = SPIStatusUnpaired;
+    
+    // act
     [client setAutoAddressResolutionEnable:autoAddressResolutionEnable];
+    
+    // assert
     XCTAssertEqual(autoAddressResolutionEnable, client.autoAddressResolutionEnable);
 }
 
-- (void)testAutoResolveEftposAddressWithIncorectSerialNumberAsync {
-    NSString *apiKey = @"RamenPosDeviceAddressApiKey";
-    NSString *acquirerCode = @"wbc";
-    NSString *serialNumber = @"111-111-111";
+- (void)testRetrieveService_SerialNumberNotRegistered_NotFound {
+    // arrange
+    static NSString *apiKey = @"RamenPosDeviceAddressApiKey";
+    static NSString *acquirerCode = @"wbc";
+    static NSString *serialNumber = @"111-111-111";
     
+    // act
     [[SPIDeviceService alloc] retrieveServiceWithSerialNumber:serialNumber apiKey:apiKey acquirerCode:acquirerCode isTestMode:true completion:^(SPIDeviceAddressStatus *addressResponse) {
+        // assert
         XCTAssertEqual(addressResponse.responseCode, 404);
     }];
     
@@ -44,12 +57,16 @@
     (void) [XCTWaiter waitForExpectations:@[expectation] timeout:1];
 }
 
-- (void)testAutoResolveEftposAddressWithValidSerialNumberAsync {
-    NSString *apiKey = @"RamenPosDeviceAddressApiKey";
-    NSString *acquirerCode = @"wbc";
-    NSString *serialNumber = @"321-404-842";
+- (void)testRetrieveService_SerialNumberRegistered_Found {
+    // arrange
+    static NSString *apiKey = @"RamenPosDeviceAddressApiKey";
+    static NSString *acquirerCode = @"wbc";
+    static NSString *serialNumber = @"321-404-842";
     
+    // act
     [[SPIDeviceService alloc] retrieveServiceWithSerialNumber:serialNumber apiKey:apiKey acquirerCode:acquirerCode isTestMode:true completion:^(SPIDeviceAddressStatus *addressResponse) {
+        
+        // assert
         XCTAssertNotNil(addressResponse);
         XCTAssertNotNil(addressResponse.address);
         XCTAssertEqual(addressResponse.deviceAddressResponseCode, DeviceAddressResponceCodeSuccess);
