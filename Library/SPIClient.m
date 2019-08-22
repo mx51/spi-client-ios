@@ -78,6 +78,7 @@ static NSTimeInterval pingFrequency = 18; // How often we send pings
 static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before disconnecting
 static NSInteger retriesBeforeResolvingDeviceAddress = 3; // How many retries before resolving Device Address
 
+static NSRegularExpression *regex;
 static NSString *regexItemsForPosId = @"^[a-zA-Z0-9 ]*$";
 static NSString *regexItemsForEftposAddress = @"^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$";
 
@@ -1014,7 +1015,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             self.state.deviceAddressStatus = [[SPIDeviceAddressStatus alloc] init];
         }
         
-        self.state.deviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponceCodeSerialNumberNotChanged;
+        self.state.deviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponseCodeSerialNumberNotChanged;
         [self deviceAddressChanged];
     }
 }
@@ -1089,9 +1090,11 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     }
     
     [[SPIDeviceService alloc] retrieveServiceWithSerialNumber:_serialNumber apiKey:_deviceApiKey acquirerCode:_acquirerCode isTestMode:_testMode completion:^(SPIDeviceAddressStatus *addressResponse) {
+        
+        SPIDeviceAddressStatus *currentDeviceAddressStatus = [SPIDeviceAddressStatus new];
+        
         if (addressResponse == nil) {
-            SPIDeviceAddressStatus *currentDeviceAddressStatus = [SPIDeviceAddressStatus new];
-            currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponceCodeDeviceError;
+            currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponseCodeDeviceError;
             self.state.deviceAddressStatus = currentDeviceAddressStatus;
             [self deviceAddressChanged];
             return;
@@ -1099,14 +1102,12 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         
         if (addressResponse.address.length == 0) {
             if (addressResponse.responseCode == 404) {
-                SPIDeviceAddressStatus *currentDeviceAddressStatus = [SPIDeviceAddressStatus new];
-                currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponceCodeInvalidSerialNumber;
+                currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponseCodeInvalidSerialNumber;
                 self.state.deviceAddressStatus = currentDeviceAddressStatus;
                 [self deviceAddressChanged];
                 return;
             } else {
-                SPIDeviceAddressStatus *currentDeviceAddressStatus = [SPIDeviceAddressStatus new];
-                currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponceCodeDeviceError;
+                currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponseCodeDeviceError;
                 self.state.deviceAddressStatus = currentDeviceAddressStatus;
                 [self deviceAddressChanged];
                 return;
@@ -1114,8 +1115,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         }
         
         if (![self hasEftposAddressChanged:addressResponse.address]) {
-            SPIDeviceAddressStatus *currentDeviceAddressStatus = [SPIDeviceAddressStatus new];
-            currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponceCodeAddressNotChanged;
+            currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponseCodeAddressNotChanged;
             self.state.deviceAddressStatus = currentDeviceAddressStatus;
             [self deviceAddressChanged];
             return;
@@ -1125,10 +1125,9 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         self->_eftposAddress = [NSString stringWithFormat:@"ws://%@", addressResponse.address];
         [self->_connection setUrl:self->_eftposAddress];
         
-        SPIDeviceAddressStatus *currentDeviceAddressStatus = [SPIDeviceAddressStatus new];
         currentDeviceAddressStatus.address = addressResponse.address;
         currentDeviceAddressStatus.lastUpdated = addressResponse.lastUpdated;
-        currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponceCodeSuccess;
+        currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponseCodeSuccess;
         self.state.deviceAddressStatus = currentDeviceAddressStatus;
         [self deviceAddressChanged];
     }];
@@ -1417,8 +1416,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                 SPILog(@"ERROR: Received %@ response but I was not waiting for one. %@", typeName, trace);
                 return YES;
             }
-        }
-        else {
+        } else {
             SPILog(@"ERROR: Received %@ response but I was not waiting for one. %@", typeName, trace);
             return YES;
         }
@@ -1714,8 +1712,8 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                 break;
                 
             case SPIConnectionStateConnected:
-                self->_retriesSinceLastDeviceAddressResolution = 0;
-                self->_retriesSinceLastPairing = 0;
+                self.retriesSinceLastDeviceAddressResolution = 0;
+                self.retriesSinceLastPairing = 0;
                 
                 if (weakSelf.state.flow == SPIFlowPairing && weakSelf.state.status == SPIStatusUnpaired) {
                     weakSelf.state.pairingFlowState.message = @"Requesting to pair...";
@@ -1751,12 +1749,12 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                         if (weakSelf.connection == nil) return;
                         
-                        if (self->_autoAddressResolutionEnable) {
-                            if (self->_retriesSinceLastDeviceAddressResolution >= retriesBeforeResolvingDeviceAddress) {
+                        if (self.autoAddressResolutionEnable) {
+                            if (self.retriesSinceLastDeviceAddressResolution >= retriesBeforeResolvingDeviceAddress) {
                                 [self autoResolveEftposAddress];
-                                self->_retriesSinceLastDeviceAddressResolution = 0;
+                                self.retriesSinceLastDeviceAddressResolution = 0;
                             } else {
-                                self->_retriesSinceLastDeviceAddressResolution += 1;
+                                self.retriesSinceLastDeviceAddressResolution += 1;
                             }
                         }
                         
@@ -1771,8 +1769,8 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                         if (weakSelf.state.pairingFlowState.isFinished) return;
                         
-                        if (self->_retriesSinceLastPairing >= retriesBeforePairing) {
-                            self->_retriesSinceLastPairing = 0;
+                        if (self.retriesSinceLastPairing >= retriesBeforePairing) {
+                            self.retriesSinceLastPairing = 0;
                             SPILog(@"Lost connection during pairing.");
                             [weakSelf onPairingFailed];
                             [weakSelf pairingFlowStateChanged];
@@ -1784,7 +1782,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                             if (weakSelf.state.status != SPIStatusPairedConnected) {
                                 [weakSelf.connection connect];
                             }
-                            self->_retriesSinceLastPairing += 1;
+                            self.retriesSinceLastPairing += 1;
                         }
                     });
                 }
@@ -2098,7 +2096,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         NSLog(@"The Pos Id should be equal or less than 16 characters! It has been truncated");
     }
     
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexItemsForPosId options:NSRegularExpressionCaseInsensitive error:nil];
+    regex = [NSRegularExpression regularExpressionWithPattern:regexItemsForPosId options:NSRegularExpressionCaseInsensitive error:nil];
     NSUInteger match = [regex numberOfMatchesInString:posId options:0 range:NSMakeRange(0, [posId length])];
     
     if (posId.length != 0 && match == 0) {
@@ -2109,7 +2107,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 }
 
 - (void)validateEftposAddress:(NSString *)eftposAddress {
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexItemsForEftposAddress options:NSRegularExpressionCaseInsensitive error:nil];
+    regex = [NSRegularExpression regularExpressionWithPattern:regexItemsForEftposAddress options:NSRegularExpressionCaseInsensitive error:nil];
     NSUInteger match = [regex numberOfMatchesInString:eftposAddress options:0 range:NSMakeRange(0, [eftposAddress length])];
     
     if (eftposAddress.length != 0 && match == 0) {

@@ -45,55 +45,6 @@
     XCTAssertNotEqual(lengthOfPosId, posId.length);
 }
 
-- (void)testSetPosId_OnInvalidCharacters_IsSet {
-    // arrange
-    static NSString *posId = @"test@";
-    static NSString *regexItemsForPosId = @"^[a-zA-Z0-9 ]*$";
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexItemsForPosId options:NSRegularExpressionCaseInsensitive error:nil];
-    NSUInteger match = [regex numberOfMatchesInString:posId options:0 range:NSMakeRange(0, [posId length])];
-    SPIClient *client = [[SPIClient alloc] init];
-    
-    //
-    client.posId = posId;
-    
-    XCTAssertTrue([client.posId isEqualToString:posId]);
-    XCTAssertNotEqual(1, match);
-}
-
-- (void)testSetPosAddress_OnValidCharacters_IsSet {
-    // arrange
-    static NSString *posAddress = @"127.0.0.1";
-    static NSString *regexItemsForEftposAddress = @"^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$";
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexItemsForEftposAddress options:NSRegularExpressionCaseInsensitive error:nil];
-    NSUInteger match = [regex numberOfMatchesInString:posAddress options:0 range:NSMakeRange(0, [posAddress length])];
-    SPIClient *client = [[SPIClient alloc] init];
-    
-    // act
-    [client setEftposAddress:posAddress];
-    NSString *generatedAddress = [NSString stringWithFormat:@"ws://%@", posAddress];
-    
-    // assert
-    XCTAssertTrue([client.eftposAddress isEqualToString:generatedAddress]);
-    XCTAssertEqual(1, match);
-}
-
-- (void)testSetPosAddress_OnInvalidCharacters_IsSet {
-    // arrange
-    NSString *posAddress = @"127.0.0.1@";
-    static NSString *regexItemsForEftposAddress = @"^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$";
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexItemsForEftposAddress options:NSRegularExpressionCaseInsensitive error:nil];
-    NSUInteger match = [regex numberOfMatchesInString:posAddress options:0 range:NSMakeRange(0, [posAddress length])];
-    SPIClient *client = [[SPIClient alloc] init];
-    
-    // act
-    [client setEftposAddress:posAddress];
-    NSString *generatedAddress = [NSString stringWithFormat:@"ws://%@", posAddress];
-    
-    // assert
-    XCTAssertTrue([client.eftposAddress isEqualToString:generatedAddress]);
-    XCTAssertNotEqual(1, match);
-}
-
 - (void)testUnpair_OnValid_IsSet {
     //Initiate Client and set status
     SPIClient *client = [[SPIClient alloc] init];

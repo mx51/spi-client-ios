@@ -69,7 +69,7 @@
         // assert
         XCTAssertNotNil(addressResponse);
         XCTAssertNotNil(addressResponse.address);
-        XCTAssertEqual(addressResponse.deviceAddressResponseCode, DeviceAddressResponceCodeSuccess);
+        XCTAssertEqual(addressResponse.deviceAddressResponseCode, DeviceAddressResponseCodeSuccess);
     }];
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"test expectation"];
