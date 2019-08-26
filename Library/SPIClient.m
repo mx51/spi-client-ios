@@ -66,6 +66,10 @@
 
 @property (nonatomic, assign) NSInteger retriesSinceLastPairing;
 
+@property (nonatomic, strong) NSRegularExpression *posIdRegex;
+
+@property (nonatomic, strong) NSRegularExpression *eftposAddressRegex;
+
 @end
 
 static NSTimeInterval txMonitorCheckFrequency = 1; // How often do we check on the tx state from our tx monitoring thread
@@ -78,7 +82,6 @@ static NSTimeInterval pingFrequency = 18; // How often we send pings
 static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before disconnecting
 static NSInteger retriesBeforeResolvingDeviceAddress = 3; // How many retries before resolving Device Address
 
-static NSRegularExpression *regex;
 static NSString *regexItemsForPosId = @"^[a-zA-Z0-9 ]*$";
 static NSString *regexItemsForEftposAddress = @"^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$";
 
@@ -93,6 +96,8 @@ static NSInteger retriesBeforePairing = 3; // How many retries before resolving 
         _queue = dispatch_queue_create("com.assemblypayments", dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_DEFAULT, 0));
         _config = [[SPIConfig alloc] init];
         _state = [SPIState new];
+        _posIdRegex = [NSRegularExpression regularExpressionWithPattern:regexItemsForPosId options:NSRegularExpressionCaseInsensitive error:nil];
+        _eftposAddressRegex = [NSRegularExpression regularExpressionWithPattern:regexItemsForEftposAddress options:NSRegularExpressionCaseInsensitive error:nil];
         
         _txLock = [[NSObject alloc] init];
     }
@@ -2096,8 +2101,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         NSLog(@"The Pos Id should be equal or less than 16 characters! It has been truncated");
     }
     
-    regex = [NSRegularExpression regularExpressionWithPattern:regexItemsForPosId options:NSRegularExpressionCaseInsensitive error:nil];
-    NSUInteger match = [regex numberOfMatchesInString:posId options:0 range:NSMakeRange(0, [posId length])];
+    NSUInteger match = [_posIdRegex numberOfMatchesInString:posId options:0 range:NSMakeRange(0, [posId length])];
     
     if (posId.length != 0 && match == 0) {
         NSLog(@"The Pos Id can not include special characters!");
@@ -2107,8 +2111,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 }
 
 - (void)validateEftposAddress:(NSString *)eftposAddress {
-    regex = [NSRegularExpression regularExpressionWithPattern:regexItemsForEftposAddress options:NSRegularExpressionCaseInsensitive error:nil];
-    NSUInteger match = [regex numberOfMatchesInString:eftposAddress options:0 range:NSMakeRange(0, [eftposAddress length])];
+    NSUInteger match = [_eftposAddressRegex numberOfMatchesInString:eftposAddress options:0 range:NSMakeRange(0, [eftposAddress length])];
     
     if (eftposAddress.length != 0 && match == 0) {
         NSLog(@"The Eftpos Address is not in correct format!");

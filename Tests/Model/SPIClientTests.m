@@ -15,22 +15,6 @@
 
 @implementation SPIClientTests
 
-- (void)testSetPosId_OnValidCharacters_IsSet {
-    // arrange
-    static NSString *posId = @"test";
-    static NSString *regexItemsForPosId = @"^[a-zA-Z0-9 ]*$";
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexItemsForPosId options:NSRegularExpressionCaseInsensitive error:nil];
-    NSUInteger match = [regex numberOfMatchesInString:posId options:0 range:NSMakeRange(0, [posId length])];
-    SPIClient *client = [[SPIClient alloc] init];
-    
-    // act
-    client.posId = posId;
-    
-    // assert
-    XCTAssertTrue([client.posId isEqualToString:posId]);
-    XCTAssertEqual(1, match);
-}
-
 - (void)testSetPosId_OnInvalidLength_IsSet {
     // arrange
     static NSString *posId = @"12345678901234567";
