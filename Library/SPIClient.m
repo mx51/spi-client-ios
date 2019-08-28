@@ -1718,7 +1718,6 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                 
             case SPIConnectionStateConnected:
                 self.retriesSinceLastDeviceAddressResolution = 0;
-                self.retriesSinceLastPairing = 0;
                 
                 if (weakSelf.state.flow == SPIFlowPairing && weakSelf.state.status == SPIStatusUnpaired) {
                     weakSelf.state.pairingFlowState.message = @"Requesting to pair...";
