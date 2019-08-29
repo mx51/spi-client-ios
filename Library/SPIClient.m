@@ -942,7 +942,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     _eftposAddress = @"";
     
     if (![self isEftposAddressValid:url.copy]) {
-        NSLog(@"Pos Id set to null");
+        NSLog(@"Eftpos Address set to null");
         return;
     }
     
@@ -964,7 +964,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     _posId = @"";
     
     if (![self isPosIdValid:posId.copy]) {
-        NSLog(@"Eftpos Address set to null");
+        NSLog(@"Pos Id set to null");
         return;
     }
     
