@@ -14,6 +14,8 @@
 
 + (SPIClient *)clientWithTestSecrets;
 
++ (SPISecrets *)setTestSecrets:(NSString *)encKey hmacKey:(NSString *)hmacKey;
+
 + (void)waitForAsync:(NSTimeInterval)seconds;
 
 @end
