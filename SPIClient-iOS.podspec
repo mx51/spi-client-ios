@@ -1,11 +1,11 @@
 Pod::Spec.new do |s|
   s.name         = 'SPIClient-iOS'
-  s.version      = '2.6.3'
+  s.version      = '2.6.4'
   s.summary      = 'SPI Client iOS'
   s.authors      = [ 'Yoo-Jin Lee', 'Mike Gouline', 'Amir Kamali', 'Metin Avci' ]
   s.license      = { :type => 'Apache License, Version 2.0' }
-  s.homepage     = 'https://github.com/AssemblyPayments/spi-client-ios'
-  s.source       = { :git => 'https://github.com/AssemblyPayments/spi-client-ios.git', :tag => s.version }
+  s.homepage     = 'https://github.com/mx51/spi-client-ios'
+  s.source       = { :git => 'https://github.com/mx51/spi-client-ios.git', :tag => s.version }
   s.source_files = 'Library/**/*.{h,m,c}'
   s.requires_arc = true
   s.platform     = :ios, '8.0'

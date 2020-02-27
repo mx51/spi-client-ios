@@ -3,7 +3,7 @@
 //  Tests
 //
 //  Created by Metin Avci on 19/7/19.
-//  Copyright © 2019 Assembly Payments. All rights reserved.
+//  Copyright © 2019 mx51. All rights reserved.
 //
 
 #import <XCTest/XCTest.h>
