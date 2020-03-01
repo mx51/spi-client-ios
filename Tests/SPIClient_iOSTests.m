@@ -3,7 +3,7 @@
 //  SPIClient-iOSTests
 //
 //  Created by Mike Gouline on 14/3/18.
-//  Copyright © 2018 Assembly Payments. All rights reserved.
+//  Copyright © 2018 mx51. All rights reserved.
 //
 
 #import <XCTest/XCTest.h>

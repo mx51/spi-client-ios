@@ -3,7 +3,7 @@
 //  Tests
 //
 //  Created by Amir Kamali on 18/6/18.
-//  Copyright © 2018 Assembly Payments. All rights reserved.
+//  Copyright © 2018 mx51. All rights reserved.
 //
 
 #import <XCTest/XCTest.h>
@@ -31,8 +31,8 @@
     // arrange
     static NSString *posId = @"12345678901234567";
     static NSString *eftposAddress = @"10.20.30.40";
-    static NSString *posVendorId = @"assembly";
-    static NSString *posVersion = @"2.6.3";
+    static NSString *posVendorId = @"mx51";
+    static NSString *posVersion = @"2.6.4";
     SPIClient *client = [[SPIClient alloc] init];
     client.posId = posId;
     client.eftposAddress = eftposAddress;
@@ -63,8 +63,8 @@
     // arrange
     static NSString *posId = @"RamenPos";
     static NSString *eftposAddress = @"10.20.30.40";
-    static NSString *posVendorId = @"assembly";
-    static NSString *posVersion = @"2.6.3";
+    static NSString *posVendorId = @"mx51";
+    static NSString *posVersion = @"2.6.4";
     SPIClient *client = [[SPIClient alloc] init];
     client.posId = posId;
     client.eftposAddress = eftposAddress;
@@ -94,8 +94,8 @@
     // arrange
     static NSString *posId = @"RamenPos@";
     static NSString *eftposAddress = @"10.20.30.40";
-    static NSString *posVendorId = @"assembly";
-    static NSString *posVersion = @"2.6.3";
+    static NSString *posVendorId = @"mx51";
+    static NSString *posVersion = @"2.6.4";
     SPIClient *client = [[SPIClient alloc] init];
     client.posId = posId;
     client.eftposAddress = eftposAddress;
@@ -126,8 +126,8 @@
     // arrange
     static NSString *posId = @"RamenPos";
     static NSString *eftposAddress = @"10.20.30.40";
-    static NSString *posVendorId = @"assembly";
-    static NSString *posVersion = @"2.6.3";
+    static NSString *posVendorId = @"mx51";
+    static NSString *posVersion = @"2.6.4";
     SPIClient *client = [[SPIClient alloc] init];
     client.posId = posId;
     client.eftposAddress = eftposAddress;
@@ -159,8 +159,8 @@
     // arrange
     static NSString *posId = @"RamenPos";
     static NSString *eftposAddress = @"10.20.30";
-    static NSString *posVendorId = @"assembly";
-    static NSString *posVersion = @"2.6.3";
+    static NSString *posVendorId = @"mx51";
+    static NSString *posVersion = @"2.6.4";
     SPIClient *client = [[SPIClient alloc] init];
     client.posId = posId;
     client.eftposAddress = eftposAddress;
