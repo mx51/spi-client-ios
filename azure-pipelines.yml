@@ -1,0 +1,86 @@
+pool:
+  vmImage: 'macos-latest'
+
+pr:
+  branches:
+    include:
+    - '*'
+
+trigger:
+  branches:
+    include:
+      - '*'
+  tags:
+    include:
+       - '*'
+
+variables:
+  - group: global-variables
+  - name: ARTIFACT_NAME
+    value: spi-client-ios
+  - name: BRANCH_NAME
+    value: $[variables['Build.SourceBranch']]
+  - name: SCHEME
+    value: SPIClient-iOS
+  - name: SDK
+    value: iphoneos
+  - name: TEST_DEVICE
+    value: iPad (7th generation)
+  - name: WORKSPACE_PATH
+    value: ./SPIClient-iOS.xcworkspace
+
+stages:
+- stage: build
+  displayName: Build
+  jobs:
+  - job: build
+    cancelTimeoutInMinutes: 5
+    displayName: Build
+    steps:
+    - task: Xcode@5
+      displayName: Build
+      inputs:
+        actions: clean build
+        scheme: $(SCHEME)
+        sdk: $(SDK)
+        xcWorkspacePath: $(WORKSPACE_PATH)
+
+    - task: Xcode@5
+      displayName: Test
+      inputs:
+        actions: test
+        destinationPlatformOption: iOS
+        destinationSimulators: $(TEST_DEVICE)
+        scheme: $(SCHEME)
+        sdk: $(SDK)
+        xcWorkspacePath: $(WORKSPACE_PATH)
+
+    - bash: ./deploy-check.sh $(echo ${BRANCH_NAME/refs\/tags\//})
+      condition: and(succeeded(), contains(variables['BRANCH_NAME'], 'refs/tags/'))
+      displayName: Check podspec version matches tag
+      failOnStderr: true
+
+    - publish: $(System.DefaultWorkingDirectory)
+      artifact: $(ARTIFACT_NAME)
+      condition: and(succeeded(), contains(variables['BRANCH_NAME'], 'refs/tags/'))
+      displayName: Publish Arfifact
+
+- stage: deploy
+  condition: and(succeeded(), contains(variables['BRANCH_NAME'], 'refs/tags/'))
+  dependsOn: build
+  displayName: Deploy
+  jobs:
+  - deployment:
+    cancelTimeoutInMinutes: 5
+    displayName: Deploy
+    environment: production
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - bash: pod trunk push SPIClient-iOS.podspec --allow-warnings
+              displayName: Publish
+              env:
+                COCOAPODS_TRUNK_TOKEN: $(cocoaPodsTrunkToken)
+              failOnStderr: true
+              workingDirectory: $(Agent.BuildDirectory)/$(ARTIFACT_NAME)
