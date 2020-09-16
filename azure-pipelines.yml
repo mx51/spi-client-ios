@@ -55,6 +55,13 @@ stages:
         sdk: $(SDK)
         xcWorkspacePath: $(WORKSPACE_PATH)
 
+    - bash: brew tap snyk/tap && brew install snyk && snyk auth $SNYK_TOKEN && snyk monitor
+      condition: and(succeeded(), contains(variables['BRANCH_NAME'], 'refs/heads/master'))
+      displayName: Check solution for vulnerabilities
+      env:
+        SNYK_TOKEN: $(snykToken)
+      timeoutInMinutes: 5
+
     - bash: ./deploy-check.sh $(echo ${BRANCH_NAME/refs\/tags\//})
       condition: and(succeeded(), contains(variables['BRANCH_NAME'], 'refs/tags/'))
       displayName: Check podspec version matches tag
