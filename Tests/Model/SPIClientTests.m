@@ -32,7 +32,7 @@
     static NSString *posId = @"12345678901234567";
     static NSString *eftposAddress = @"10.20.30.40";
     static NSString *posVendorId = @"mx51";
-    static NSString *posVersion = @"2.6.5";
+    static NSString *posVersion = @"2.6.6";
     SPIClient *client = [[SPIClient alloc] init];
     client.posId = posId;
     client.eftposAddress = eftposAddress;
@@ -64,7 +64,7 @@
     static NSString *posId = @"RamenPos";
     static NSString *eftposAddress = @"10.20.30.40";
     static NSString *posVendorId = @"mx51";
-    static NSString *posVersion = @"2.6.5";
+    static NSString *posVersion = @"2.6.6";
     SPIClient *client = [[SPIClient alloc] init];
     client.posId = posId;
     client.eftposAddress = eftposAddress;
@@ -95,7 +95,7 @@
     static NSString *posId = @"RamenPos@";
     static NSString *eftposAddress = @"10.20.30.40";
     static NSString *posVendorId = @"mx51";
-    static NSString *posVersion = @"2.6.5";
+    static NSString *posVersion = @"2.6.6";
     SPIClient *client = [[SPIClient alloc] init];
     client.posId = posId;
     client.eftposAddress = eftposAddress;
@@ -127,7 +127,7 @@
     static NSString *posId = @"RamenPos";
     static NSString *eftposAddress = @"10.20.30.40";
     static NSString *posVendorId = @"mx51";
-    static NSString *posVersion = @"2.6.5";
+    static NSString *posVersion = @"2.6.6";
     SPIClient *client = [[SPIClient alloc] init];
     client.posId = posId;
     client.eftposAddress = eftposAddress;
@@ -160,7 +160,7 @@
     static NSString *posId = @"RamenPos";
     static NSString *eftposAddress = @"10.20.30";
     static NSString *posVendorId = @"mx51";
-    static NSString *posVersion = @"2.6.5";
+    static NSString *posVersion = @"2.6.6";
     SPIClient *client = [[SPIClient alloc] init];
     client.posId = posId;
     client.eftposAddress = eftposAddress;
