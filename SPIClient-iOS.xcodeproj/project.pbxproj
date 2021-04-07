@@ -135,6 +135,8 @@
 		831D3C04214B62F40038B3E3 /* SPIRepeatingTimer.h in Headers */ = {isa = PBXBuildFile; fileRef = 831D3C02214B62F40038B3E3 /* SPIRepeatingTimer.h */; };
 		831D3C05214B62F40038B3E3 /* SPIRepeatingTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 831D3C03214B62F40038B3E3 /* SPIRepeatingTimer.m */; };
 		871DB6791A60B8722827A9CA /* libPods-SPIClient-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6673653AFE9DCEDEE3BF7940 /* libPods-SPIClient-iOS.a */; };
+		C980074D25E75DEF00808E8D /* SPITenantsService.h in Headers */ = {isa = PBXBuildFile; fileRef = C980074B25E75DEF00808E8D /* SPITenantsService.h */; };
+		C980074E25E75DEF00808E8D /* SPITenantsService.m in Sources */ = {isa = PBXBuildFile; fileRef = C980074C25E75DEF00808E8D /* SPITenantsService.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -264,6 +266,8 @@
 		831D3C02214B62F40038B3E3 /* SPIRepeatingTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPIRepeatingTimer.h; sourceTree = "<group>"; };
 		831D3C03214B62F40038B3E3 /* SPIRepeatingTimer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIRepeatingTimer.m; sourceTree = "<group>"; };
 		C72497E83165D2D15EC6229C /* Pods-SPIClient-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SPIClient-iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-SPIClient-iOS/Pods-SPIClient-iOS.release.xcconfig"; sourceTree = "<group>"; };
+		C980074B25E75DEF00808E8D /* SPITenantsService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPITenantsService.h; path = Library/Service/SPITenantsService.h; sourceTree = SOURCE_ROOT; };
+		C980074C25E75DEF00808E8D /* SPITenantsService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SPITenantsService.m; path = Library/Service/SPITenantsService.m; sourceTree = SOURCE_ROOT; };
 		E4F182040639C7C173C6A36E /* Pods-SPIClient-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SPIClient-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SPIClient-iOS/Pods-SPIClient-iOS.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -532,6 +536,8 @@
 			children = (
 				49A6067021DDAE1800B6C706 /* SPIDeviceService.h */,
 				49A6067121DDAE1800B6C706 /* SPIDeviceService.m */,
+				C980074B25E75DEF00808E8D /* SPITenantsService.h */,
+				C980074C25E75DEF00808E8D /* SPITenantsService.m */,
 			);
 			name = Service;
 			path = "New Group";
@@ -577,6 +583,7 @@
 				27C68F4E20E32CA400D8268C /* SPIKeyRollingHelper.h in Headers */,
 				27C68F4F20E32CAD00D8268C /* SPIMessage.h in Headers */,
 				27C68F5020E32CB000D8268C /* SPIPairing.h in Headers */,
+				C980074D25E75DEF00808E8D /* SPITenantsService.h in Headers */,
 				27C68F5120E32CB300D8268C /* SPIPairingHelper.h in Headers */,
 				27C8E48220EC74CC00E00EA9 /* SPIDeviceInfo.h in Headers */,
 				27C68F5220E32CB600D8268C /* SPIPayAtTable.h in Headers */,
@@ -769,6 +776,7 @@
 				273E9B67205A34BF0006ED5C /* NSDate+Util.m in Sources */,
 				290A3C0220BEEF59006FD523 /* SPIPurchaseHelper.m in Sources */,
 				273E9B22205A31030006ED5C /* SPIPingHelper.m in Sources */,
+				C980074E25E75DEF00808E8D /* SPITenantsService.m in Sources */,
 				273E9B20205A31030006ED5C /* SPIRequestIdHelper.m in Sources */,
 				27C8E48320EC74CC00E00EA9 /* SPIDeviceInfo.m in Sources */,
 				273E9B0D205A30F90006ED5C /* SPIKeyRollingHelper.m in Sources */,
