@@ -975,7 +975,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     
     if (_posId.length > 0) {
         // Our stamp for signing outgoing messages
-        self.spiMessageStamp = [[SPIMessageStamp alloc] initWithPosId:posId secrets:nil serverTimeDelta:0];
+        self.spiMessageStamp = [[SPIMessageStamp alloc] initWithPosId:posId secrets:nil];
     }
 }
 
@@ -1963,11 +1963,12 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 - (void)handleIncomingPong:(SPIMessage *)m {
     NSLog(@"handleIncomingPong");
     
-    // We need to maintain this time delta otherwise the server will not accept our messages.
-    self.spiMessageStamp.serverTimeDelta = m.serverTimeDelta;
+    
     
     if (self.mostRecentPongReceived == nil) {
         // First pong received after a connection, and after the pairing process is fully finalised.
+        // Receive connection id from PinPad after first pong, store this as this needs to be passed for every request.
+        [self.spiMessageStamp setConnectionId: m.connID];
         if (_state.status != SPIStatusUnpaired) {
             SPILog(@"First pong of connection and in paired state.");
             [self onReadyToTransact];

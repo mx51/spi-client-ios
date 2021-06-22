@@ -539,8 +539,7 @@
 				C980074B25E75DEF00808E8D /* SPITenantsService.h */,
 				C980074C25E75DEF00808E8D /* SPITenantsService.m */,
 			);
-			name = Service;
-			path = "New Group";
+			path = Service;
 			sourceTree = "<group>";
 		};
 		786F0B30F75E71B9A8439A92 /* Pods */ = {
