@@ -84,7 +84,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
 static NSInteger retriesBeforeResolvingDeviceAddress = 3; // How many retries before resolving Device Address
 
 static NSString *regexItemsForPosId = @"^[a-zA-Z0-9]*$";
-static NSString *regexItemsForEftposAddress = @"^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$";
+static NSString *regexItemsForEftposAddress = @"^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}(\\:[0-9]{1,5})?$";
 
 static NSInteger retriesBeforePairing = 3; // How many retries before resolving Device Address
 
