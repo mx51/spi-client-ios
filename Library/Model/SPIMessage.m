@@ -107,7 +107,7 @@ NSString *const SPIBatteryLevelChangedKey = @"battery_level_changed";
     NSInteger min = 100;
     NSInteger max = 99999;
     
-    [self setConnectionId:0];
+    [self setConnectionId: @""];
     self.posCounter = min + arc4random() % (max - min);
     
 }

@@ -233,7 +233,7 @@
 - (void)testHandleCancelResponse_success {
     SPIClient *client = [SPITestUtils clientWithTestSecrets];
     SPISecrets *secrets = client.secrets;
-    SPIMessageStamp *stamp = [[SPIMessageStamp alloc] initWithPosId:@"POS" secrets:secrets serverTimeDelta:0];
+    SPIMessageStamp *stamp = [[SPIMessageStamp alloc] initWithPosId:@"POS" secrets:secrets];
     
     client.state.status = SPIStatusPairedConnected;
     
@@ -275,7 +275,7 @@
 - (void)testHandleCancelResponse_failure {
     SPIClient *client = [SPITestUtils clientWithTestSecrets];
     SPISecrets *secrets = client.secrets;
-    SPIMessageStamp *stamp = [[SPIMessageStamp alloc] initWithPosId:@"POS" secrets:secrets serverTimeDelta:0];
+    SPIMessageStamp *stamp = [[SPIMessageStamp alloc] initWithPosId:@"POS" secrets:secrets];
     
     client.state.status = SPIStatusPairedConnected;
     
