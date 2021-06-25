@@ -97,13 +97,15 @@ typedef NS_ENUM(NSInteger, SPIMessageSuccessState) {
 
 @property (nonatomic, copy) NSString *posId;
 @property (nonatomic, strong) SPISecrets *secrets;
-@property (nonatomic, assign) NSInteger connID;
+@property (nonatomic, copy) NSString *connID;
 @property (nonatomic, assign) NSInteger posCounter;
 
 - (instancetype)initWithPosId:(NSString *)posId
                       secrets:(SPISecrets *)secrets;
 
-- (void)setConnectionId:(int)connID;
+- (void)resetConnection;
+
+- (void)setConnectionId:(NSString *)connID;
 
 @end
 
@@ -128,7 +130,7 @@ typedef NS_ENUM(NSInteger, SPIMessageSuccessState) {
 // (not in the envelope 's top level which would just have the "message" field.)
 @property (nonatomic, copy) NSString *posId;
 
-@property (nonatomic, assign) NSInteger connID;
+@property (nonatomic, copy) NSString *connID;
 
 @property (nonatomic, assign) NSInteger posCounter;
 

@@ -95,7 +95,7 @@ NSString *const SPIBatteryLevelChangedKey = @"battery_level_changed";
     if (self) {
         _posId = posId.copy;
         self.secrets = secrets;
-        self.connID = 0;
+        self.connID = @"";
         self.posCounter = 0;
     }
     
@@ -112,7 +112,7 @@ NSString *const SPIBatteryLevelChangedKey = @"battery_level_changed";
     
 }
 
--  (void)setConnectionId:(int)connID {
+-  (void)setConnectionId:(NSString *)connID {
     
     self.connID = connID;
     
@@ -132,8 +132,8 @@ NSString *const SPIBatteryLevelChangedKey = @"battery_level_changed";
         _dateTimeStamp = dict[@"datetime"];
         _posId = dict[@"pos_id"];
         _needsEncryption = NO;
-        _connID = 0;
-        _posCounter = 0;
+        _connID = dict[@"conn_id"];
+        _posCounter = [dict[@"pos_counter"] integerValue];
     }
     
     return self;
@@ -349,7 +349,7 @@ NSString *const SPIBatteryLevelChangedKey = @"battery_level_changed";
     }
 
     if (self.connID) {
-        [dict setValue:[NSNumber numberWithInteger:self.connID] forKey:@"conn_id"];
+        [dict setValue:self.connID forKey:@"conn_id"];
     }
     
     

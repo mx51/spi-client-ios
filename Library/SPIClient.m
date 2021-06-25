@@ -84,7 +84,7 @@ static NSInteger missedPongsToDisconnect = 2; // How many missed pongs before di
 static NSInteger retriesBeforeResolvingDeviceAddress = 3; // How many retries before resolving Device Address
 
 static NSString *regexItemsForPosId = @"^[a-zA-Z0-9]*$";
-static NSString *regexItemsForEftposAddress = @"^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$";
+static NSString *regexItemsForEftposAddress = @"^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}(\\:[0-9]{1,5})?$";
 
 static NSInteger retriesBeforePairing = 3; // How many retries before resolving Device Address
 
@@ -1765,6 +1765,8 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             case SPIConnectionStateConnected:
                 self.retriesSinceLastDeviceAddressResolution = 0;
                 
+                [self.spiMessageStamp resetConnection];
+                
                 if (weakSelf.state.flow == SPIFlowPairing && weakSelf.state.status == SPIStatusUnpaired) {
                     weakSelf.state.pairingFlowState.message = @"Requesting to pair...";
                     [weakSelf pairingFlowStateChanged];
@@ -1785,7 +1787,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                 weakSelf.mostRecentPongReceived = nil;
                 weakSelf.missedPongsCount = 0;
                 [weakSelf stopPeriodPing];
-                
+                [weakSelf.spiMessageStamp resetConnection];
                 if (weakSelf.state.status != SPIStatusUnpaired) {
                     weakSelf.state.status = SPIStatusPairedConnecting;
                     [weakSelf statusChanged];
