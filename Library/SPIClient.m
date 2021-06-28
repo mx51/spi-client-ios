@@ -834,7 +834,8 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     });
 }
 
-- (void)initiateGetTxWithCompletion:(SPICompletionTxResult)completion {
+- (void)initiateGetTxWithPosRefD:(NSString *)posRefId
+                      completion:(SPICompletionTxResult)completion {
     if (self.state.status == SPIStatusUnpaired) {
         completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
         return;
@@ -853,7 +854,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             
             weakSelf.state.flow = SPIFlowTransaction;
             
-            SPIGetTransactionRequest *gtRequest = [SPIGetTransactionRequest new];
+            SPIGetTransactionRequest *gtRequest = [[SPIGetTransactionRequest alloc] initWithPosRefId:posRefId];
             
             SPIMessage *gtMessage = [gtRequest toMessage];
             
