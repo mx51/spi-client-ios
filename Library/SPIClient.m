@@ -834,7 +834,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     });
 }
 
-- (void)initiateGetTxWithPosRefD:(NSString *)posRefId
+- (void)initiateGetTxWithPosRefID:(NSString *)posRefId
                       completion:(SPICompletionTxResult)completion {
     if (self.state.status == SPIStatusUnpaired) {
         completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
