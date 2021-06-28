@@ -110,6 +110,9 @@
         case SPITransactionTypeGetLastTransaction:
             return @"Get Last Transaction";
             
+        case SPITransactionTypeGetTransaction:
+            return @"Get Transaction";
+            
         case SPITransactionTypePreAuth:
             return @"Preauth";
             
