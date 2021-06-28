@@ -2114,6 +2114,9 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         } else if ([eventName isEqualToString:SPIGetLastTransactionResponseKey]) {
             [weakSelf handleGetLastTransactionResponse:m];
             
+        } else if ([eventName isEqualToString:SPIGetTransactionResponseKey]) {
+            [weakSelf handleGetLastTransactionResponse:m];
+            
         } else if ([eventName isEqualToString:SPISettleResponseKey]) {
             [weakSelf handleSettleResponse:m];
             
