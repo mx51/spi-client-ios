@@ -29,6 +29,9 @@ extern NSString *const SPIPurchaseResponseKey;
 extern NSString *const SPICancelTransactionRequestKey;
 extern NSString *const SPICancelTransactionResponseKey;
 
+extern NSString *const SPIGetTransactionRequestKey;
+extern NSString *const SPIGetTransactionResponseKey;
+
 extern NSString *const SPIGetLastTransactionRequestKey;
 extern NSString *const SPIGetLastTransactionResponseKey;
 

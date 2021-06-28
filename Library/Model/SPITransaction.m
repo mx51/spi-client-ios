@@ -248,6 +248,32 @@
 
 @end
 
+@implementation SPIGetTransactionRequest : NSObject
+
+- (instancetype)initWithPosRefId:(NSString *)posRefId {
+    self = [super init];
+    
+    if (self) {
+        _posRefId = posRefId;
+    }
+    
+    return self;
+}
+
+- (SPIMessage *)toMessage {
+    NSDictionary *originalData = @{
+                                   @"pos_ref_id" : self.posRefId
+                                   };
+    
+    NSMutableDictionary *data = [[NSMutableDictionary alloc] initWithDictionary:originalData];
+    return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"gt"]
+                                       eventName:SPIGetTransactionRequestKey
+                                            data:data
+                                 needsEncryption:true];
+}
+
+@end
+
 @implementation SPIGetLastTransactionResponse : NSObject
 
 - (instancetype)initWithMessage:(SPIMessage *)message {

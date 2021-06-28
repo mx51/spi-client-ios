@@ -119,6 +119,18 @@
 
 @end
 
+@interface SPIGetTransactionRequest : NSObject
+
+@property (nonatomic, readonly, copy) NSString *posRefId;
+
+- (instancetype)initWithPosRefId:(NSString *)posRefId;
+
+
+- (SPIMessage *)toMessage;
+
+@end
+
+
 @interface SPIGetLastTransactionRequest : NSObject
 
 - (SPIMessage *)toMessage;

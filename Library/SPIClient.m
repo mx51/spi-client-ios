@@ -834,6 +834,49 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     });
 }
 
+- (void)initiateGetTxWithCompletion:(SPICompletionTxResult)completion {
+    if (self.state.status == SPIStatusUnpaired) {
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
+        return;
+    }
+    
+    __weak __typeof(& *self) weakSelf = self;
+    
+    dispatch_async(self.queue, ^{
+        NSLog(@"initGt txLock entering");
+        @synchronized(weakSelf.txLock) {
+            NSLog(@"initGt txLock entered");
+            if (weakSelf.state.flow != SPIFlowIdle) {
+                completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not idle"]);
+                return;
+            }
+            
+            weakSelf.state.flow = SPIFlowTransaction;
+            
+            SPIGetTransactionRequest *gtRequest = [SPIGetTransactionRequest new];
+            
+            SPIMessage *gtMessage = [gtRequest toMessage];
+            
+            weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:gtMessage.mid
+                                                                                 type:SPITransactionTypeGetTransaction
+                                                                          amountCents:0
+                                                                              message:gtMessage
+                                                                                  msg:@"Waiting for EFTPOS connection to make a get last transaction request"];
+            
+            [weakSelf.state.txFlowState callingGlt:gtMessage.mid];
+            
+            if ([weakSelf send:gtMessage]) {
+                [weakSelf.state.txFlowState sent:@"Asked EFTPOS to get transaction"];
+            }
+            NSLog(@"initGt txLock exiting");
+        }
+        
+        [weakSelf transactionFlowStateChanged];
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Get transaction initiated"]);
+    });
+}
+
+
 - (void)initiateGetLastTxWithCompletion:(SPICompletionTxResult)completion {
     if (self.state.status == SPIStatusUnpaired) {
         completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);

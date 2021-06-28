@@ -58,6 +58,7 @@ typedef NS_ENUM(NSUInteger, SPITransactionType) {
     SPITransactionTypeMOTO,
     SPITransactionTypeSettle,
     SPITransactionTypeSettleEnquiry,
+    SPITransactionTypeGetTransaction,
     SPITransactionTypeGetLastTransaction,
     SPITransactionTypePreAuth,
     SPITransactionTypeAccountVerify,
