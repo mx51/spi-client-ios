@@ -361,6 +361,58 @@
 
 @end
 
+@implementation SPIReversalRequest : NSObject
+
+- (instancetype)initWithPosRefId:(NSString *)posRefId {
+    
+    self = [super init];
+    
+    if (self) {
+        _posRefId = posRefId;
+    }
+    
+    return self;
+}
+
+- (SPIMessage *)toMessage {
+    NSDictionary *originalData = @{
+                                   @"pos_ref_id": self.posRefId
+                                   };
+    
+    NSMutableDictionary *data = [[NSMutableDictionary alloc] initWithDictionary:originalData];
+    
+    return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"rev"]
+                                       eventName:SPIReversalRequestKey
+                                            data:data
+                                 needsEncryption:true];
+}
+
+@end
+
+@implementation SPIReversalResponse : NSObject
+
+- (instancetype)initWithMessage:(SPIMessage *)message {
+    self = [super init];
+    
+    if (self) {
+        _message = message;
+        _posRefId = [message getDataStringValue:@"pos_ref_id"];
+        _isSuccess = message.isSuccess;
+    }
+    
+    return self;
+}
+
+- (NSString *)getErrorReason {
+    return [self.message getDataStringValue:@"error_reason"];
+}
+
+- (NSString *)getErrorDetail {
+    return [self.message getDataStringValue:@"error_detail"];
+}
+
+@end
+
 @implementation SPIRefundRequest : NSObject
 
 - (instancetype)initWithPosRefId:(NSString *)posRefId

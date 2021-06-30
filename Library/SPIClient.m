@@ -919,6 +919,48 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     });
 }
 
+- (void)initiateReversal:(NSString *)posRefId
+              completion:(SPICompletionTxResult)completion {
+    
+    if (self.state.status == SPIStatusUnpaired) {
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:false message:@"Not paired"]);
+        return;
+    }
+    
+    __weak __typeof(& *self) weakSelf = self;
+    
+    dispatch_async(self.queue, ^{
+        NSLog(@"initReversal txLock entering");
+        @synchronized(weakSelf.txLock) {
+            NSLog(@"initReversal txLock entered");
+            if (weakSelf.state.flow != SPIFlowIdle) {
+                completion([[SPIInitiateTxResult alloc] initWithTxResult:false message:@"Not idle"]);
+                return;
+            }
+            
+            weakSelf.state.flow = SPIFlowTransaction;
+            
+            SPIGetLastTransactionRequest *revRequest = [[SPIGetLastTransactionRequest alloc] init];
+            
+            SPIMessage *revRequestMsg = [revRequest toMessage];
+            
+            weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId
+                                                                                 type:SPITransactionTypeReversal
+                                                                          amountCents:0
+                                                                              message:revRequestMsg
+                                                                                  msg:@"Waiting for EFTPOS connection to attempt reversal"];
+            
+            if ([weakSelf send:revRequestMsg]) {
+                [weakSelf.state.txFlowState sent:@"Asked EFTPOS for reversal"];
+            }
+            NSLog(@"initReversal txLock exiting");
+        }
+        
+        [weakSelf transactionFlowStateChanged];
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Reversal initiated"]);
+    });
+}
+
 - (void)printReport:(NSString *)key
             payload:(NSString *)payload {
     [self send:[[[SPIPrintingRequest alloc] initWithKey:key payload:payload] toMessage]];
@@ -1398,6 +1440,11 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 - (void)handleRefundResponse:(SPIMessage *)m {
     [self handleTxResponse:m type:SPITransactionTypeRefund checkPosRefId:YES];
 }
+
+- (void)handleReversalResponse:(SPIMessage *)m {
+    [self handleTxResponse:m type:SPITransactionTypeReversal checkPosRefId:YES];
+}
+
 
 /**
  * Handle the settlement response received from the PIN pad.
@@ -2055,7 +2102,11 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         } else if ([eventName isEqualToString:SPIRefundResponseKey]) {
             [weakSelf handleRefundResponse:m];
             
-        } else if ([eventName isEqualToString:SPICashoutOnlyResponseKey]) {
+        } else if ([eventName isEqualToString:SPIReversalResponseKey]) {
+            [weakSelf handleReversalResponse:m];
+            
+        }
+        else if ([eventName isEqualToString:SPICashoutOnlyResponseKey]) {
             [weakSelf handleCashoutOnlyResponse:m];
             
         } else if ([eventName isEqualToString:SPIMotoPurchaseResponseKey]) {

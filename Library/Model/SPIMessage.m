@@ -35,6 +35,9 @@ NSString *const SPICancelTransactionResponseKey = @"cancel_response";
 NSString *const SPIGetLastTransactionRequestKey = @"get_last_transaction";
 NSString *const SPIGetLastTransactionResponseKey = @"last_transaction";
 
+NSString *const SPIReversalRequestKey = @"reversal";
+NSString *const SPIReversalResponseKey = @"reversal_response";
+
 NSString *const SPIRefundRequestKey = @"refund";
 NSString *const SPIRefundResponseKey = @"refund_response";
 NSString *const SPISignatureRequiredKey = @"signature_required";

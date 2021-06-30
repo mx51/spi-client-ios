@@ -32,6 +32,9 @@ extern NSString *const SPICancelTransactionResponseKey;
 extern NSString *const SPIGetLastTransactionRequestKey;
 extern NSString *const SPIGetLastTransactionResponseKey;
 
+extern NSString *const SPIReversalRequestKey;
+extern NSString *const SPIReversalResponseKey;
+
 extern NSString *const SPIRefundRequestKey;
 extern NSString *const SPIRefundResponseKey;
 extern NSString *const SPISignatureRequiredKey;
