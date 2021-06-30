@@ -195,6 +195,14 @@
 
 - (NSString *)getErrorDetail;
 
+- (BOOL)wasOperationInProgressError;
+
+- (BOOL)wasTransactionInProgressError;
+
+- (BOOL)wasRefIdNotFoundError;
+
+- (BOOL)couldNotBeReversedError;
+
 @end
 
 @interface SPIRefundRequest : NSObject

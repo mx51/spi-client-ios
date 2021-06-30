@@ -1442,7 +1442,27 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 }
 
 - (void)handleReversalResponse:(SPIMessage *)m {
-    [self handleTxResponse:m type:SPITransactionTypeReversal checkPosRefId:YES];
+    
+    NSLog(@"handleReversalResponse");
+    NSLog(@"hansdleReversalResp txLock entering");
+    @synchronized(self.txLock) {
+        NSLog(@"handleReversalResp txLock entered");
+        SPITransactionFlowState *txState = self.state.txFlowState;
+        NSDictionary *dict = m.data;
+        NSString *incomingPosRefId = [dict objectForKey:@"pos_ref_id"];
+        
+        if (self.state.flow != SPIFlowTransaction || txState.isFinished || txState.posRefId == incomingPosRefId) {
+            SPILog(@"Received Reversal response but I was not waiting for this one.");
+            return;
+        }
+        
+        [txState completed:m.successState response:m msg:@"Reversal completed"];
+    }
+    NSLog(@"handleReversalResp txLock exiting");
+    
+    
+    [self transactionFlowStateChanged];
+    
 }
 
 

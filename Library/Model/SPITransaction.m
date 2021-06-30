@@ -375,11 +375,8 @@
 }
 
 - (SPIMessage *)toMessage {
-    NSDictionary *originalData = @{
-                                   @"pos_ref_id": self.posRefId
-                                   };
-    
-    NSMutableDictionary *data = [[NSMutableDictionary alloc] initWithDictionary:originalData];
+    NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
+    [data setValue:_posRefId forKey:@"pos_ref_id"];
     
     return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"rev"]
                                        eventName:SPIReversalRequestKey
@@ -401,6 +398,22 @@
     }
     
     return self;
+}
+
+- (BOOL)wasOperationInProgressError {
+    return [self.message.error hasPrefix:@"OPERATION_IN_PROGRESS"];
+}
+
+- (BOOL)wasTransactionInProgressError {
+    return [self.message.error hasPrefix:@"TRANSACTION_IN_PROGRESS"];
+}
+
+- (BOOL)wasRefIdNotFoundError {
+    return [self.message.error hasPrefix:@"POS_REF_ID_NOT_FOUND"];
+}
+
+- (BOOL)couldNotBeReversedError {
+    return [self.message.error hasPrefix:@"INTERNAL_ERROR"];
 }
 
 - (NSString *)getErrorReason {
