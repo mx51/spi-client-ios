@@ -940,7 +940,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             
             weakSelf.state.flow = SPIFlowTransaction;
             
-            SPIGetLastTransactionRequest *revRequest = [[SPIGetLastTransactionRequest alloc] init];
+            SPIReversalRequest *revRequest = [[SPIReversalRequest alloc] initWithPosRefId:posRefId];
             
             SPIMessage *revRequestMsg = [revRequest toMessage];
             
