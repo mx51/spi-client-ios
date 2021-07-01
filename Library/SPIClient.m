@@ -1451,8 +1451,16 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         NSDictionary *dict = m.data;
         NSString *incomingPosRefId = [dict objectForKey:@"pos_ref_id"];
         
+        SPIReversalResponse *revResp = [[SPIReversalResponse alloc] initWithMessage:m];
+        
         if (self.state.flow != SPIFlowTransaction || txState.isFinished || txState.posRefId == incomingPosRefId) {
             SPILog(@"Received Reversal response but I was not waiting for this one.");
+            return;
+        }
+        
+        if (!revResp.isSuccess) {
+            
+            [txState completed:m.successState response:m msg:revResp.getErrorDetail];
             return;
         }
         

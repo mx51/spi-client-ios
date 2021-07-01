@@ -191,6 +191,8 @@
 @property (nonatomic, readonly, strong) SPIMessage *message;
 @property (nonatomic, readonly) BOOL isSuccess;
 
+- (instancetype)initWithMessage:(SPIMessage *)message;
+
 - (NSString *)getErrorReason;
 
 - (NSString *)getErrorDetail;
