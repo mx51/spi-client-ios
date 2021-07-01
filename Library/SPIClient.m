@@ -1459,12 +1459,10 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         }
         
         if (!revResp.isSuccess) {
-            
             [txState completed:m.successState response:m msg:revResp.getErrorDetail];
-            return;
+        } else {
+            [txState completed:m.successState response:m msg:@"Reversal completed"];
         }
-        
-        [txState completed:m.successState response:m msg:@"Reversal completed"];
     }
     NSLog(@"handleReversalResp txLock exiting");
     
