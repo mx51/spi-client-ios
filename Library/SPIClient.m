@@ -919,6 +919,48 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     });
 }
 
+- (void)initiateReversal:(NSString *)posRefId
+              completion:(SPICompletionTxResult)completion {
+    
+    if (self.state.status == SPIStatusUnpaired) {
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:false message:@"Not paired"]);
+        return;
+    }
+    
+    __weak __typeof(& *self) weakSelf = self;
+    
+    dispatch_async(self.queue, ^{
+        NSLog(@"initReversal txLock entering");
+        @synchronized(weakSelf.txLock) {
+            NSLog(@"initReversal txLock entered");
+            if (weakSelf.state.flow != SPIFlowIdle) {
+                completion([[SPIInitiateTxResult alloc] initWithTxResult:false message:@"Not idle"]);
+                return;
+            }
+            
+            weakSelf.state.flow = SPIFlowTransaction;
+            
+            SPIReversalRequest *revRequest = [[SPIReversalRequest alloc] initWithPosRefId:posRefId];
+            
+            SPIMessage *revRequestMsg = [revRequest toMessage];
+            
+            weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId
+                                                                                 type:SPITransactionTypeReversal
+                                                                          amountCents:0
+                                                                              message:revRequestMsg
+                                                                                  msg:@"Waiting for EFTPOS connection to attempt reversal"];
+            
+            if ([weakSelf send:revRequestMsg]) {
+                [weakSelf.state.txFlowState sent:@"Asked EFTPOS for reversal"];
+            }
+            NSLog(@"initReversal txLock exiting");
+        }
+        
+        [weakSelf transactionFlowStateChanged];
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Reversal initiated"]);
+    });
+}
+
 - (void)printReport:(NSString *)key
             payload:(NSString *)payload {
     [self send:[[[SPIPrintingRequest alloc] initWithKey:key payload:payload] toMessage]];
@@ -1398,6 +1440,37 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 - (void)handleRefundResponse:(SPIMessage *)m {
     [self handleTxResponse:m type:SPITransactionTypeRefund checkPosRefId:YES];
 }
+
+- (void)handleReversalResponse:(SPIMessage *)m {
+    
+    NSLog(@"handleReversalResponse");
+    NSLog(@"handleReversalResp txLock entering");
+    @synchronized(self.txLock) {
+        NSLog(@"handleReversalResp txLock entered");
+        SPITransactionFlowState *txState = self.state.txFlowState;
+        NSDictionary *dict = m.data;
+        NSString *incomingPosRefId = [dict objectForKey:@"pos_ref_id"];
+        
+        SPIReversalResponse *revResp = [[SPIReversalResponse alloc] initWithMessage:m];
+        
+        if (self.state.flow != SPIFlowTransaction || txState.isFinished || txState.posRefId == incomingPosRefId) {
+            SPILog(@"Received Reversal response but I was not waiting for this one. Incoming Pos Ref ID: %@", incomingPosRefId);
+            return;
+        }
+        
+        if (!revResp.isSuccess) {
+            [txState completed:m.successState response:m msg:revResp.getErrorDetail];
+        } else {
+            [txState completed:m.successState response:m msg:@"Reversal completed"];
+        }
+    }
+    NSLog(@"handleReversalResp txLock exiting");
+    
+    
+    [self transactionFlowStateChanged];
+    
+}
+
 
 /**
  * Handle the settlement response received from the PIN pad.
@@ -2055,7 +2128,11 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         } else if ([eventName isEqualToString:SPIRefundResponseKey]) {
             [weakSelf handleRefundResponse:m];
             
-        } else if ([eventName isEqualToString:SPICashoutOnlyResponseKey]) {
+        } else if ([eventName isEqualToString:SPIReversalResponseKey]) {
+            [weakSelf handleReversalResponse:m];
+            
+        }
+        else if ([eventName isEqualToString:SPICashoutOnlyResponseKey]) {
             [weakSelf handleCashoutOnlyResponse:m];
             
         } else if ([eventName isEqualToString:SPIMotoPurchaseResponseKey]) {
