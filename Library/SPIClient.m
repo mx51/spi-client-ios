@@ -1454,7 +1454,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         SPIReversalResponse *revResp = [[SPIReversalResponse alloc] initWithMessage:m];
         
         if (self.state.flow != SPIFlowTransaction || txState.isFinished || txState.posRefId == incomingPosRefId) {
-            SPILog(@"Received Reversal response but I was not waiting for this one.");
+            SPILog(@"Received Reversal response but I was not waiting for this one. Incoming Pos Ref ID: %@", incomingPosRefId);
             return;
         }
         
