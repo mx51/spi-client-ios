@@ -1444,7 +1444,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 - (void)handleReversalResponse:(SPIMessage *)m {
     
     NSLog(@"handleReversalResponse");
-    NSLog(@"hansdleReversalResp txLock entering");
+    NSLog(@"handleReversalResp txLock entering");
     @synchronized(self.txLock) {
         NSLog(@"handleReversalResp txLock entered");
         SPITransactionFlowState *txState = self.state.txFlowState;
