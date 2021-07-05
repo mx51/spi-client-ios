@@ -72,6 +72,7 @@ extern NSString *const SPIPayAtTableGetBillDetailsKey; // incoming. When eftpos 
 extern NSString *const SPIPayAtTableBillDetailsKey;    // outgoing. We reply with this when eftpos requests to us get_bill_details.
 extern NSString *const SPIPayAtTableBillPaymentKey;    // incoming. When the eftpos advices
 extern NSString *const SPIPayAtTableBillPaymentFlowEndedKey;
+extern NSString *const SPIPayAtTableBillPaymentFlowEndedAckKey;
 extern NSString *const SPIPayAtTableGetOpenTablesKey;
 extern NSString *const SPIPayAtTableOpenTablesKey;
 
