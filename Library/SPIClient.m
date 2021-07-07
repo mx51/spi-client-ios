@@ -1252,19 +1252,11 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
  *
  * Handling the 4th interaction of the pairing process i.e. an incoming
  * KeyCheck.
- *
+ * This method is doing nothing since auto confirmation is implemented (SP-297)
  * @param m Message
  */
 - (void)handleKeyCheck:(SPIMessage *)m {
     NSLog(@"handleKeyCheck");
-    
-    SPIKeyCheck *keyCheck = [[SPIKeyCheck alloc] initWithMessage:m];
-    self.state.pairingFlowState.confirmationCode = keyCheck.confirmationCode;
-    self.state.pairingFlowState.isAwaitingCheckFromEftpos = YES;
-    self.state.pairingFlowState.isAwaitingCheckFromPos = YES;
-    self.state.pairingFlowState.message = [NSString stringWithFormat:@"Confirm that the following code:\n\n%@\n\n is showing on the terminal",
-                                           keyCheck.confirmationCode];
-    [self pairingFlowStateChanged];
 }
 
 /**
