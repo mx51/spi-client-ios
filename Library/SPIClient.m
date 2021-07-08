@@ -1252,19 +1252,11 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
  *
  * Handling the 4th interaction of the pairing process i.e. an incoming
  * KeyCheck.
- *
+ * This method is doing nothing since auto confirmation is implemented (SP-297)
  * @param m Message
  */
 - (void)handleKeyCheck:(SPIMessage *)m {
     NSLog(@"handleKeyCheck");
-    
-    SPIKeyCheck *keyCheck = [[SPIKeyCheck alloc] initWithMessage:m];
-    self.state.pairingFlowState.confirmationCode = keyCheck.confirmationCode;
-    self.state.pairingFlowState.isAwaitingCheckFromEftpos = YES;
-    self.state.pairingFlowState.isAwaitingCheckFromPos = YES;
-    self.state.pairingFlowState.message = [NSString stringWithFormat:@"Confirm that the following code:\n\n%@\n\n is showing on the terminal",
-                                           keyCheck.confirmationCode];
-    [self pairingFlowStateChanged];
 }
 
 /**
@@ -1281,16 +1273,12 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     
     if (pairResponse.isSuccess) {
         if (self.state.pairingFlowState.isAwaitingCheckFromPos) {
-            SPILog(@"Got pair confirm from EFTPOS, but still waiting for use to confirm from POS.");
-            // Still Waiting for User to say yes on POS
-            self.state.pairingFlowState.message = [NSString stringWithFormat:@"Confirm that the following Code:\n\n%@\n\n is what the EFTPOS showed",
-                                                   self.state.pairingFlowState.confirmationCode];
-            [self pairingFlowStateChanged];
-        } else {
-            SPILog(@"Got pair confirm from EFTPOS, and already had confirm from POS. Now just waiting for first pong.");
-            [self onPairingSuccess];
+            // Waiting for PoS, auto confirming code
+            SPILog(@"Confirming pairing from library.");
+            [self pairingConfirmCode];
         }
-        
+        SPILog(@"Got Pair Confirm from Eftpos, and already had confirm from POS. Now just waiting for first pong.");
+        [self onPairingSuccess];
         // I need to ping/login even if the pos user has not said yes yet,
         // because otherwise within 5 seconds connectiong will be dropped by
         // EFTPOS.
