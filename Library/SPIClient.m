@@ -36,6 +36,7 @@
 #import "SPITerminal.h"
 #import "SPIDeviceService.h"
 #import "SPITenantsService.h"
+#import "SPITransactionReportHelper.h"
 
 @interface SPIClient () <SPIConnectionDelegate>
 
@@ -70,6 +71,8 @@
 @property (nonatomic, strong) NSRegularExpression *posIdRegex;
 
 @property (nonatomic, strong) NSRegularExpression *eftposAddressRegex;
+
+@property (nonatomic, strong) SPITransactionReport *transactionReport;
 
 @end
 
@@ -735,6 +738,9 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         }
         
         [self transactionFlowStateChanged];
+        
+        [self sendTransactionReport];
+        
     });
 }
 
@@ -957,6 +963,8 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         }
         
         [weakSelf transactionFlowStateChanged];
+        [self sendTransactionReport];
+        
         completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Reversal initiated"]);
     });
 }
@@ -1457,6 +1465,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     
     [self transactionFlowStateChanged];
     
+    [self sendTransactionReport];
 }
 
 
@@ -1497,6 +1506,8 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     }
     
     [self transactionFlowStateChanged];
+    
+    [self sendTransactionReport];
 }
 
 /**
@@ -1657,6 +1668,8 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     }
     
     [self transactionFlowStateChanged];
+    
+    [self sendTransactionReport];
 }
 
 - (SPIMessageSuccessState)gltMatch:(SPIGetLastTransactionResponse *)gltResponse
@@ -1719,6 +1732,8 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         NSString *msg = [NSString stringWithFormat:@"Failed to cancel transaction: %@. Check EFTPOS.", response.getErrorDetail];
         [self.state.txFlowState cancelFailed:msg];
         [self transactionFlowStateChanged];
+        [self sendTransactionReport];
+        
         NSLog(@"handleCancelTxResp txLock exiting");
     }
 }
@@ -1991,6 +2006,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             dispatch_async(self.queue, ^{
                 if (!self.hasSetPosInfo) {
                     [weakSelf callSetPosInfo];
+                    weakSelf.transactionReport = [SPITransactionReportHelper createTransactionReportEnvelope:weakSelf.posVendorId posVersion:weakSelf.posVersion libraryLanguage:@"ios" libraryVersion:[SPIClient getVersion] serialNumber:weakSelf.serialNumber];
                 }
                 
                 [weakSelf.spiPat pushPayAtTableConfig];
@@ -2209,10 +2225,59 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     });
 }
 
+- (void)sendTransactionReport {
+    self.transactionReport.txType = [self.state.txFlowState txTypeString];
+    self.transactionReport.txResult = [self successStateString:self.state.txFlowState.successState];
+    self.transactionReport.txStartTime = self.state.txFlowState.request.dateTimeStamp;
+    self.transactionReport.txEndTime = self.state.txFlowState.request.dateTimeStamp;
+    
+    NSTimeInterval duration = [self.state.txFlowState.completedDate timeIntervalSinceDate:self.state.txFlowState.requestDate];
+    
+    self.transactionReport.durationMs = [NSNumber numberWithDouble:duration];
+    self.transactionReport.currentFlow = [SPIState flowString:self.state.flow];
+    self.transactionReport.currentStatus = [self statusString:self.state.status];
+    self.transactionReport.posRefId = self.state.txFlowState.posRefId;
+    self.transactionReport.event = [NSString stringWithFormat:@"Waiting for Signature: %@, Attemtping to Cancel: %@, Finished: %@", self.state.txFlowState.isAwaitingSignatureCheck ? @"true" : @"false", self.state.txFlowState.isAttemptingToCancel ? @"true" : @"false", self.state.txFlowState.isFinished ? @"true" : @"false"];
+    self.transactionReport.serialNumber = self.serialNumber;
+    
+    [SPIAnalyticsService reportTransaction:self.transactionReport apiKey:self.deviceApiKey acquirerCode:self.acquirerCode isTestMode:self.testMode];
+    
+}
+
 - (void)didReceiveError:(NSError *)error {
     dispatch_async(self.queue, ^{
         SPILog(@"ERROR: Received WS error: %@", error);
     });
+}
+
+#pragma mark - Helpers
+
+- (NSString *)successStateString:(SPIMessageSuccessState)state {
+    switch (state) {
+        case SPIMessageSuccessStateFailed:
+            return @"Failed";
+            break;
+        case SPIMessageSuccessStateSuccess:
+            return @"Success";
+            break;
+        case SPIMessageSuccessStateUnknown:
+            return @"Unkown";
+            break;
+    }
+}
+
+- (NSString *)statusString:(SPIStatus)status {
+    switch (status) {
+        case SPIStatusPairedConnected:
+            return @"PairedConnected";
+            break;
+        case SPIStatusUnpaired:
+            return @"Unpaired";
+            break;
+        case SPIStatusPairedConnecting:
+            return @"PairedConnecting";
+            break;
+    }
 }
 
 #pragma mark - Internals for Validations
