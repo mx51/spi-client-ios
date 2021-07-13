@@ -179,6 +179,11 @@ typedef NS_ENUM(NSUInteger, SPITransactionType) {
 @property (nonatomic, strong) NSDate *requestDate;
 
 /**
+ The time when the response was received from the EFTPOS.
+ */
+@property (nonatomic, strong) NSDate *completedDate;
+
+/**
  The time when we last asked for an update, including the original request at first.
  */
 @property (nonatomic, strong) NSDate *lastStateRequestTime;
@@ -281,7 +286,10 @@ typedef NS_ENUM(NSUInteger, SPITransactionType) {
 
 - (void)unknownCompleted:(NSString *)msg;
 
+- (NSString *)txTypeString;
+
 + (NSString *)txTypeString:(SPITransactionType)type;
+
 
 @end
 
