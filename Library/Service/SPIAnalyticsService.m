@@ -87,7 +87,7 @@
              acquirerCode:(NSString *)acquirerCode
                isTestMode:(BOOL)isTestMode {
     
-    NSString *transactionServiceUriBase = isTestMode ? @"https://spi-analytics-api-sb.%@.msp.assemblypayments.com/v1/report-transaction" : @"https://device-address-api.%@.msp.assemblypayments.com/v1/report-transaction";
+    NSString *transactionServiceUriBase = isTestMode ? @"https://spi-analytics-api-sb.%@.msp.assemblypayments.com/v1/report-transaction" : @"https://spi-analytics-api.%@.msp.assemblypayments.com/v1/report-transaction";
     
     NSString *transactionServiceUri = [NSString stringWithFormat:transactionServiceUriBase, acquirerCode];
     
