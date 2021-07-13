@@ -2233,12 +2233,14 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     self.transactionReport.txResult = [self successStateString:self.state.txFlowState.successState];
     self.transactionReport.txStartTime = [NSNumber numberWithLong:self.state.txFlowState.requestDate.timeIntervalSince1970];
     self.transactionReport.txEndTime = [NSNumber numberWithLong:self.state.txFlowState.completedDate.timeIntervalSince1970];
-    self.transactionReport.durationMs = [NSNumber numberWithLong:(duration * 1000)];
+    self.transactionReport.durationMs = [NSNumber numberWithLong:(duration * 1000.0)];
     self.transactionReport.currentFlow = [SPIState flowString:self.state.flow];
     self.transactionReport.currentStatus = [self statusString:self.state.status];
     self.transactionReport.posRefId = self.state.txFlowState.posRefId;
     self.transactionReport.event = [NSString stringWithFormat:@"Waiting for Signature: %@, Attemtping to Cancel: %@, Finished: %@", self.state.txFlowState.isAwaitingSignatureCheck ? @"true" : @"false", self.state.txFlowState.isAttemptingToCancel ? @"true" : @"false", self.state.txFlowState.isFinished ? @"true" : @"false"];
     self.transactionReport.serialNumber = self.serialNumber;
+    self.transactionReport.currentTxFlowState = [self.state.txFlowState txTypeString];
+    
     
     [SPIAnalyticsService reportTransaction:self.transactionReport apiKey:self.deviceApiKey acquirerCode:self.acquirerCode isTestMode:self.testMode];
     
