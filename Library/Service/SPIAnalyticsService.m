@@ -59,7 +59,7 @@
         [dict setObject:self.txEndTime forKey:@"tx_end_ts_ms"];
     }
     
-    if (self.txStartTime) {
+    if (self.durationMs) {
         [dict setObject:self.txStartTime forKey:@"duration_ms"];
     }
     
@@ -87,7 +87,7 @@
              acquirerCode:(NSString *)acquirerCode
                isTestMode:(BOOL)isTestMode {
     
-    NSString *transactionServiceUriBase = isTestMode ? @"https://spi-analytics-api-sb.%@.msp.assemblypayments.com/v1/report-transaction" : @"https://spi-analytics-api.%@.msp.assemblypayments.com/v1/report-transaction";
+    NSString *transactionServiceUriBase = isTestMode ? @"https://spi-analytics-api-sb.%@.mspenv.io/v1/report-transaction" : @"https://spi-analytics-api.%@.mspenv.io/v1/report-transaction";
     
     NSString *transactionServiceUri = [NSString stringWithFormat:transactionServiceUriBase, acquirerCode];
     
@@ -121,8 +121,14 @@
     }];
     
     NSURLSessionDataTask * dataTask = [defaultSession dataTaskWithRequest:urlRequest completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-        if (response == nil) {
-            SPILog(@"Error reporting to anaytics service.");
+        if (error) {
+            SPILog(@"Error reporting to %@: %@", transactionServiceUri, error);
+            return;
+        }
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+        if ([httpResponse statusCode] != 200){
+            NSLog(@"Error reporting to %@, HTTP status code %li", transactionServiceUri, (long)[httpResponse statusCode]);
+            return;
         }
     }];
     

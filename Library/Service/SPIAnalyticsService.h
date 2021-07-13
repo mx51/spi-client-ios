@@ -20,8 +20,8 @@
 @property (nonatomic, copy) NSString *event;
 @property (nonatomic, copy) NSString *txType;
 @property (nonatomic, copy) NSString *txResult;
-@property (nonatomic, copy) NSString *txStartTime;
-@property (nonatomic, copy) NSString *txEndTime;
+@property (nonatomic, copy) NSNumber *txStartTime;
+@property (nonatomic, copy) NSNumber *txEndTime;
 @property (nonatomic, copy) NSNumber *durationMs;
 @property (nonatomic, copy) NSString *currentFlow;
 @property (nonatomic, copy) NSString *currentTxFlowState;
