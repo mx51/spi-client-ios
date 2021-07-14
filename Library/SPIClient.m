@@ -36,7 +36,7 @@
 #import "SPITerminal.h"
 #import "SPIDeviceService.h"
 #import "SPITenantsService.h"
-#import "SPITransactionReportHelper.h"
+
 
 @interface SPIClient () <SPIConnectionDelegate>
 
@@ -72,7 +72,6 @@
 
 @property (nonatomic, strong) NSRegularExpression *eftposAddressRegex;
 
-@property (nonatomic, strong) SPITransactionReport *transactionReport;
 
 @end
 
