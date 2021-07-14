@@ -274,6 +274,11 @@
 
 - (void)testHandleCancelResponse_failure {
     SPIClient *client = [SPITestUtils clientWithTestSecrets];
+    client.deviceApiKey = @"testPos";
+    client.testMode = YES;
+    client.acquirerCode = @"gko";
+    client.transactionReport = [SPITransactionReportHelper createTransactionReportEnvelope:@"test" posVersion:@"2.8.0" libraryLanguage:@"ios" libraryVersion:@"2.8.0" serialNumber:@"555-555-555"];
+    
     SPISecrets *secrets = client.secrets;
     SPIMessageStamp *stamp = [[SPIMessageStamp alloc] initWithPosId:@"POS" secrets:secrets];
     
@@ -323,6 +328,10 @@
     
     // Initiate request
     client.state.status = SPIStatusPairedConnected;
+    client.deviceApiKey = @"testPos";
+    client.testMode = YES;
+    client.acquirerCode = @"gko";
+    client.transactionReport = [SPITransactionReportHelper createTransactionReportEnvelope:@"test" posVersion:@"2.8.0" libraryLanguage:@"ios" libraryVersion:@"2.8.0" serialNumber:@"555-555-555"];
     [client initiatePurchaseTx:@"kebab-18-06-2018-03-44-05"
                 purchaseAmount:10
                      tipAmount:0
