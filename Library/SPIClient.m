@@ -2231,7 +2231,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     
     self.transactionReport.txType = [self.state.txFlowState txTypeString];
     self.transactionReport.txResult = [self successStateString:self.state.txFlowState.successState];
-    self.transactionReport.txStartTime = [NSNumber numberWithLong:(self.state.txFlowState.requestDate.timeIntervalSince1970) * 1000.0];
+    self.transactionReport.txStartTime = [NSNumber numberWithLong:(self.state.txFlowState.requestDate.timeIntervalSince1970 * 1000.0)];
     self.transactionReport.txEndTime = [NSNumber numberWithLong:(self.state.txFlowState.completedDate.timeIntervalSince1970 * 1000.0)];
     self.transactionReport.durationMs = [NSNumber numberWithLong:(duration * 1000.0)];
     self.transactionReport.currentFlow = [SPIState flowString:self.state.flow];
