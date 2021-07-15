@@ -2262,7 +2262,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             return @"Success";
             break;
         case SPIMessageSuccessStateUnknown:
-            return @"Unkown";
+            return @"Unknown";
             break;
     }
 }
