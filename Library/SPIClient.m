@@ -1559,12 +1559,12 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             return;
         }
         
-        if (!txState.isAwaitingGltResponse) {
+        if (!txState.isAwaitingGtResponse) {
             SPILog(@"received a gt response but we had not asked for one within this transaction. Perhaps leftover from previous one. ignoring.");
             return;
         }
         
-        if (txState.lastGltRequestId != m.mid) {
+        if (txState.gtRequestId != m.mid) {
             SPILog(@"received a gt response but the message id does not match the glt request that we sent. strange. ignoring.");
             return;
         }
