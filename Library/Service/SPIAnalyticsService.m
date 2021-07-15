@@ -60,7 +60,7 @@
     }
     
     if (self.durationMs) {
-        [dict setObject:self.txStartTime forKey:@"duration_ms"];
+        [dict setObject:self.durationMs forKey:@"duration_ms"];
     }
     
     if (self.currentFlow) {
