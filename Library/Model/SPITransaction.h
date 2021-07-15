@@ -130,6 +130,51 @@
 
 @end
 
+@interface SPIGetTransactionResponse : NSObject
+
+@property (nonatomic, strong) SPIMessage *message;
+@property (nonatomic, copy, readonly) NSString *bankDateTimeString;
+@property (nonatomic) SPIMessageSuccessState successState;
+
+- (instancetype)initWithMessage:(SPIMessage *)message;
+
+- (BOOL)wasRetrievedSuccessfully;
+
+- (BOOL)wasRefIDNotFoundError;
+
+- (BOOL)wasTransactionInProgressError;
+
+- (BOOL)isInvalidArgumentsError;
+
+- (BOOL)isMissingArgumentsError;
+
+- (BOOL)isWaitingForSignatureResponse;
+
+- (BOOL)isWaitingForAuthCode;
+
+- (BOOL)IsSomethingElseBlocking;
+
+- (BOOL)isStillInProgress;
+
+- (SPIMessageSuccessState)getSuccessState;
+
+- (BOOL)wasSuccessfulTx;
+
+- (NSString *)getPosRefId;
+
+- (SPIMessage *)getTxMessage;
+
+- (NSInteger)getBankNonCashAmount;
+
+- (NSString *)getBankDateTimeString;
+
+- (NSString *)getResponseText;
+
+- (NSString *)getResponseCode;
+
+- (void)copyMerchantReceiptToCustomerReceipt;
+
+@end
 
 @interface SPIGetLastTransactionRequest : NSObject
 

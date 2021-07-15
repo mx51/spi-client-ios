@@ -143,10 +143,21 @@
     self.displayMessage = msg;
 }
 
+- (void)callingGt:(NSString *)gtRequestId {
+    self.isAwaitingGtResponse = YES;
+    self.lastStateRequestTime = [NSDate date];
+    self.gtRequestId = gtRequestId;
+}
+
+
 - (void)callingGlt:(NSString *)gltRequestId {
     self.isAwaitingGltResponse = YES;
     self.lastStateRequestTime = [NSDate date];
     self.lastGltRequestId = gltRequestId;
+}
+
+- (void)gotGtResponse {
+    self.isAwaitingGtResponse = NO;
 }
 
 - (void)gotGltResponse {
@@ -158,6 +169,7 @@
     self.isFinished = YES;
     self.response = response;
     self.displayMessage = msg;
+    self.completedTime = [NSDate date];
 }
 
 - (void)signatureRequired:(SPISignatureRequired *)spiMessage msg:(NSString *)msg {
@@ -177,9 +189,11 @@
     self.isFinished = YES;
     self.isAttemptingToCancel = NO;
     self.isAwaitingGltResponse = NO;
+    self.isAwaitingGtResponse = NO;
     self.isAwaitingSignatureCheck = NO;
     self.isAwaitingPhoneForAuth = NO;
     self.displayMessage = msg;
+    self.completedTime = [NSDate date];
 }
 
 - (void)unknownCompleted:(NSString *)msg {
@@ -188,9 +202,11 @@
     self.isFinished = YES;
     self.isAttemptingToCancel = NO;
     self.isAwaitingGltResponse = NO;
+    self.isAwaitingGtResponse = NO;
     self.isAwaitingSignatureCheck = NO;
     self.isAwaitingPhoneForAuth = NO;
     self.displayMessage = msg;
+    self.completedTime = [NSDate date];
 }
 
 - (id)copyWithZone:(NSZone *)zone {
