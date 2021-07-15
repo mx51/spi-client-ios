@@ -72,6 +72,7 @@
 
 @property (nonatomic, strong) NSRegularExpression *eftposAddressRegex;
 
+@property (nonatomic, strong) NSString *libraryLanguage;
 
 @end
 
@@ -101,7 +102,7 @@ static NSInteger retriesBeforePairing = 3; // How many retries before resolving 
         _state = [SPIState new];
         _posIdRegex = [NSRegularExpression regularExpressionWithPattern:regexItemsForPosId options:NSRegularExpressionCaseInsensitive error:nil];
         _eftposAddressRegex = [NSRegularExpression regularExpressionWithPattern:regexItemsForEftposAddress options:NSRegularExpressionCaseInsensitive error:nil];
-        
+        _libraryLanguage = @"ios";
         _txLock = [[NSObject alloc] init];
     }
     
@@ -2005,7 +2006,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             dispatch_async(self.queue, ^{
                 if (!self.hasSetPosInfo) {
                     [weakSelf callSetPosInfo];
-                    weakSelf.transactionReport = [SPITransactionReportHelper createTransactionReportEnvelope:weakSelf.posVendorId posVersion:weakSelf.posVersion libraryLanguage:@"ios" libraryVersion:[SPIClient getVersion] serialNumber:weakSelf.serialNumber];
+                    weakSelf.transactionReport = [SPITransactionReportHelper createTransactionReportEnvelope:weakSelf.posVendorId posVersion:weakSelf.posVersion libraryLanguage:self.libraryLanguage libraryVersion:[SPIClient getVersion] serialNumber:weakSelf.serialNumber];
                 }
                 
                 [weakSelf.spiPat pushPayAtTableConfig];
@@ -2083,7 +2084,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 - (void)callSetPosInfo {
     [self send:[[[SPISetPosInfoRequest alloc] initWithVersion:self.posVersion
                                                      vendorId:self.posVendorId
-                                              libraryLanguage:@"ios"
+                                              libraryLanguage:self.libraryLanguage
                                                libraryVersion:[SPIClient getVersion]
                                                     otherInfo:[SPIDeviceInfo getAppDeviceInfo]] toMessage]];
 }

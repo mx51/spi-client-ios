@@ -154,6 +154,8 @@ Subscribe to this event to receive update messages
 @property (nonatomic, readonly) SPIConfig *config;
 
 @property (nonatomic, strong) SPITransactionReport *transactionReport;
+
+@property (nonatomic, readonly) NSString *libraryLanguage;
 /**
  If you provide secrets, it will start in PairedConnecting status; Otherwise
  it will start in Unpaired status.
