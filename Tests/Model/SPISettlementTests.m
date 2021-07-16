@@ -45,6 +45,10 @@
 - (void)testHandleSettlementResponse {
     SPIClient *client = [SPITestUtils clientWithTestSecrets];
     
+    client.deviceApiKey = @"testPos";
+    client.testMode = YES;
+    client.acquirerCode = @"gko";
+    client.transactionReport = [SPITransactionReportHelper createTransactionReportEnvelope:@"test" posVersion:@"2.8.0" libraryLanguage:@"ios" libraryVersion:@"2.8.0" serialNumber:@"555-555-555"];
     // Initiate request
     client.state.status = SPIStatusPairedConnected;
     [client initiateSettleTx:@"TEST" completion:^(SPIInitiateTxResult *result) {}];
