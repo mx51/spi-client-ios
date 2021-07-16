@@ -287,12 +287,7 @@
 }
 
 - (BOOL)wasRetrievedSuccessfully {
-    // We can't rely on checking "success" flag or "error" fields here,
-    // as retrieval may be successful, but the retrieved transaction was a fail.
-    // So we check if we got back an ResponseCode.
-    // (as opposed to say an operation_in_progress_error)
-    NSString *code = [self getResponseCode];
-    return !(code == nil || code.length == 0);
+    return [self getSuccessState] == SPIMessageSuccessStateSuccess;
 }
 
 - (BOOL)wasRefIDNotFoundError {
