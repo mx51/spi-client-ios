@@ -1655,12 +1655,12 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
  */
 - (void)handleGetLastTransactionResponse:(SPIMessage *)m {
     NSLog(@"handleGetLastTransactionResponse");
-    NSLog(@"hansdleGltResp txLock entering");
+    NSLog(@"handleGltResp txLock entering");
     @synchronized(self.txLock) {
         NSLog(@"handleGltResp txLock entered");
         SPITransactionFlowState *txState = self.state.txFlowState;
         
-        if (self.state.flow != SPIFlowTransaction || txState.isFinished || txState.type == SPITransactionTypeGetLastTransaction) {
+        if (self.state.flow != SPIFlowTransaction || txState.isFinished || txState.type != SPITransactionTypeGetLastTransaction) {
             SPILog(@"Received glt response but we were not expecting one. ignoring.");
             return;
         }
