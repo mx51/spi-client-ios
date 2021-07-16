@@ -1548,7 +1548,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 
 
 - (void)handleGetTransactionResponse:(SPIMessage *)m {
-    NSLog(@"handleLastTransactionResponse");
+    NSLog(@"handleGetTransactionResponse");
     NSLog(@"handleGtResp txLock entering");
     @synchronized(self.txLock) {
         NSLog(@"handleGtResp txLock entered");
@@ -1675,7 +1675,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         } else {
             SPILog(@"Retrieved Last Transaction as asked directly by the user.");
             [gltResponse copyMerchantReceiptToCustomerReceipt];
-            [txState completed:gltResponse.successState response:m msg:@"Last transaction retrieved"];
+            [txState completed:[gltResponse getSuccessState] response:m msg:@"Last transaction retrieved"];
         }
     }
     
