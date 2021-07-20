@@ -1682,45 +1682,6 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     [self transactionFlowStateChanged];
 }
 
-- (SPIMessageSuccessState)gltMatch:(SPIGetLastTransactionResponse *)gltResponse
-                      expectedType:(SPITransactionType)expectedType
-                    expectedAmount:(NSInteger)expectedAmount
-                       requestDate:(NSDate *)requestDate
-                          posRefId:(NSString *)posRefId {
-    
-    return [self gltMatch:gltResponse posRefId:posRefId];
-}
-
-- (SPIMessageSuccessState)gltMatch:(SPIGetLastTransactionResponse *)gltResponse posRefId:(NSString *)posRefId {
-    SPILog(@"GLT check: posRefId=%@->%@}", posRefId, [gltResponse getPosRefId]);
-    
-    if (![posRefId isEqualToString:gltResponse.getPosRefId]) {
-        return SPIMessageSuccessStateUnknown;
-    }
-    
-    return gltResponse.getSuccessState;
-}
-
-- (SPIMessageSuccessState)gltMatch:(SPIGetLastTransactionResponse *)gltResponse
-                    expectedAmount:(NSInteger)expectedAmount
-                       requestDate:(NSDate *)requestDate
-                          posRefId:(NSString *)posRefId {
-    SPILog(@"GLT check: posRefId=%@->%@}", posRefId, [gltResponse getPosRefId]);
-    
-    NSDate *gltBankDate = [[NSDateFormatter dateFormaterWithFormatter:@"ddMMyyyyHHmmss"] dateFromString:[gltResponse getBankDateTimeString]];
-    BOOL compare = [requestDate compare:gltBankDate];
-    
-    if (![posRefId isEqualToString:gltResponse.getPosRefId]) {
-        return SPIMessageSuccessStateUnknown;
-    }
-    
-    if ([[[gltResponse getTxType] uppercaseString] isEqual: @"PURCHASE"] && [gltResponse getBankNonCashAmount] != expectedAmount && compare > 0) {
-        return SPIMessageSuccessStateUnknown;
-    }
-    
-    return gltResponse.getSuccessState;
-}
-
 /**
  * When the transaction cancel response is returned.
  *
