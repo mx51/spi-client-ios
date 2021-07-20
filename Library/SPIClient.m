@@ -310,7 +310,6 @@ static NSInteger retriesBeforePairing = 3; // How many retries before resolving 
         // from the POS perspective.
         weakSelf.state.pairingFlowState.message = @"Pairing successful";
         [weakSelf onPairingSuccess];
-        [weakSelf onReadyToTransact];
     }
 }
 
