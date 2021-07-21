@@ -1619,7 +1619,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                 return;
             } else {
                 // get transaction failed, but we weren't given a specific reason
-                SPILog(@"GTR-08: Unexpected Response in Get Transaction - Received posRefId:%@ %@", txState.posRefId, m.error);
+                SPILog(@"GTR-08: Unexpected Response in Get Transaction - Received posRefId:%@ Error:%@", txState.posRefId, m.error);
                 [txState completed:SPIMessageSuccessStateFailed response:m msg:[NSString stringWithFormat:@"Get Transaction failed, %@", m.error]];
             }
         } else {
