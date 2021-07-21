@@ -376,7 +376,6 @@
     
     XCTAssertTrue([msg.eventName isEqualToString:@"last_transaction"]);
     XCTAssertTrue([msg.errorDetail isEqualToString:@"see 'host_response_text' for details"]);
-    XCTAssertTrue([response wasTimeOutOfSyncError]);
     XCTAssertEqual([response getSuccessState], SPIMessageSuccessStateFailed);
 }
 

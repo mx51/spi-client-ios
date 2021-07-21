@@ -149,19 +149,8 @@
     self.gtRequestId = gtRequestId;
 }
 
-
-- (void)callingGlt:(NSString *)gltRequestId {
-    self.isAwaitingGltResponse = YES;
-    self.lastStateRequestTime = [NSDate date];
-    self.lastGltRequestId = gltRequestId;
-}
-
 - (void)gotGtResponse {
     self.isAwaitingGtResponse = NO;
-}
-
-- (void)gotGltResponse {
-    self.isAwaitingGltResponse = NO;
 }
 
 - (void)failed:(SPIMessage *)response msg:(NSString *)msg {
@@ -188,7 +177,6 @@
     self.response = response;
     self.isFinished = YES;
     self.isAttemptingToCancel = NO;
-    self.isAwaitingGltResponse = NO;
     self.isAwaitingGtResponse = NO;
     self.isAwaitingSignatureCheck = NO;
     self.isAwaitingPhoneForAuth = NO;
@@ -201,7 +189,6 @@
     self.response = nil;
     self.isFinished = YES;
     self.isAttemptingToCancel = NO;
-    self.isAwaitingGltResponse = NO;
     self.isAwaitingGtResponse = NO;
     self.isAwaitingSignatureCheck = NO;
     self.isAwaitingPhoneForAuth = NO;
@@ -230,16 +217,12 @@
     state.signatureRequiredMessage = self.signatureRequiredMessage;
     state.cancelAttemptTime = self.cancelAttemptTime;
     state.request = self.request;
-    state.isAwaitingGltResponse = self.isAwaitingGltResponse;
-    state.gltResponsePosRefId = self.gltResponsePosRefId;
-    state.lastGltRequestId = self.lastGltRequestId;
     
     return state;
 }
 
 - (void)phoneForAuthRequired:(SPIPhoneForAuthRequired *)spiMessage msg:(NSString *)msg {
     _phoneForAuthRequiredMessage = spiMessage;
-    _isAwaitingGltResponse = true;
     _isAwaitingPhoneForAuth = true;
     _displayMessage = msg;
 }

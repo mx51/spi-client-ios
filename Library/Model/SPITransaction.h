@@ -152,7 +152,7 @@
 
 - (BOOL)isWaitingForAuthCode;
 
-- (BOOL)IsSomethingElseBlocking;
+- (BOOL)isSomethingElseBlocking;
 
 - (BOOL)isStillInProgress;
 
@@ -189,8 +189,6 @@
 @property (nonatomic) SPIMessageSuccessState successState;
 
 - (instancetype)initWithMessage:(SPIMessage *)message;
-
-- (BOOL)wasTimeOutOfSyncError;
 
 - (BOOL)wasRetrievedSuccessfully;
 

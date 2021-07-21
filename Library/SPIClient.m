@@ -858,7 +858,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             
             SPIMessage *gtMessage = [gtRequest toMessage];
             
-            weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:gtMessage.mid
+            weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId
                                                                                  type:SPITransactionTypeGetTransaction
                                                                           amountCents:0
                                                                               message:gtMessage
@@ -867,7 +867,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             [weakSelf.state.txFlowState callingGt:gtMessage.mid];
             
             if ([weakSelf send:gtMessage]) {
-                [weakSelf.state.txFlowState sent:@"Asked EFTPOS to get transaction"];
+                [weakSelf.state.txFlowState sent:[NSString stringWithFormat:@"Asked EFTPOS to get transaction: %@", posRefId]];
             }
             NSLog(@"initGt txLock exiting");
         }
@@ -906,8 +906,6 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                                                                           amountCents:0
                                                                               message:gltMessage
                                                                                   msg:@"Waiting for EFTPOS connection to make a get last transaction request"];
-            
-            [weakSelf.state.txFlowState callingGlt:gltMessage.mid];
             
             if ([weakSelf send:gltMessage]) {
                 [weakSelf.state.txFlowState sent:@"Asked EFTPOS to get last transaction"];
@@ -1585,15 +1583,6 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                                                                                      requestId:m.mid
                                                                                  receiptToSign:@"MISSING RECEIPT\n DECLINE AND TRY AGAIN."];
                     [self.state.txFlowState signatureRequired:req msg:@"Recovered in signature required but we don't have receipt. You may decline then retry."];
-                } else if ([gtResponse isWaitingForAuthCode] && !txState.isAwaitingPhoneForAuth) {
-                    SPILog(@"EFTPOS is waiting for us to send it auth code, but we were not aware of this. "
-                           "We can only cancel the transaction at this stage as we don't have enough information to recover from this.");
-                    
-                    SPIPhoneForAuthRequired *req = [[SPIPhoneForAuthRequired alloc] initWithPosRefId:txState.posRefId
-                                                                                           requestId:m.mid
-                                                                                         phoneNumber:@"UNKNOWN"
-                                                                                          merchantId:@"UNKNOWN"];
-                    [self.state.txFlowState phoneForAuthRequired:req msg:@"Recovered mid phone-for-auth but don't have details. You may cancel then retry."];
                 } else {
                     SPILog(@"Waiting for Signature response ... stay waiting.");
                     // No need to publish txFlowStateChanged. Can return;
@@ -1614,7 +1603,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             } else if ([gtResponse isMissingArgumentsError]) {
                 SPILog(@"GTR-06: Get transaction failed, PosRefId is missing.");
                 [txState completed:SPIMessageSuccessStateFailed response:m msg:[NSString stringWithFormat:@"PosRefId is missing for %@", txState.posRefId]];
-            } else if ([gtResponse IsSomethingElseBlocking]) {
+            } else if ([gtResponse isSomethingElseBlocking]) {
                 SPILog(@"GTR-07: Terminal is Blocked by something else... stay waiting.");
                 return;
             } else {

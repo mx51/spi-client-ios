@@ -184,10 +184,6 @@ typedef NS_ENUM(NSUInteger, SPITransactionType) {
 @property (nonatomic, strong) NSDate *lastStateRequestTime;
 
 @property (nonatomic, strong) NSDate *completedTime;
-/**
- The id of the last glt request message that was sent. used to match with the response.
- */
-@property (nonatomic, copy) NSString *lastGltRequestId;
 
 @property (nonatomic, copy) NSString *gtRequestId;
 /**
@@ -250,11 +246,6 @@ typedef NS_ENUM(NSUInteger, SPITransactionType) {
 
 @property (nonatomic, assign) BOOL isAwaitingGtResponse;
 
-/**
- The pos ref id  when Get Last Transaction response.
- */
-@property (nonatomic, copy) NSString *gltResponsePosRefId;
-
 - (instancetype)initWithTid:(NSString *)tid
                        type:(SPITransactionType)type
                 amountCents:(NSInteger)amountCents
@@ -269,11 +260,7 @@ typedef NS_ENUM(NSUInteger, SPITransactionType) {
 
 - (void)callingGt:(NSString *)gtRequestId;
 
-- (void)callingGlt:(NSString *)gltRequestId;
-
 - (void)gotGtResponse;
-
-- (void)gotGltResponse;
 
 - (void)failed:(SPIMessage *)response msg:(NSString *)msg;
 

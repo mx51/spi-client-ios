@@ -314,7 +314,7 @@
     return [self.message.error hasPrefix:@"OPERATION_IN_PROGRESS_AWAITING_PHONE_AUTH_CODE"];
 }
 
-- (BOOL)IsSomethingElseBlocking {
+- (BOOL)isSomethingElseBlocking {
     return [self.message.error hasPrefix:@"OPERATION_IN_PROGRESS"];
 }
 
@@ -394,10 +394,6 @@
     // (as opposed to say an operation_in_progress_error)
     NSString *code = [self getResponseCode];
     return !(code == nil || code.length == 0);
-}
-
-- (BOOL)wasTimeOutOfSyncError {
-    return [self.message.error hasPrefix:@"TIME_OUT_OF_SYNC"];
 }
 
 - (BOOL)wasOperationInProgressError {
