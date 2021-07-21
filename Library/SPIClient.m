@@ -1565,7 +1565,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         }
         
         if (txState.gtRequestId != m.mid) {
-            SPILog(@"received a gt response but the message id does not match the glt request that we sent. strange. ignoring.");
+            SPILog(@"received a gt response but the message id does not match the gt request that we sent. strange. ignoring.");
             return;
         }
         
