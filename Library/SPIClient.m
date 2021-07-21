@@ -1670,7 +1670,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         SPIGetLastTransactionResponse *gltResponse = [[SPIGetLastTransactionResponse alloc] initWithMessage:m];
         
         if (!gltResponse.wasRetrievedSuccessfully) {
-            SPILog(@"Error in Response for Get Last Transaction - Received posRefId:%@ %@. UnknownCompleted.", [gltResponse getPosRefId], [m error]);
+            SPILog(@"Error in Response for Get Last Transaction - Received posRefId:%@ Error:%@. UnknownCompleted.", [gltResponse getPosRefId], [m error]);
             [txState unknownCompleted:@"Failed to Retrieve Last Transaction"];
         } else {
             SPILog(@"Retrieved Last Transaction as asked directly by the user.");
