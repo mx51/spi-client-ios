@@ -37,6 +37,7 @@
 #import "SPIDeviceService.h"
 #import "SPITenantsService.h"
 
+
 @interface SPIClient () <SPIConnectionDelegate>
 
 // The current status of this SPI instance. Unpaired, PairedConnecting or PairedConnected.
@@ -71,6 +72,8 @@
 
 @property (nonatomic, strong) NSRegularExpression *eftposAddressRegex;
 
+@property (nonatomic, strong) NSString *libraryLanguage;
+
 @end
 
 static NSTimeInterval txMonitorCheckFrequency = 1; // How often do we check on the tx state from our tx monitoring thread
@@ -99,7 +102,7 @@ static NSInteger retriesBeforePairing = 3; // How many retries before resolving 
         _state = [SPIState new];
         _posIdRegex = [NSRegularExpression regularExpressionWithPattern:regexItemsForPosId options:NSRegularExpressionCaseInsensitive error:nil];
         _eftposAddressRegex = [NSRegularExpression regularExpressionWithPattern:regexItemsForEftposAddress options:NSRegularExpressionCaseInsensitive error:nil];
-        
+        _libraryLanguage = @"ios";
         _txLock = [[NSObject alloc] init];
     }
     
@@ -307,7 +310,6 @@ static NSInteger retriesBeforePairing = 3; // How many retries before resolving 
         // from the POS perspective.
         weakSelf.state.pairingFlowState.message = @"Pairing successful";
         [weakSelf onPairingSuccess];
-        [weakSelf onReadyToTransact];
     }
 }
 
@@ -735,6 +737,9 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         }
         
         [self transactionFlowStateChanged];
+        
+        [self sendTransactionReport];
+        
     });
 }
 
@@ -958,6 +963,50 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         
         [weakSelf transactionFlowStateChanged];
         completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Recovery initiated"]);
+    });
+}
+
+- (void)initiateReversal:(NSString *)posRefId
+              completion:(SPICompletionTxResult)completion {
+    
+    if (self.state.status == SPIStatusUnpaired) {
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:false message:@"Not paired"]);
+        return;
+    }
+    
+    __weak __typeof(& *self) weakSelf = self;
+    
+    dispatch_async(self.queue, ^{
+        NSLog(@"initReversal txLock entering");
+        @synchronized(weakSelf.txLock) {
+            NSLog(@"initReversal txLock entered");
+            if (weakSelf.state.flow != SPIFlowIdle) {
+                completion([[SPIInitiateTxResult alloc] initWithTxResult:false message:@"Not idle"]);
+                return;
+            }
+            
+            weakSelf.state.flow = SPIFlowTransaction;
+            
+            SPIReversalRequest *revRequest = [[SPIReversalRequest alloc] initWithPosRefId:posRefId];
+            
+            SPIMessage *revRequestMsg = [revRequest toMessage];
+            
+            weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId
+                                                                                 type:SPITransactionTypeReversal
+                                                                          amountCents:0
+                                                                              message:revRequestMsg
+                                                                                  msg:@"Waiting for EFTPOS connection to attempt reversal"];
+            
+            if ([weakSelf send:revRequestMsg]) {
+                [weakSelf.state.txFlowState sent:@"Asked EFTPOS for reversal"];
+            }
+            NSLog(@"initReversal txLock exiting");
+        }
+        
+        [weakSelf transactionFlowStateChanged];
+        [self sendTransactionReport];
+        
+        completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Reversal initiated"]);
     });
 }
 
@@ -1252,19 +1301,11 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
  *
  * Handling the 4th interaction of the pairing process i.e. an incoming
  * KeyCheck.
- *
+ * This method is doing nothing since auto confirmation is implemented (SP-297)
  * @param m Message
  */
 - (void)handleKeyCheck:(SPIMessage *)m {
     NSLog(@"handleKeyCheck");
-    
-    SPIKeyCheck *keyCheck = [[SPIKeyCheck alloc] initWithMessage:m];
-    self.state.pairingFlowState.confirmationCode = keyCheck.confirmationCode;
-    self.state.pairingFlowState.isAwaitingCheckFromEftpos = YES;
-    self.state.pairingFlowState.isAwaitingCheckFromPos = YES;
-    self.state.pairingFlowState.message = [NSString stringWithFormat:@"Confirm that the following code:\n\n%@\n\n is showing on the terminal",
-                                           keyCheck.confirmationCode];
-    [self pairingFlowStateChanged];
 }
 
 /**
@@ -1281,16 +1322,12 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     
     if (pairResponse.isSuccess) {
         if (self.state.pairingFlowState.isAwaitingCheckFromPos) {
-            SPILog(@"Got pair confirm from EFTPOS, but still waiting for use to confirm from POS.");
-            // Still Waiting for User to say yes on POS
-            self.state.pairingFlowState.message = [NSString stringWithFormat:@"Confirm that the following Code:\n\n%@\n\n is what the EFTPOS showed",
-                                                   self.state.pairingFlowState.confirmationCode];
-            [self pairingFlowStateChanged];
-        } else {
-            SPILog(@"Got pair confirm from EFTPOS, and already had confirm from POS. Now just waiting for first pong.");
-            [self onPairingSuccess];
+            // Waiting for PoS, auto confirming code
+            SPILog(@"Confirming pairing from library.");
+            [self pairingConfirmCode];
         }
-        
+        SPILog(@"Got Pair Confirm from Eftpos, and already had confirm from POS. Now just waiting for first pong.");
+        [self onPairingSuccess];
         // I need to ping/login even if the pos user has not said yes yet,
         // because otherwise within 5 seconds connectiong will be dropped by
         // EFTPOS.
@@ -1441,6 +1478,38 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     [self handleTxResponse:m type:SPITransactionTypeRefund checkPosRefId:YES];
 }
 
+- (void)handleReversalResponse:(SPIMessage *)m {
+    
+    NSLog(@"handleReversalResponse");
+    NSLog(@"handleReversalResp txLock entering");
+    @synchronized(self.txLock) {
+        NSLog(@"handleReversalResp txLock entered");
+        SPITransactionFlowState *txState = self.state.txFlowState;
+        NSDictionary *dict = m.data;
+        NSString *incomingPosRefId = [dict objectForKey:@"pos_ref_id"];
+        
+        SPIReversalResponse *revResp = [[SPIReversalResponse alloc] initWithMessage:m];
+        
+        if (self.state.flow != SPIFlowTransaction || txState.isFinished || txState.posRefId == incomingPosRefId) {
+            SPILog(@"Received Reversal response but I was not waiting for this one. Incoming Pos Ref ID: %@", incomingPosRefId);
+            return;
+        }
+        
+        if (!revResp.isSuccess) {
+            [txState completed:m.successState response:m msg:revResp.getErrorDetail];
+        } else {
+            [txState completed:m.successState response:m msg:@"Reversal completed"];
+        }
+    }
+    NSLog(@"handleReversalResp txLock exiting");
+    
+    
+    [self transactionFlowStateChanged];
+    
+    [self sendTransactionReport];
+}
+
+
 /**
  * Handle the settlement response received from the PIN pad.
  *
@@ -1478,6 +1547,8 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     }
     
     [self transactionFlowStateChanged];
+    
+    [self sendTransactionReport];
 }
 
 /**
@@ -1634,6 +1705,8 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     }
     NSLog(@"handleGltResp txLock exiting");
     [self transactionFlowStateChanged];
+    
+    [self sendTransactionReport];
 }
 
 
@@ -1692,6 +1765,8 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         NSString *msg = [NSString stringWithFormat:@"Failed to cancel transaction: %@. Check EFTPOS.", response.getErrorDetail];
         [self.state.txFlowState cancelFailed:msg];
         [self transactionFlowStateChanged];
+        [self sendTransactionReport];
+        
         NSLog(@"handleCancelTxResp txLock exiting");
     }
 }
@@ -1775,6 +1850,12 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 - (void)handleBatteryLevelChanged:(SPIMessage *)m {
     if([_delegate respondsToSelector:@selector(batteryLevelChanged:)]) {
         [_delegate batteryLevelChanged:m];
+    }
+}
+
+- (void)handleUpdateMessage:(SPIMessage *)m {
+    if([_delegate respondsToSelector:@selector(updateMessageReceived:)]) {
+        [_delegate updateMessageReceived:m];
     }
 }
 
@@ -1967,6 +2048,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             dispatch_async(self.queue, ^{
                 if (!self.hasSetPosInfo) {
                     [weakSelf callSetPosInfo];
+                    weakSelf.transactionReport = [SPITransactionReportHelper createTransactionReportEnvelope:weakSelf.posVendorId posVersion:weakSelf.posVersion libraryLanguage:self.libraryLanguage libraryVersion:[SPIClient getVersion] serialNumber:weakSelf.serialNumber];
                 }
                 
                 [weakSelf.spiPat pushPayAtTableConfig];
@@ -2044,7 +2126,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 - (void)callSetPosInfo {
     [self send:[[[SPISetPosInfoRequest alloc] initWithVersion:self.posVersion
                                                      vendorId:self.posVendorId
-                                              libraryLanguage:@"ios"
+                                              libraryLanguage:self.libraryLanguage
                                                libraryVersion:[SPIClient getVersion]
                                                     otherInfo:[SPIDeviceInfo getAppDeviceInfo]] toMessage]];
 }
@@ -2099,7 +2181,11 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         } else if ([eventName isEqualToString:SPIRefundResponseKey]) {
             [weakSelf handleRefundResponse:m];
             
-        } else if ([eventName isEqualToString:SPICashoutOnlyResponseKey]) {
+        } else if ([eventName isEqualToString:SPIReversalResponseKey]) {
+            [weakSelf handleReversalResponse:m];
+            
+        }
+        else if ([eventName isEqualToString:SPICashoutOnlyResponseKey]) {
             [weakSelf handleCashoutOnlyResponse:m];
             
         } else if ([eventName isEqualToString:SPIMotoPurchaseResponseKey]) {
@@ -2169,7 +2255,10 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         } else if ([eventName isEqualToString:SPIBatteryLevelChangedKey]) {
             [weakSelf handleBatteryLevelChanged:m];
             
-        } else if ([eventName isEqualToString:SPIInvalidHmacSignature]) {
+        } else if ([eventName isEqualToString:SPITransactionUpdateKey]) {
+            [weakSelf handleUpdateMessage:m];
+        }
+        else if ([eventName isEqualToString:SPIInvalidHmacSignature]) {
             SPILog(@"I could not verify message from EFTPOS. You might have to un-pair EFTPOS and then reconnect.");
             
         } else if ([eventName isEqualToString:SPIEventError]) {
@@ -2182,10 +2271,61 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     });
 }
 
+- (void)sendTransactionReport {
+    
+    NSTimeInterval duration = [self.state.txFlowState.completedDate timeIntervalSinceDate:self.state.txFlowState.requestDate];
+    
+    self.transactionReport.txType = [self.state.txFlowState txTypeString];
+    self.transactionReport.txResult = [self successStateString:self.state.txFlowState.successState];
+    self.transactionReport.txStartTime = [NSNumber numberWithLong:(self.state.txFlowState.requestDate.timeIntervalSince1970 * 1000.0)];
+    self.transactionReport.txEndTime = [NSNumber numberWithLong:(self.state.txFlowState.completedDate.timeIntervalSince1970 * 1000.0)];
+    self.transactionReport.durationMs = [NSNumber numberWithLong:(duration * 1000.0)];
+    self.transactionReport.currentFlow = [SPIState flowString:self.state.flow];
+    self.transactionReport.currentStatus = [self statusString:self.state.status];
+    self.transactionReport.posRefId = self.state.txFlowState.posRefId;
+    self.transactionReport.event = [NSString stringWithFormat:@"Waiting for Signature: %@, Attemtping to Cancel: %@, Finished: %@", self.state.txFlowState.isAwaitingSignatureCheck ? @"true" : @"false", self.state.txFlowState.isAttemptingToCancel ? @"true" : @"false", self.state.txFlowState.isFinished ? @"true" : @"false"];
+    self.transactionReport.serialNumber = self.serialNumber;
+    self.transactionReport.currentTxFlowState = [self.state.txFlowState txTypeString];
+    
+    
+    [SPIAnalyticsService reportTransaction:self.transactionReport apiKey:self.deviceApiKey acquirerCode:self.acquirerCode isTestMode:self.testMode];
+    
+}
+
 - (void)didReceiveError:(NSError *)error {
     dispatch_async(self.queue, ^{
         SPILog(@"ERROR: Received WS error: %@", error);
     });
+}
+
+#pragma mark - Helpers
+
+- (NSString *)successStateString:(SPIMessageSuccessState)state {
+    switch (state) {
+        case SPIMessageSuccessStateFailed:
+            return @"Failed";
+            break;
+        case SPIMessageSuccessStateSuccess:
+            return @"Success";
+            break;
+        case SPIMessageSuccessStateUnknown:
+            return @"Unknown";
+            break;
+    }
+}
+
+- (NSString *)statusString:(SPIStatus)status {
+    switch (status) {
+        case SPIStatusPairedConnected:
+            return @"PairedConnected";
+            break;
+        case SPIStatusUnpaired:
+            return @"Unpaired";
+            break;
+        case SPIStatusPairedConnecting:
+            return @"PairedConnecting";
+            break;
+    }
 }
 
 #pragma mark - Internals for Validations

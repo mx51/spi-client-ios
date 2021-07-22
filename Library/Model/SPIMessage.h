@@ -35,6 +35,9 @@ extern NSString *const SPIGetTransactionResponseKey;
 extern NSString *const SPIGetLastTransactionRequestKey;
 extern NSString *const SPIGetLastTransactionResponseKey;
 
+extern NSString *const SPIReversalRequestKey;
+extern NSString *const SPIReversalResponseKey;
+
 extern NSString *const SPIRefundRequestKey;
 extern NSString *const SPIRefundResponseKey;
 extern NSString *const SPISignatureRequiredKey;
@@ -72,6 +75,7 @@ extern NSString *const SPIPayAtTableGetBillDetailsKey; // incoming. When eftpos 
 extern NSString *const SPIPayAtTableBillDetailsKey;    // outgoing. We reply with this when eftpos requests to us get_bill_details.
 extern NSString *const SPIPayAtTableBillPaymentKey;    // incoming. When the eftpos advices
 extern NSString *const SPIPayAtTableBillPaymentFlowEndedKey;
+extern NSString *const SPIPayAtTableBillPaymentFlowEndedAckKey;
 extern NSString *const SPIPayAtTableGetOpenTablesKey;
 extern NSString *const SPIPayAtTableOpenTablesKey;
 
@@ -85,6 +89,8 @@ extern NSString *const SPITerminalConfigurationRequestKey;
 extern NSString *const SPITerminalConfigurationResponseKey;
 
 extern NSString *const SPIBatteryLevelChangedKey;
+
+extern NSString *const SPITransactionUpdateKey;
 
 typedef NS_ENUM(NSInteger, SPIMessageSuccessState) {
     SPIMessageSuccessStateUnknown,

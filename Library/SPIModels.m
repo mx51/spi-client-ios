@@ -118,6 +118,9 @@
             
         case SPITransactionTypeAccountVerify:
             return @"Account Verify";
+            
+        case SPITransactionTypeReversal:
+            return @"Reversal";
     }
 }
 
@@ -158,7 +161,7 @@
     self.isFinished = YES;
     self.response = response;
     self.displayMessage = msg;
-    self.completedTime = [NSDate date];
+    self.completedDate = [NSDate date];
 }
 
 - (void)signatureRequired:(SPISignatureRequired *)spiMessage msg:(NSString *)msg {
@@ -181,7 +184,7 @@
     self.isAwaitingSignatureCheck = NO;
     self.isAwaitingPhoneForAuth = NO;
     self.displayMessage = msg;
-    self.completedTime = [NSDate date];
+    self.completedDate = [NSDate date];
 }
 
 - (void)unknownCompleted:(NSString *)msg {
@@ -193,7 +196,7 @@
     self.isAwaitingSignatureCheck = NO;
     self.isAwaitingPhoneForAuth = NO;
     self.displayMessage = msg;
-    self.completedTime = [NSDate date];
+    self.completedDate = [NSDate date];
 }
 
 - (id)copyWithZone:(NSZone *)zone {
