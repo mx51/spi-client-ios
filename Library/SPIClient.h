@@ -503,6 +503,9 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                           options:(SPITransactionOptions *)options
                        completion:(SPICompletionTxResult)completion;
 
+- (void)initiateGetTxWithPosRefID:(NSString *)posRefId
+                      completion:(SPICompletionTxResult)completion;
+
 /**
  Initiates a get last transaction operation.
  Use this when you want to retrieve the most recent transaction that was

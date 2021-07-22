@@ -110,6 +110,9 @@
         case SPITransactionTypeGetLastTransaction:
             return @"Get Last Transaction";
             
+        case SPITransactionTypeGetTransaction:
+            return @"Get Transaction";
+            
         case SPITransactionTypePreAuth:
             return @"Preauth";
             
@@ -143,14 +146,14 @@
     self.displayMessage = msg;
 }
 
-- (void)callingGlt:(NSString *)gltRequestId {
-    self.isAwaitingGltResponse = YES;
+- (void)callingGt:(NSString *)gtRequestId {
+    self.isAwaitingGtResponse = YES;
     self.lastStateRequestTime = [NSDate date];
-    self.lastGltRequestId = gltRequestId;
+    self.gtRequestId = gtRequestId;
 }
 
-- (void)gotGltResponse {
-    self.isAwaitingGltResponse = NO;
+- (void)gotGtResponse {
+    self.isAwaitingGtResponse = NO;
 }
 
 - (void)failed:(SPIMessage *)response msg:(NSString *)msg {
@@ -177,7 +180,7 @@
     self.response = response;
     self.isFinished = YES;
     self.isAttemptingToCancel = NO;
-    self.isAwaitingGltResponse = NO;
+    self.isAwaitingGtResponse = NO;
     self.isAwaitingSignatureCheck = NO;
     self.isAwaitingPhoneForAuth = NO;
     self.displayMessage = msg;
@@ -189,7 +192,7 @@
     self.response = nil;
     self.isFinished = YES;
     self.isAttemptingToCancel = NO;
-    self.isAwaitingGltResponse = NO;
+    self.isAwaitingGtResponse = NO;
     self.isAwaitingSignatureCheck = NO;
     self.isAwaitingPhoneForAuth = NO;
     self.displayMessage = msg;
@@ -217,16 +220,12 @@
     state.signatureRequiredMessage = self.signatureRequiredMessage;
     state.cancelAttemptTime = self.cancelAttemptTime;
     state.request = self.request;
-    state.isAwaitingGltResponse = self.isAwaitingGltResponse;
-    state.gltResponsePosRefId = self.gltResponsePosRefId;
-    state.lastGltRequestId = self.lastGltRequestId;
     
     return state;
 }
 
 - (void)phoneForAuthRequired:(SPIPhoneForAuthRequired *)spiMessage msg:(NSString *)msg {
     _phoneForAuthRequiredMessage = spiMessage;
-    _isAwaitingGltResponse = true;
     _isAwaitingPhoneForAuth = true;
     _displayMessage = msg;
 }
