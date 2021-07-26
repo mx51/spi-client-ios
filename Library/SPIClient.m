@@ -36,6 +36,7 @@
 #import "SPITerminal.h"
 #import "SPIDeviceService.h"
 #import "SPITenantsService.h"
+#import "SPITerminalHelper.h"
 
 
 @interface SPIClient () <SPIConnectionDelegate>
@@ -73,6 +74,8 @@
 @property (nonatomic, strong) NSRegularExpression *eftposAddressRegex;
 
 @property (nonatomic, strong) NSString *libraryLanguage;
+
+@property (nonatomic, strong) NSString *terminalModel;
 
 @end
 
@@ -398,6 +401,15 @@ static NSInteger retriesBeforePairing = 3; // How many retries before resolving 
         return;
     }
     
+    // no printing available, reset header and footer and disable print
+    if (![SPITerminalHelper isPrinterAvailable:self.terminalModel] && [self isPrintingConfigEnabled]) {
+        options = [SPITransactionOptions new];
+        self.config.promptForCustomerCopyOnEftpos = NO;
+        self.config.printMerchantCopy = NO;
+        self.config.signatureFlowOnEftpos = NO;
+        SPILog(@"Printing is enabled on a terminal without printer. Printing options will now be disabled.");
+    }
+    
     __weak __typeof(& *self) weakSelf = self;
     
     dispatch_async(self.queue, ^{
@@ -469,6 +481,16 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     if (self.state.status == SPIStatusUnpaired) {
         completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
         return;
+    }
+    
+    
+    // no printing available, reset header and footer and disable print
+    if (![SPITerminalHelper isPrinterAvailable:self.terminalModel] && [self isPrintingConfigEnabled]) {
+        options = [SPITransactionOptions new];
+        self.config.promptForCustomerCopyOnEftpos = NO;
+        self.config.printMerchantCopy = NO;
+        self.config.signatureFlowOnEftpos = NO;
+        SPILog(@"Printing is enabled on a terminal without printer. Printing options will now be disabled.");
     }
     
     __weak __typeof(& *self) weakSelf = self;
@@ -566,6 +588,15 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         return;
     }
     
+    // no printing available, reset header and footer and disable print
+    if (![SPITerminalHelper isPrinterAvailable:self.terminalModel] && [self isPrintingConfigEnabled]) {
+        options = [SPITransactionOptions new];
+        self.config.promptForCustomerCopyOnEftpos = NO;
+        self.config.printMerchantCopy = NO;
+        self.config.signatureFlowOnEftpos = NO;
+        SPILog(@"Printing is enabled on a terminal without printer. Printing options will now be disabled.");
+    }
+    
     __weak __typeof(& *self) weakSelf = self;
     
     dispatch_async(self.queue, ^{
@@ -643,6 +674,15 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     if (self.state.status == SPIStatusUnpaired) {
         completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
         return;
+    }
+    
+    // no printing available, reset header and footer and disable print
+    if (![SPITerminalHelper isPrinterAvailable:self.terminalModel] && [self isPrintingConfigEnabled]) {
+        options = [SPITransactionOptions new];
+        self.config.promptForCustomerCopyOnEftpos = NO;
+        self.config.printMerchantCopy = NO;
+        self.config.signatureFlowOnEftpos = NO;
+        SPILog(@"Printing is enabled on a terminal without printer. Printing options will now be disabled.");
     }
     
     __weak __typeof(& *self) weakSelf = self;
@@ -804,6 +844,15 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     if (self.state.status == SPIStatusUnpaired) {
         completion([[SPIInitiateTxResult alloc] initWithTxResult:NO message:@"Not paired"]);
         return;
+    }
+    
+    // no printing available, reset header and footer and disable print
+    if (![SPITerminalHelper isPrinterAvailable:self.terminalModel] && [self isPrintingConfigEnabled]) {
+        options = [SPITransactionOptions new];
+        self.config.promptForCustomerCopyOnEftpos = NO;
+        self.config.printMerchantCopy = NO;
+        self.config.signatureFlowOnEftpos = NO;
+        SPILog(@"Printing is enabled on a terminal without printer. Printing options will now be disabled.");
     }
     
     __weak __typeof(& *self) weakSelf = self;
@@ -1847,6 +1896,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 }
 
 - (void)handleTerminalConfigurationResponse:(SPIMessage *)m {
+    self.terminalModel = [[[SPITerminalConfigurationResponse alloc] initWithMessage:m] getTerminalModel];
     if([_delegate respondsToSelector:@selector(terminalConfigurationResponse:)]) {
         [_delegate terminalConfigurationResponse:m];
     }
@@ -2301,6 +2351,14 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     dispatch_async(self.queue, ^{
         SPILog(@"ERROR: Received WS error: %@", error);
     });
+}
+
+- (BOOL)isPrintingConfigEnabled {
+    if (self.config.promptForCustomerCopyOnEftpos || self.config.printMerchantCopy || self.config.signatureFlowOnEftpos) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 #pragma mark - Helpers
