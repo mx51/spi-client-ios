@@ -15,7 +15,11 @@
     // Terminal model strings
     NSArray *terminalsWithoutPrinter = [NSArray arrayWithObjects: @"E355", nil];
     
-    return [terminalsWithoutPrinter containsObject: terminalModel];
+    if ([terminalsWithoutPrinter containsObject: terminalModel]) {
+        return false;
+    }
+    
+    return true;
     
 }
 
