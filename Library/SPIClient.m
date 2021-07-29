@@ -1080,7 +1080,6 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     }];
 }
 
-#pragma mark -
 #pragma mark - Connection
 
 - (void)setEftposAddress:(NSString *)url {
