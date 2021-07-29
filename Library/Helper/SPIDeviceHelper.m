@@ -32,7 +32,7 @@
         }
     }
     
-    if ([serviceResponse.address isEqual:currentEftposAddress]) {
+    if ([serviceResponse.address isEqual:[currentEftposAddress stringByReplacingOccurrencesOfString:@"ws://" withString:@""]]) {
         currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponseCodeAddressNotChanged;
         return currentDeviceAddressStatus;
     }
