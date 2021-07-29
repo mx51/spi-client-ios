@@ -1258,14 +1258,6 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     return true;
 }
 
-- (BOOL)hasEftposAddressChanged:(NSString *)updatedEftposAddress {
-    if ([_eftposAddress isEqualToString:updatedEftposAddress]) {
-        return false;
-    }
-    
-    return true;
-}
-
 - (void)autoResolveEftposAddress {
     if (!_autoAddressResolutionEnable) {
         return;
