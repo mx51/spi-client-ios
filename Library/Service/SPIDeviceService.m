@@ -51,7 +51,7 @@ static NSTimeInterval connectionTimeout = 8; // How long do we wait for a pong t
 
 @implementation SPIDeviceService : NSObject
 
-- (void)retrieveServiceWithSerialNumber:(NSString *)serialNumber
+- (void)retrieveDeviceAddressWithSerialNumber:(NSString *)serialNumber
                                  apiKey:(NSString *)apiKey
                            acquirerCode:(NSString *)acquirerCode
                              isTestMode:(BOOL)isTestMode

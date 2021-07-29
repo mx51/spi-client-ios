@@ -127,6 +127,8 @@
 		4719CC142698607A00A18DD7 /* SPIAnalyticsService.h in Headers */ = {isa = PBXBuildFile; fileRef = 4719CC132698607A00A18DD7 /* SPIAnalyticsService.h */; };
 		4719CC16269C21DA00A18DD7 /* SPITransactionReportHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 4719CC15269C21DA00A18DD7 /* SPITransactionReportHelper.m */; };
 		4719CC18269C220D00A18DD7 /* SPITransactionReportHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 4719CC17269C220D00A18DD7 /* SPITransactionReportHelper.h */; };
+		47E2F05A26B2CC1100BD02FE /* SPIDeviceHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 47E2F05926B2CC1100BD02FE /* SPIDeviceHelper.h */; };
+		47E2F05C26B2CC3000BD02FE /* SPIDeviceHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 47E2F05B26B2CC3000BD02FE /* SPIDeviceHelper.m */; };
 		47F1F782269C3792003CC15F /* SPITransactionReportHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 4719CC15269C21DA00A18DD7 /* SPITransactionReportHelper.m */; };
 		49024DD4217ED7E300ACD54B /* SPITerminal.m in Sources */ = {isa = PBXBuildFile; fileRef = 49024DD2217ED7E300ACD54B /* SPITerminal.m */; };
 		49024DD5217ED7E300ACD54B /* SPITerminal.h in Headers */ = {isa = PBXBuildFile; fileRef = 49024DD3217ED7E300ACD54B /* SPITerminal.h */; };
@@ -262,6 +264,8 @@
 		4719CC132698607A00A18DD7 /* SPIAnalyticsService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPIAnalyticsService.h; sourceTree = "<group>"; };
 		4719CC15269C21DA00A18DD7 /* SPITransactionReportHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPITransactionReportHelper.m; sourceTree = "<group>"; };
 		4719CC17269C220D00A18DD7 /* SPITransactionReportHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPITransactionReportHelper.h; sourceTree = "<group>"; };
+		47E2F05926B2CC1100BD02FE /* SPIDeviceHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPIDeviceHelper.h; sourceTree = "<group>"; };
+		47E2F05B26B2CC3000BD02FE /* SPIDeviceHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIDeviceHelper.m; sourceTree = "<group>"; };
 		49024DD2217ED7E300ACD54B /* SPITerminal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPITerminal.m; sourceTree = "<group>"; };
 		49024DD3217ED7E300ACD54B /* SPITerminal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPITerminal.h; sourceTree = "<group>"; };
 		49A6067021DDAE1800B6C706 /* SPIDeviceService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPIDeviceService.h; path = Library/Service/SPIDeviceService.h; sourceTree = SOURCE_ROOT; };
@@ -552,6 +556,8 @@
 				4719CC15269C21DA00A18DD7 /* SPITransactionReportHelper.m */,
 				4714156026AEA9A500CDC264 /* SPITerminalHelper.h */,
 				4714155E26AEA98A00CDC264 /* SPITerminalHelper.m */,
+				47E2F05926B2CC1100BD02FE /* SPIDeviceHelper.h */,
+				47E2F05B26B2CC3000BD02FE /* SPIDeviceHelper.m */,
 			);
 			path = Helper;
 			sourceTree = "<group>";
@@ -606,6 +612,7 @@
 				27C68F4920E32C9700D8268C /* NSString+Crypto.h in Headers */,
 				27C68F4A20E32C9900D8268C /* NSString+Util.h in Headers */,
 				49024DD5217ED7E300ACD54B /* SPITerminal.h in Headers */,
+				47E2F05A26B2CC1100BD02FE /* SPIDeviceHelper.h in Headers */,
 				27C68F4B20E32C9B00D8268C /* SPICrypto.h in Headers */,
 				27C68F4C20E32C9E00D8268C /* SPIDiffieHellman.h in Headers */,
 				27C68F4D20E32CA200D8268C /* SPICashout.h in Headers */,
@@ -799,6 +806,7 @@
 				49024DD4217ED7E300ACD54B /* SPITerminal.m in Sources */,
 				273E9B03205A30F90006ED5C /* SPIMessage.m in Sources */,
 				273E9B13205A30F90006ED5C /* SPISecrets.m in Sources */,
+				47E2F05C26B2CC3000BD02FE /* SPIDeviceHelper.m in Sources */,
 				273E9B1E205A31030006ED5C /* SPIWebSocketConnection.m in Sources */,
 				2986B1C620B117EF0044857A /* SPIPayAtTable.m in Sources */,
 				273E9AB2205A2FDE0006ED5C /* SPIClient.m in Sources */,

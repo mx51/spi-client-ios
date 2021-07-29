@@ -20,6 +20,7 @@
 
 typedef void (^SPICompletionTxResult)(SPIInitiateTxResult *result);
 typedef void (^SPIAuthCodeSubmitCompletionResult)(SPISubmitAuthCodeResult *result);
+typedef void (^SPIGetTerminalAddressCompletionResult)(NSString *address);
 
 /**
  Completion handler.
@@ -168,6 +169,11 @@ Subscribe to this event to receive update messages
  * Returns the SDK version.
  */
 + (NSString *)getVersion;
+
+/**
+ Async call to get the current terminal address, this does not update the internals address of the library.
+ */
+- (void)getTerminalAddressWithCompletion:(SPIGetTerminalAddressCompletionResult)completion;
 
 /**
  Set the pairing secrets.
