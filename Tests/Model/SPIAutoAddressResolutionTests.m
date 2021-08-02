@@ -48,7 +48,7 @@
     static NSString *serialNumber = @"111-111-111";
     
     // act
-    [[SPIDeviceService alloc] retrieveServiceWithSerialNumber:serialNumber apiKey:apiKey acquirerCode:acquirerCode isTestMode:true completion:^(SPIDeviceAddressStatus *addressResponse) {
+    [[SPIDeviceService alloc] retrieveDeviceAddressWithSerialNumber:serialNumber apiKey:apiKey acquirerCode:acquirerCode isTestMode:true completion:^(SPIDeviceAddressStatus *addressResponse) {
         // assert
         XCTAssertEqual(addressResponse.responseCode, 404);
     }];
@@ -64,7 +64,7 @@
     static NSString *serialNumber = @"321-404-842";
     
     // act
-    [[SPIDeviceService alloc] retrieveServiceWithSerialNumber:serialNumber apiKey:apiKey acquirerCode:acquirerCode isTestMode:true completion:^(SPIDeviceAddressStatus *addressResponse) {
+    [[SPIDeviceService alloc] retrieveDeviceAddressWithSerialNumber:serialNumber apiKey:apiKey acquirerCode:acquirerCode isTestMode:true completion:^(SPIDeviceAddressStatus *addressResponse) {
         
         // assert
         XCTAssertNotNil(addressResponse);

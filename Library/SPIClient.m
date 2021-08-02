@@ -37,6 +37,7 @@
 #import "SPIDeviceService.h"
 #import "SPITenantsService.h"
 #import "SPITerminalHelper.h"
+#import "SPIDeviceHelper.h"
 
 
 @interface SPIClient () <SPIConnectionDelegate>
@@ -1073,7 +1074,12 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     [self send:[[[SPITerminalConfigurationRequest alloc] init] toMessage]];
 }
 
-#pragma mark -
+- (void)getTerminalAddressWithCompletion:(SPIGetTerminalAddressCompletionResult)completion {
+    [[SPIDeviceService alloc] retrieveDeviceAddressWithSerialNumber:self.serialNumber apiKey:self.deviceApiKey acquirerCode:self.acquirerCode isTestMode:self.testMode completion:^(SPIDeviceAddressStatus *response) {
+        completion(response.address);
+    }];
+}
+
 #pragma mark - Connection
 
 - (void)setEftposAddress:(NSString *)url {
@@ -1251,14 +1257,6 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     return true;
 }
 
-- (BOOL)hasEftposAddressChanged:(NSString *)updatedEftposAddress {
-    if ([_eftposAddress isEqualToString:updatedEftposAddress]) {
-        return false;
-    }
-    
-    return true;
-}
-
 - (void)autoResolveEftposAddress {
     if (!_autoAddressResolutionEnable) {
         return;
@@ -1268,45 +1266,20 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         return;
     }
     
-    [[SPIDeviceService alloc] retrieveServiceWithSerialNumber:_serialNumber apiKey:_deviceApiKey acquirerCode:_acquirerCode isTestMode:_testMode completion:^(SPIDeviceAddressStatus *addressResponse) {
+    [[SPIDeviceService alloc] retrieveDeviceAddressWithSerialNumber:_serialNumber apiKey:_deviceApiKey acquirerCode:_acquirerCode isTestMode:_testMode completion:^(SPIDeviceAddressStatus *addressResponse) {
         
-        SPIDeviceAddressStatus *currentDeviceAddressStatus = [SPIDeviceAddressStatus new];
+        SPIDeviceAddressStatus *currentDeviceAddressStatus = [SPIDeviceHelper generateDeviceAddressStatus:addressResponse currentEftposAddress:self->_eftposAddress];
         
-        if (addressResponse == nil) {
-            currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponseCodeDeviceError;
-            self.state.deviceAddressStatus = currentDeviceAddressStatus;
+        if (currentDeviceAddressStatus.deviceAddressResponseCode != DeviceAddressResponseCodeSuccess) {
+            SPILog(@"Trying to auto resolve address, but device address has not changed.");
+            // even though address haven't changed - dispatch event as PoS depend on this
             [self deviceAddressChanged];
-            return;
-        }
-        
-        if (addressResponse.address.length == 0) {
-            if (addressResponse.responseCode == 404) {
-                currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponseCodeInvalidSerialNumber;
-                self.state.deviceAddressStatus = currentDeviceAddressStatus;
-                [self deviceAddressChanged];
-                return;
-            } else {
-                currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponseCodeDeviceError;
-                self.state.deviceAddressStatus = currentDeviceAddressStatus;
-                [self deviceAddressChanged];
-                return;
-            }
-        }
-        
-        if (![self hasEftposAddressChanged:addressResponse.address]) {
-            currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponseCodeAddressNotChanged;
-            self.state.deviceAddressStatus = currentDeviceAddressStatus;
-            [self deviceAddressChanged];
-            return;
         }
         
         // update device and connection address
         self->_eftposAddress = [NSString stringWithFormat:@"ws://%@", addressResponse.address];
         [self->_connection setUrl:self->_eftposAddress];
         
-        currentDeviceAddressStatus.address = addressResponse.address;
-        currentDeviceAddressStatus.lastUpdated = addressResponse.lastUpdated;
-        currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponseCodeSuccess;
         self.state.deviceAddressStatus = currentDeviceAddressStatus;
         [self deviceAddressChanged];
     }];

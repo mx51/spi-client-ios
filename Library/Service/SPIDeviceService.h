@@ -15,7 +15,7 @@ typedef NS_ENUM(NSUInteger, SPIDeviceAddressResponseCode) {
     DeviceAddressResponseCodeInvalidSerialNumber,
     DeviceAddressResponseCodeAddressNotChanged,
     DeviceAddressResponseCodeSerialNumberNotChanged,
-    DeviceAddressResponseCodeDeviceError
+    DeviceAddressResponseCodeServiceError
 };
 
 @property (nonatomic, copy) NSString *address;
@@ -31,7 +31,7 @@ typedef void(^DeviceAddressStatusResult)(SPIDeviceAddressStatus *);
 
 @interface SPIDeviceService : NSObject
 
-- (void)retrieveServiceWithSerialNumber:(NSString *)serialNumber
+- (void)retrieveDeviceAddressWithSerialNumber:(NSString *)serialNumber
                                  apiKey:(NSString *)apiKey
                            acquirerCode:(NSString *)acquirerCode
                              isTestMode:(BOOL)isTestMode
