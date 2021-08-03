@@ -78,6 +78,8 @@
 
 @property (nonatomic, strong) NSString *terminalModel;
 
+@property (nonatomic, assign) BOOL pairUsingEftposAddress;
+
 @end
 
 static NSTimeInterval txMonitorCheckFrequency = 1; // How often do we check on the tx state from our tx monitoring thread
@@ -107,6 +109,8 @@ static NSInteger retriesBeforePairing = 3; // How many retries before resolving 
         _posIdRegex = [NSRegularExpression regularExpressionWithPattern:regexItemsForPosId options:NSRegularExpressionCaseInsensitive error:nil];
         _eftposAddressRegex = [NSRegularExpression regularExpressionWithPattern:regexItemsForEftposAddress options:NSRegularExpressionCaseInsensitive error:nil];
         _libraryLanguage = @"ios";
+        _pairUsingEftposAddress = YES;
+        _autoAddressResolutionEnable = YES;
         _txLock = [[NSObject alloc] init];
     }
     
@@ -1083,7 +1087,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 #pragma mark - Connection
 
 - (void)setEftposAddress:(NSString *)url {
-    if (self.state.status == SPIStatusPairedConnected || _autoAddressResolutionEnable) {
+    if (self.state.status == SPIStatusPairedConnected) {
         return;
     }
     
@@ -1181,9 +1185,6 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
  Allows you to set the serial number of the Eftpos
  */
 - (void)setSerialNumber:(NSString *)serialNumber {
-    if (self.state.status != SPIStatusUnpaired) {
-        return;
-    }
     
     NSString *was = _serialNumber;
     _serialNumber = serialNumber.copy;
@@ -1209,9 +1210,6 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
  Allows you to set the auto address discovery feature.
  */
 - (void)setAutoAddressResolutionEnable:(BOOL)autoAddressResolutionEnable {
-    if (self.state.status == SPIStatusPairedConnected) {
-        return;
-    }
     
     BOOL was = _autoAddressResolutionEnable;
     _autoAddressResolutionEnable = autoAddressResolutionEnable;
@@ -1230,9 +1228,6 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
  Allows you to set the auto address discovery feature.
  */
 - (void)setTestMode:(BOOL)testMode {
-    if (self.state.status != SPIStatusUnpaired) {
-        return;
-    }
     
     if (testMode == _testMode) {
         return;
@@ -1262,25 +1257,39 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         return;
     }
     
-    if (_serialNumber.length == 0) {
+    if (_serialNumber.length == 0 || _deviceApiKey.length == 0) {
+        SPILog(@"Missing serialNumber and/or deviceApiKey. Need to set them before for Auto Address to work.");
         return;
     }
     
     [[SPIDeviceService alloc] retrieveDeviceAddressWithSerialNumber:_serialNumber apiKey:_deviceApiKey acquirerCode:_acquirerCode isTestMode:_testMode completion:^(SPIDeviceAddressStatus *addressResponse) {
         
         SPIDeviceAddressStatus *currentDeviceAddressStatus = [SPIDeviceHelper generateDeviceAddressStatus:addressResponse currentEftposAddress:self->_eftposAddress];
+        self.state.deviceAddressStatus = currentDeviceAddressStatus;
         
-        if (currentDeviceAddressStatus.deviceAddressResponseCode != DeviceAddressResponseCodeSuccess) {
-            SPILog(@"Trying to auto resolve address, but device address has not changed.");
+        if (currentDeviceAddressStatus.deviceAddressResponseCode == DeviceAddressResponseCodeServiceError) {
+            SPILog(@"Could not communicate with device address service.");
+            return;
+        }
+        
+        if (currentDeviceAddressStatus.deviceAddressResponseCode == DeviceAddressResponseCodeInvalidSerialNumber) {
+            SPILog(@"Could not resolve address, invalid serial number.");
+            return;
+        }
+        
+        if (currentDeviceAddressStatus.deviceAddressResponseCode != DeviceAddressResponseCodeAddressNotChanged) {
+            SPILog(@"Address resolved, but device address has not changed.");
             // even though address haven't changed - dispatch event as PoS depend on this
             [self deviceAddressChanged];
+            return;
         }
         
         // update device and connection address
         self->_eftposAddress = [NSString stringWithFormat:@"ws://%@", addressResponse.address];
         [self->_connection setUrl:self->_eftposAddress];
         
-        self.state.deviceAddressStatus = currentDeviceAddressStatus;
+        SPILog([NSString stringWithFormat:@"Address resolved to %@", addressResponse.address]);
+        
         [self deviceAddressChanged];
     }];
 }
@@ -1388,6 +1397,11 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     self.state.status = SPIStatusPairedConnected;
     [self secretsChanged:self.secrets];
     [self pairingFlowStateChanged];
+    
+    // set the serial number
+    if (self.pairUsingEftposAddress) {
+        [self getTerminalConfiguration];
+    }
 }
 
 - (void)onPairingFailed {
@@ -1870,7 +1884,15 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 }
 
 - (void)handleTerminalConfigurationResponse:(SPIMessage *)m {
-    self.terminalModel = [[[SPITerminalConfigurationResponse alloc] initWithMessage:m] getTerminalModel];
+    
+    SPITerminalConfigurationResponse *response = [[SPITerminalConfigurationResponse alloc] initWithMessage:m];
+    
+    if (_pairUsingEftposAddress && response.isSuccess) {
+        self.serialNumber = [response getSerialNumber];
+        self.terminalModel = [response getTerminalModel];
+    }
+    
+    
     if([_delegate respondsToSelector:@selector(terminalConfigurationResponse:)]) {
         [_delegate terminalConfigurationResponse:m];
     }
@@ -2078,6 +2100,10 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                 if (!self.hasSetPosInfo) {
                     [weakSelf callSetPosInfo];
                     weakSelf.transactionReport = [SPITransactionReportHelper createTransactionReportEnvelope:weakSelf.posVendorId posVersion:weakSelf.posVersion libraryLanguage:self.libraryLanguage libraryVersion:[SPIClient getVersion] serialNumber:weakSelf.serialNumber];
+                }
+                
+                if (weakSelf.pairUsingEftposAddress) {
+                    [weakSelf getTerminalConfiguration];
                 }
                 
                 [weakSelf.spiPat pushPayAtTableConfig];

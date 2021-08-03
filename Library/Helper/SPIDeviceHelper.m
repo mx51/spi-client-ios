@@ -16,20 +16,18 @@
     
     SPIDeviceAddressStatus *currentDeviceAddressStatus = [SPIDeviceAddressStatus new];
     
-    if (serviceResponse == nil) {
-        currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponseCodeServiceError;
-        
+    if (serviceResponse.responseCode == 404) {
+        currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponseCodeInvalidSerialNumber;
         return currentDeviceAddressStatus;
     }
     
+    
     if (serviceResponse.address.length == 0) {
-        if (serviceResponse.responseCode == 404) {
-            currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponseCodeInvalidSerialNumber;
-            return currentDeviceAddressStatus;
-        } else {
+        if (serviceResponse == nil || serviceResponse.responseCode != 200) {
             currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponseCodeServiceError;
+            
             return currentDeviceAddressStatus;
-        }
+        } 
     }
     
     if ([serviceResponse.address isEqual:[currentEftposAddress stringByReplacingOccurrencesOfString:@"ws://" withString:@""]]) {
