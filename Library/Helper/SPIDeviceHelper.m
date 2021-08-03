@@ -23,7 +23,7 @@
     
     
     if (serviceResponse.address.length == 0) {
-        if (serviceResponse == nil || serviceResponse.responseCode == 200) {
+        if (serviceResponse == nil || serviceResponse.responseCode != 200) {
             currentDeviceAddressStatus.deviceAddressResponseCode = DeviceAddressResponseCodeServiceError;
             
             return currentDeviceAddressStatus;
