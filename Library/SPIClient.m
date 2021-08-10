@@ -1976,7 +1976,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                         
                         // As we have no way to recover from a reversal in the event of a disconnection, we will fail the reversal.
                         if (weakSelf.state.flow == SPIFlowTransaction && weakSelf.state.txFlowState.type == SPITransactionTypeReversal) {
-                            [weakSelf.state.txFlowState completed:SPIMessageSuccessStateFailed response:nil msg:@"We were in the middle of a reversal when a disconnection happened, let's fail the reversal."];
+                            [weakSelf.state.txFlowState completed:SPIMessageSuccessStateFailed response:[SPIMessage new] msg:@"We were in the middle of a reversal when a disconnection happened, let's fail the reversal."];
                             [weakSelf transactionFlowStateChanged];
                         }
                     }
