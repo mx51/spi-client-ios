@@ -1967,10 +1967,18 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                     weakSelf.state.status = SPIStatusPairedConnecting;
                     [weakSelf statusChanged];
                     
-                    if (weakSelf.state.flow == SPIFlowTransaction && !weakSelf.state.txFlowState.isFinished) {
-                        // we're in the middle of a transaction, just so you know!
-                        // TH-1D
-                        SPILog(@"Lost connection in the middle of a transaction...");
+                    @synchronized(weakSelf.txLock) {
+                        if (weakSelf.state.flow == SPIFlowTransaction && !weakSelf.state.txFlowState.isFinished) {
+                            // we're in the middle of a transaction, just so you know!
+                            // TH-1D
+                            SPILog(@"Lost connection in the middle of a transaction...");
+                        }
+                        
+                        // As we have no way to recover from a reversal in the event of a disconnection, we will fail the reversal.
+                        if (weakSelf.state.flow == SPIFlowTransaction && weakSelf.state.txFlowState.type == SPITransactionTypeReversal) {
+                            [weakSelf.state.txFlowState completed:SPIMessageSuccessStateFailed response:[SPIMessage new] msg:@"We were in the middle of a reversal when a disconnection happened, let's fail the reversal."];
+                            [weakSelf transactionFlowStateChanged];
+                        }
                     }
                     
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
