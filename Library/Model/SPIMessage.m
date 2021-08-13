@@ -122,9 +122,9 @@ NSString *const SPITransactionUpdateKey = @"txn_update_message";
 }
 
 -  (void)setConnectionId:(NSString *)connID {
-    
-    self.connID = connID;
-    
+    if (connID) {
+        self.connID = connID;
+    }
 }
 
 @end

@@ -1067,15 +1067,22 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 
 - (void)printReport:(NSString *)key
             payload:(NSString *)payload {
-    [self send:[[[SPIPrintingRequest alloc] initWithKey:key payload:payload] toMessage]];
+    if (self.state.status == SPIStatusPairedConnected) {
+        [self send:[[[SPIPrintingRequest alloc] initWithKey:key payload:payload] toMessage]];
+    }
+    
 }
 
 - (void)getTerminalStatus {
-    [self send:[[[SPITerminalStatusRequest alloc] init] toMessage]];
+    if (self.state.status == SPIStatusPairedConnected) {
+        [self send:[[[SPITerminalStatusRequest alloc] init] toMessage]];
+    }
 }
 
 - (void)getTerminalConfiguration {
-    [self send:[[[SPITerminalConfigurationRequest alloc] init] toMessage]];
+    if (self.state.status == SPIStatusPairedConnected) {
+        [self send:[[[SPITerminalConfigurationRequest alloc] init] toMessage]];
+    }
 }
 
 - (void)getTerminalAddressWithCompletion:(SPIGetTerminalAddressCompletionResult)completion {

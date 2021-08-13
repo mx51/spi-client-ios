@@ -217,7 +217,9 @@
 }
 
 - (void)pushPayAtTableConfig {
-    [_spi send:[_config toMessage:[SPIRequestIdHelper idForString:@"patconf"]]];
+    if (_spi.state.status == SPIStatusPairedConnected) {
+        [_spi send:[_config toMessage:[SPIRequestIdHelper idForString:@"patconf"]]];
+    }
 }
 
 - (void)handleGetBillDetailsRequest:(SPIMessage *)message {
