@@ -1404,11 +1404,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     self.state.status = SPIStatusPairedConnected;
     [self secretsChanged:self.secrets];
     [self pairingFlowStateChanged];
-    
-    // set the serial number
-    if (self.pairUsingEftposAddress) {
-        [self getTerminalConfiguration];
-    }
+   
 }
 
 - (void)onPairingFailed {
