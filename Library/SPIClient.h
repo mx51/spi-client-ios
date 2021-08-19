@@ -126,7 +126,7 @@ Subscribe to this event to receive update messages
  Set the acquirer code of your bank, please contact mx51's Integration
  Engineers for acquirer code.
  */
-@property (nonatomic, retain) NSString *acquirerCode;
+@property (nonatomic, retain) NSString *tenantCode;
 
 /**
  Set the api key used for auto address discovery feature, please contact

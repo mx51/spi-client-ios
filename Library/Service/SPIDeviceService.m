@@ -53,16 +53,16 @@ static NSTimeInterval connectionTimeout = 8; // How long do we wait for a pong t
 
 - (void)retrieveDeviceAddressWithSerialNumber:(NSString *)serialNumber
                                  apiKey:(NSString *)apiKey
-                           acquirerCode:(NSString *)acquirerCode
+                           tenantCode:(NSString *)tenantCode
                              isTestMode:(BOOL)isTestMode
                              completion:(DeviceAddressStatusResult)completion {
     NSString *deviceAddressUrl;
     SPIDeviceAddressStatus *deviceAddressStatus = [[SPIDeviceAddressStatus alloc] init];
     
     if (isTestMode) {
-        deviceAddressUrl = [NSString stringWithFormat: @"https://device-address-api-sb.%@.mspenv.io/v1/%@/ip", acquirerCode, serialNumber];
+        deviceAddressUrl = [NSString stringWithFormat: @"https://device-address-api-sb.%@.mspenv.io/v1/%@/ip", tenantCode, serialNumber];
     } else {
-        deviceAddressUrl = [NSString stringWithFormat: @"https://device-address-api.%@.mspenv.io/v1/%@/ip", acquirerCode, serialNumber];
+        deviceAddressUrl = [NSString stringWithFormat: @"https://device-address-api.%@.mspenv.io/v1/%@/ip", tenantCode, serialNumber];
     }
     
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];

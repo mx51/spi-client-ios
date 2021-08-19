@@ -32,9 +32,9 @@ typedef void(^DeviceAddressStatusResult)(SPIDeviceAddressStatus *);
 @interface SPIDeviceService : NSObject
 
 - (void)retrieveDeviceAddressWithSerialNumber:(NSString *)serialNumber
-                                 apiKey:(NSString *)apiKey
-                           acquirerCode:(NSString *)acquirerCode
-                             isTestMode:(BOOL)isTestMode
-                             completion:(DeviceAddressStatusResult)completion;
+                                       apiKey:(NSString *)apiKey
+                                   tenantCode:(NSString *)tenantCode
+                                   isTestMode:(BOOL)isTestMode
+                                   completion:(DeviceAddressStatusResult)completion;
 
 @end

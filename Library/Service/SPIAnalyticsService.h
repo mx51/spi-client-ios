@@ -35,7 +35,7 @@
 
 + (void)reportTransaction:(SPITransactionReport *)transactionReport
                   apiKey:(NSString *)apiKey
-            acquirerCode:(NSString *)acquirerCode
+            tenantCode:(NSString *)tenantCode
               isTestMode:(BOOL)isTestMode;
 
 
