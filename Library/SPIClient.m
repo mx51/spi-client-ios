@@ -111,6 +111,7 @@ static NSInteger retriesBeforePairing = 3; // How many retries before resolving 
         _libraryLanguage = @"ios";
         _pairUsingEftposAddress = YES;
         _autoAddressResolutionEnable = YES;
+        _transactionReport = [SPITransactionReport new];
         _txLock = [[NSObject alloc] init];
     }
     
