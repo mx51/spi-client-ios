@@ -128,6 +128,8 @@ Subscribe to this event to receive update messages
  */
 @property (nonatomic, retain) NSString *tenantCode;
 
+@property (nonatomic, retain) NSString *acquirerCode __deprecated_msg("Use tenantCode instead.");
+
 /**
  Set the api key used for auto address discovery feature, please contact
  mx51's Integration Engineers for Api key.

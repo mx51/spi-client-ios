@@ -1175,12 +1175,15 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 #pragma mark - Device Management
 
 /**
- Set the acquirer code of your bank, please contact mx51's Integration Engineers for acquirer code.
+ Deprecated, please use SetTenantCode(tenantCode)
  */
 - (void)setAcquirerCode:(NSString *)acquirerCode {
     [self setTenantCode:acquirerCode];
 }
 
+/**
+ Set the tenant code of your provider, please use the GetAvailableTenants method for a list of available tenants.
+ */
 - (void)setTenantCode:(NSString *)tenantCode {
     _tenantCode = tenantCode.copy;
 }
