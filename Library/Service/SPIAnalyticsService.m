@@ -84,12 +84,12 @@
 
 + (void)reportTransaction:(SPITransactionReport *)transactionReport
                    apiKey:(NSString *)apiKey
-             acquirerCode:(NSString *)acquirerCode
+             tenantCode:(NSString *)tenantCode
                isTestMode:(BOOL)isTestMode {
     
     NSString *transactionServiceUriBase = isTestMode ? @"https://spi-analytics-api-sb.%@.mspenv.io/v1/report-transaction" : @"https://spi-analytics-api.%@.mspenv.io/v1/report-transaction";
     
-    NSString *transactionServiceUri = [NSString stringWithFormat:transactionServiceUriBase, acquirerCode];
+    NSString *transactionServiceUri = [NSString stringWithFormat:transactionServiceUriBase, tenantCode];
     
     NSURLSessionConfiguration *defaultConfigObject = [NSURLSessionConfiguration defaultSessionConfiguration];
     
