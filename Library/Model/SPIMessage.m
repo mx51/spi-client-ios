@@ -198,10 +198,7 @@ NSString *const SPITransactionUpdateKey = @"txn_update_message";
     self.dateTimeStamp = [currentDate toString];
     self.connID = stamp.connID;
     self.posCounter = stamp.posCounter++;
-    
-    if (!self.needsEncryption) {
-        self.posId = stamp.posId;
-    }
+    self.posId = stamp.posId;
     
     SPIMessageEnvelope *messageEnvelope = [[SPIMessageEnvelope alloc] initWithMessage:self];
     NSDictionary *messageEnvelopeJson = [messageEnvelope toJson];
