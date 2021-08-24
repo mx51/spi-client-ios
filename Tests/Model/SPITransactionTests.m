@@ -277,7 +277,7 @@
     client.deviceApiKey = @"testPos";
     client.testMode = YES;
     client.tenantCode = @"gko";
-    client.transactionReport = [SPITransactionReportHelper createTransactionReportEnvelope:@"test" posVersion:@"2.8.0" libraryLanguage:@"ios" libraryVersion:@"2.8.0" serialNumber:@"555-555-555"];
+    client.transactionReport = [SPITransactionReportHelper createTransactionReportEnvelope:@"test" posVersion:@"2.9.0" libraryLanguage:@"ios" libraryVersion:@"2.9.0" serialNumber:@"555-555-555"];
     
     SPISecrets *secrets = client.secrets;
     SPIMessageStamp *stamp = [[SPIMessageStamp alloc] initWithPosId:@"POS" secrets:secrets];
@@ -331,7 +331,7 @@
     client.deviceApiKey = @"testPos";
     client.testMode = YES;
     client.tenantCode = @"gko";
-    client.transactionReport = [SPITransactionReportHelper createTransactionReportEnvelope:@"test" posVersion:@"2.8.0" libraryLanguage:@"ios" libraryVersion:@"2.8.0" serialNumber:@"555-555-555"];
+    client.transactionReport = [SPITransactionReportHelper createTransactionReportEnvelope:@"test" posVersion:@"2.9.0" libraryLanguage:@"ios" libraryVersion:@"2.9.0" serialNumber:@"555-555-555"];
     [client initiatePurchaseTx:@"kebab-18-06-2018-03-44-05"
                 purchaseAmount:10
                      tipAmount:0
