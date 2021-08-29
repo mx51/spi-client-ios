@@ -8,6 +8,7 @@
 
 #import <XCTest/XCTest.h>
 #import "SPIClient.h"
+#import "SPITestUtils.h"
 
 @interface SPIClientTests : XCTestCase
 
@@ -19,7 +20,8 @@
     // arrange
     static NSString *posId = @"12345678901234567";
     SPIClient *client = [[SPIClient alloc] init];
-    
+    SPIDummyDelegate *delegate = [SPIDummyDelegate new];
+    client.delegate = delegate;
     // act
     client.posId = posId;
     
@@ -38,7 +40,8 @@
     client.eftposAddress = eftposAddress;
     client.posVendorId = posVendorId;
     client.posVersion = posVersion;
-    
+    SPIDummyDelegate *delegate = [SPIDummyDelegate new];
+    client.delegate = delegate;
     // act
     [client start];
 
@@ -51,7 +54,8 @@
     // arrange
     static NSString *posId = @"RamenPos";
     SPIClient *client = [[SPIClient alloc] init];
-    
+    SPIDummyDelegate *delegate = [SPIDummyDelegate new];
+    client.delegate = delegate;
     // act
     client.posId = posId;
     
@@ -70,7 +74,8 @@
     client.eftposAddress = eftposAddress;
     client.posVendorId = posVendorId;
     client.posVersion = posVersion;
-    
+    SPIDummyDelegate *delegate = [SPIDummyDelegate new];
+    client.delegate = delegate;
     // act
     [client start];
     
@@ -82,7 +87,8 @@
     // arrange
     static NSString *posId = @"RamenPos@";
     SPIClient *client = [[SPIClient alloc] init];
-    
+    SPIDummyDelegate *delegate = [SPIDummyDelegate new];
+    client.delegate = delegate;
     // act
     client.posId = posId;
     
@@ -101,7 +107,8 @@
     client.eftposAddress = eftposAddress;
     client.posVendorId = posVendorId;
     client.posVersion = posVersion;
-    
+    SPIDummyDelegate *delegate = [SPIDummyDelegate new];
+    client.delegate = delegate;
     // act
     [client start];
     
@@ -113,7 +120,8 @@
     // arrange
     static NSString *eftposAddress = @"10.20.30.40";
     SPIClient *client = [[SPIClient alloc] init];
-    
+    SPIDummyDelegate *delegate = [SPIDummyDelegate new];
+    client.delegate = delegate;
     // act
     client.eftposAddress = eftposAddress;
     NSString *clientEftposAddress = [client.eftposAddress stringByReplacingOccurrencesOfString:@"ws://" withString:@""];
@@ -133,7 +141,8 @@
     client.eftposAddress = eftposAddress;
     client.posVendorId = posVendorId;
     client.posVersion = posVersion;
-    
+    SPIDummyDelegate *delegate = [SPIDummyDelegate new];
+    client.delegate = delegate;
     // act
     [client start];
     NSString *clientEftposAddress = [client.eftposAddress stringByReplacingOccurrencesOfString:@"ws://" withString:@""];
@@ -146,7 +155,8 @@
     // arrange
     static NSString *eftposAddress = @"10.20.30";
     SPIClient *client = [[SPIClient alloc] init];
-    
+    SPIDummyDelegate *delegate = [SPIDummyDelegate new];
+    client.delegate = delegate;
     // act
     client.eftposAddress = eftposAddress;
     NSString *clientEftposAddress = [client.eftposAddress stringByReplacingOccurrencesOfString:@"ws://" withString:@""];
@@ -166,7 +176,8 @@
     client.eftposAddress = eftposAddress;
     client.posVendorId = posVendorId;
     client.posVersion = posVersion;
-    
+    SPIDummyDelegate *delegate = [SPIDummyDelegate new];
+    client.delegate = delegate;
     // act
     [client start];
     NSString *clientEftposAddress = [client.eftposAddress stringByReplacingOccurrencesOfString:@"ws://" withString:@""];
@@ -180,7 +191,8 @@
     SPIClient *client = [[SPIClient alloc] init];
     [client setSecretEncKey:@"1" hmacKey:@"2"];
     client.state.status = SPIStatusPairedConnected;
-    
+    SPIDummyDelegate *delegate = [SPIDummyDelegate new];
+    client.delegate = delegate;
     //Perform unpair
     [client unpair];
     
@@ -190,5 +202,55 @@
     
     XCTAssertEqual(client.state.status, SPIStatusUnpaired);
 }
+
+- (void)testEnablePayAtTable {
+    SPIClient *client = [[SPIClient alloc] init];
+    SPIPayAtTable *pat = [client enablePayAtTable];
+    XCTAssertNotNil(pat);
+}
+
+- (void)testPairingFlowStateChanged {
+    SPIClient *client = [[SPIClient alloc] init];
+    [client setEftposAddress:@"192.168.0.1"];
+    [client setPosId:@"posID"];
+    client.state.status = SPIStatusUnpaired;
+    SPIDummyDelegate *delegate = [SPIDummyDelegate new];
+    client.delegate = delegate;
+    //Perform unpair
+    
+    SPIPairingFlowState *before = client.state.pairingFlowState;
+
+    [client pair];
+    
+    SPIPairingFlowState *after = client.state.pairingFlowState;
+    
+    XCTAssertNotEqual(before, after);
+}
+
+- (void)testAutoResolveEftposAddress {
+    SPIClient *client = [[SPIClient alloc] init];
+    [client setTenantCode:@"gko"];
+    [client setEftposAddress:@"1.1.1.1"];
+    [client setSerialNumber:@"555-555-002"];
+    [client setDeviceApiKey:@"RamenPosDeviceAddressApiKey"];
+    [client setPosId:@"posID"];
+    [client setTestMode:YES];
+    [client setTestMode:NO];
+
+    SPIDummyDelegate *delegate = [SPIDummyDelegate new];
+    client.delegate = delegate;
+    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"test expectation"];
+    
+    delegate.deviceAddressChangedBlock = ^() {
+        XCTAssertNotEqual(client.eftposAddress, @"1.1.1.1");
+    
+        [expectation fulfill];
+    };
+    (void)[XCTWaiter waitForExpectations:@[ expectation ] timeout:2];
+}
+
+
+
+
 
 @end

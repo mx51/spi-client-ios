@@ -325,7 +325,8 @@
 
 - (void)testHandlePurchaseResponse {
     SPIClient *client = [SPITestUtils clientWithTestSecrets];
-    
+    SPIDummyDelegate *delegate = [SPIDummyDelegate new];
+    client.delegate = delegate;
     // Initiate request
     client.state.status = SPIStatusPairedConnected;
     client.deviceApiKey = @"testPos";

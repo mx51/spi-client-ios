@@ -28,7 +28,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "02436D6AE57056AECE29C63A62DDC877"
+               BlueprintIdentifier = "3E6BED92AB25E5E95D24EB9F7845B05E"
                BuildableName = "libPods-SPIClient-iOS.a"
                BlueprintName = "Pods-SPIClient-iOS"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">
@@ -42,7 +42,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "951AD6C9327E9D173EB6D61EF8DD919D"
+               BlueprintIdentifier = "958186CF7D75761173A23E66E0CCAF14"
                BuildableName = "libPods-Tests.a"
                BlueprintName = "Pods-Tests"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">
@@ -56,7 +56,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3A86B98C2855C842551EF032B06D9D52"
+               BlueprintIdentifier = "7198B1667AFEBBCAA54A1C6CFFB2CE8F"
                BuildableName = "libRNCryptor-objc.a"
                BlueprintName = "RNCryptor-objc"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">
@@ -70,7 +70,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8CB8B1D122E0957F07F35B64B6E82166"
+               BlueprintIdentifier = "1948D0B63D2CF6A48E18B0B292BC6091"
                BuildableName = "libSocketRocket.a"
                BlueprintName = "SocketRocket"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">
@@ -82,8 +82,27 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      shouldUseLaunchSchemeArgsEnv = "YES"
       codeCoverageEnabled = "YES"
-      shouldUseLaunchSchemeArgsEnv = "YES">
+      onlyGenerateCoverageForSpecifiedTargets = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "27BEE9792058F9C400E74E66"
+            BuildableName = "SPIClient_iOS.framework"
+            BlueprintName = "SPIClient-iOS"
+            ReferencedContainer = "container:SPIClient-iOS.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
+      <CodeCoverageTargets>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "27BEE9792058F9C400E74E66"
+            BuildableName = "SPIClient_iOS.framework"
+            BlueprintName = "SPIClient-iOS"
+            ReferencedContainer = "container:SPIClient-iOS.xcodeproj">
+         </BuildableReference>
+      </CodeCoverageTargets>
       <Testables>
          <TestableReference
             skipped = "NO">
@@ -96,17 +115,6 @@
             </BuildableReference>
          </TestableReference>
       </Testables>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "27BEE9792058F9C400E74E66"
-            BuildableName = "SPIClient_iOS.framework"
-            BlueprintName = "SPIClient-iOS"
-            ReferencedContainer = "container:SPIClient-iOS.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
-      <AdditionalOptions>
-      </AdditionalOptions>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -127,8 +135,6 @@
             ReferencedContainer = "container:SPIClient-iOS.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
-      <AdditionalOptions>
-      </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
