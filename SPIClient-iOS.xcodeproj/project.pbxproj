@@ -127,7 +127,6 @@
 		4719CC142698607A00A18DD7 /* SPIAnalyticsService.h in Headers */ = {isa = PBXBuildFile; fileRef = 4719CC132698607A00A18DD7 /* SPIAnalyticsService.h */; };
 		4719CC16269C21DA00A18DD7 /* SPITransactionReportHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 4719CC15269C21DA00A18DD7 /* SPITransactionReportHelper.m */; };
 		4719CC18269C220D00A18DD7 /* SPITransactionReportHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 4719CC17269C220D00A18DD7 /* SPITransactionReportHelper.h */; };
-		47C78BA626DC2802005847DD /* SPIDeviceInfoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 47C78BA526DC2802005847DD /* SPIDeviceInfoTests.m */; };
 		47E2F05A26B2CC1100BD02FE /* SPIDeviceHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 47E2F05926B2CC1100BD02FE /* SPIDeviceHelper.h */; };
 		47E2F05C26B2CC3000BD02FE /* SPIDeviceHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 47E2F05B26B2CC3000BD02FE /* SPIDeviceHelper.m */; };
 		47F1F782269C3792003CC15F /* SPITransactionReportHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 4719CC15269C21DA00A18DD7 /* SPITransactionReportHelper.m */; };
@@ -265,7 +264,6 @@
 		4719CC132698607A00A18DD7 /* SPIAnalyticsService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPIAnalyticsService.h; sourceTree = "<group>"; };
 		4719CC15269C21DA00A18DD7 /* SPITransactionReportHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPITransactionReportHelper.m; sourceTree = "<group>"; };
 		4719CC17269C220D00A18DD7 /* SPITransactionReportHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPITransactionReportHelper.h; sourceTree = "<group>"; };
-		47C78BA526DC2802005847DD /* SPIDeviceInfoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIDeviceInfoTests.m; sourceTree = "<group>"; };
 		47E2F05926B2CC1100BD02FE /* SPIDeviceHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPIDeviceHelper.h; sourceTree = "<group>"; };
 		47E2F05B26B2CC3000BD02FE /* SPIDeviceHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIDeviceHelper.m; sourceTree = "<group>"; };
 		49024DD2217ED7E300ACD54B /* SPITerminal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPITerminal.m; sourceTree = "<group>"; };
@@ -439,7 +437,6 @@
 				29468BDA20D6B2CB0095D3EC /* SPISettlementTests.m */,
 				49D2B21222E0A94A00510278 /* SPITerminalTests.m */,
 				29854DCE20D02D7000ABA629 /* SPITransactionTests.m */,
-				47C78BA526DC2802005847DD /* SPIDeviceInfoTests.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -884,7 +881,6 @@
 				273E9B5D205A34BF0006ED5C /* NSString+Util.m in Sources */,
 				29468BE620D6BD900095D3EC /* XCTestCase+RNCryptorVectorTests.m in Sources */,
 				273E9B0A205A30F90006ED5C /* SPIPairing.m in Sources */,
-				47C78BA626DC2802005847DD /* SPIDeviceInfoTests.m in Sources */,
 				279BB737205B581E005ADECB /* JKBigInteger.m in Sources */,
 				29468BF320D6BE7C0095D3EC /* JKBigInteger_Tests.m in Sources */,
 				273E9B3D205A31640006ED5C /* SPIDiffieHellmanTest.m in Sources */,
