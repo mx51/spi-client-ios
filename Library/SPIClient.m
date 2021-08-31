@@ -1753,6 +1753,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                 // this was a get transaction from a recovery
                 SPILog(@"GTR-11: Retrieved transaction during recovery.");
                 [txState completed:tx.successState response:tx msg:[NSString stringWithFormat:@"Transaction Recovered for %@", [gtResponse getPosRefId]]];
+
             }
         }
     }
