@@ -1292,7 +1292,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             return;
         }
         
-        if (currentDeviceAddressStatus.deviceAddressResponseCode != DeviceAddressResponseCodeAddressNotChanged) {
+        if (currentDeviceAddressStatus.deviceAddressResponseCode == DeviceAddressResponseCodeAddressNotChanged) {
             SPILog(@"Address resolved, but device address has not changed.");
             // even though address haven't changed - dispatch event as PoS depend on this
             [self deviceAddressChanged];
