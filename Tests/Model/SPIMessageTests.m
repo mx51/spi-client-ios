@@ -55,8 +55,7 @@
                                                      hmacKey:@"40510175845988F13F6162ED8526F0B09F73384467FA855E1E79B44A56562A58"];
 
     SPIMessageStamp *stamp = [[SPIMessageStamp alloc] initWithPosId:posId
-                                                          secrets:secrets
-                                                  serverTimeDelta:0];
+                                                          secrets:secrets];
 
     NSString *msgJson = [message toJson:stamp];
 

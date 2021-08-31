@@ -121,6 +121,16 @@
 		29E3CC9720D68E9300C69BEC /* NSObjectDynamicDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 29E3CC9620D68E9300C69BEC /* NSObjectDynamicDescription.m */; };
 		29E3CC9920D6935A00C69BEC /* NSStringUtilTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 29E3CC9820D6935A00C69BEC /* NSStringUtilTests.m */; };
 		374E391C9434FCEFB65A705F /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 34C6A04AE4CE4C33D490562D /* libPods-Tests.a */; };
+		4714155F26AEA98A00CDC264 /* SPITerminalHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 4714155E26AEA98A00CDC264 /* SPITerminalHelper.m */; };
+		4714156126AEA9A500CDC264 /* SPITerminalHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 4714156026AEA9A500CDC264 /* SPITerminalHelper.h */; };
+		4719CC122698601100A18DD7 /* SPIAnalyticsService.m in Sources */ = {isa = PBXBuildFile; fileRef = 4719CC112698601100A18DD7 /* SPIAnalyticsService.m */; };
+		4719CC142698607A00A18DD7 /* SPIAnalyticsService.h in Headers */ = {isa = PBXBuildFile; fileRef = 4719CC132698607A00A18DD7 /* SPIAnalyticsService.h */; };
+		4719CC16269C21DA00A18DD7 /* SPITransactionReportHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 4719CC15269C21DA00A18DD7 /* SPITransactionReportHelper.m */; };
+		4719CC18269C220D00A18DD7 /* SPITransactionReportHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 4719CC17269C220D00A18DD7 /* SPITransactionReportHelper.h */; };
+		47C78BA626DC2802005847DD /* SPIDeviceInfoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 47C78BA526DC2802005847DD /* SPIDeviceInfoTests.m */; };
+		47E2F05A26B2CC1100BD02FE /* SPIDeviceHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 47E2F05926B2CC1100BD02FE /* SPIDeviceHelper.h */; };
+		47E2F05C26B2CC3000BD02FE /* SPIDeviceHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 47E2F05B26B2CC3000BD02FE /* SPIDeviceHelper.m */; };
+		47F1F782269C3792003CC15F /* SPITransactionReportHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 4719CC15269C21DA00A18DD7 /* SPITransactionReportHelper.m */; };
 		49024DD4217ED7E300ACD54B /* SPITerminal.m in Sources */ = {isa = PBXBuildFile; fileRef = 49024DD2217ED7E300ACD54B /* SPITerminal.m */; };
 		49024DD5217ED7E300ACD54B /* SPITerminal.h in Headers */ = {isa = PBXBuildFile; fileRef = 49024DD3217ED7E300ACD54B /* SPITerminal.h */; };
 		49A6067221DDAE1800B6C706 /* SPIDeviceService.h in Headers */ = {isa = PBXBuildFile; fileRef = 49A6067021DDAE1800B6C706 /* SPIDeviceService.h */; };
@@ -249,6 +259,15 @@
 		29E3CC9620D68E9300C69BEC /* NSObjectDynamicDescription.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSObjectDynamicDescription.m; sourceTree = "<group>"; };
 		29E3CC9820D6935A00C69BEC /* NSStringUtilTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NSStringUtilTests.m; sourceTree = "<group>"; };
 		34C6A04AE4CE4C33D490562D /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4714155E26AEA98A00CDC264 /* SPITerminalHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPITerminalHelper.m; sourceTree = "<group>"; };
+		4714156026AEA9A500CDC264 /* SPITerminalHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPITerminalHelper.h; sourceTree = "<group>"; };
+		4719CC112698601100A18DD7 /* SPIAnalyticsService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIAnalyticsService.m; sourceTree = "<group>"; };
+		4719CC132698607A00A18DD7 /* SPIAnalyticsService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPIAnalyticsService.h; sourceTree = "<group>"; };
+		4719CC15269C21DA00A18DD7 /* SPITransactionReportHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPITransactionReportHelper.m; sourceTree = "<group>"; };
+		4719CC17269C220D00A18DD7 /* SPITransactionReportHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPITransactionReportHelper.h; sourceTree = "<group>"; };
+		47C78BA526DC2802005847DD /* SPIDeviceInfoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIDeviceInfoTests.m; sourceTree = "<group>"; };
+		47E2F05926B2CC1100BD02FE /* SPIDeviceHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPIDeviceHelper.h; sourceTree = "<group>"; };
+		47E2F05B26B2CC3000BD02FE /* SPIDeviceHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPIDeviceHelper.m; sourceTree = "<group>"; };
 		49024DD2217ED7E300ACD54B /* SPITerminal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPITerminal.m; sourceTree = "<group>"; };
 		49024DD3217ED7E300ACD54B /* SPITerminal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPITerminal.h; sourceTree = "<group>"; };
 		49A6067021DDAE1800B6C706 /* SPIDeviceService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SPIDeviceService.h; path = Library/Service/SPIDeviceService.h; sourceTree = SOURCE_ROOT; };
@@ -420,6 +439,7 @@
 				29468BDA20D6B2CB0095D3EC /* SPISettlementTests.m */,
 				49D2B21222E0A94A00510278 /* SPITerminalTests.m */,
 				29854DCE20D02D7000ABA629 /* SPITransactionTests.m */,
+				47C78BA526DC2802005847DD /* SPIDeviceInfoTests.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -493,6 +513,7 @@
 				27B3CD1320EA20D200237C3A /* SPIManifest+Internal.h */,
 				273E9AB1205A2FDE0006ED5C /* SPIModels.h */,
 				273E9AAE205A2FDD0006ED5C /* SPIModels.m */,
+				4714155D26AEA91000CDC264 /* Helper */,
 				273E9B4C205A34BF0006ED5C /* Categories */,
 				273E9AE2205A30EC0006ED5C /* Crypto */,
 				273E9AED205A30F90006ED5C /* Model */,
@@ -531,6 +552,19 @@
 			path = JKDecimal;
 			sourceTree = "<group>";
 		};
+		4714155D26AEA91000CDC264 /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				4719CC17269C220D00A18DD7 /* SPITransactionReportHelper.h */,
+				4719CC15269C21DA00A18DD7 /* SPITransactionReportHelper.m */,
+				4714156026AEA9A500CDC264 /* SPITerminalHelper.h */,
+				4714155E26AEA98A00CDC264 /* SPITerminalHelper.m */,
+				47E2F05926B2CC1100BD02FE /* SPIDeviceHelper.h */,
+				47E2F05B26B2CC3000BD02FE /* SPIDeviceHelper.m */,
+			);
+			path = Helper;
+			sourceTree = "<group>";
+		};
 		49A6066F21DDADD700B6C706 /* Service */ = {
 			isa = PBXGroup;
 			children = (
@@ -538,9 +572,10 @@
 				49A6067121DDAE1800B6C706 /* SPIDeviceService.m */,
 				C980074B25E75DEF00808E8D /* SPITenantsService.h */,
 				C980074C25E75DEF00808E8D /* SPITenantsService.m */,
+				4719CC132698607A00A18DD7 /* SPIAnalyticsService.h */,
+				4719CC112698601100A18DD7 /* SPIAnalyticsService.m */,
 			);
-			name = Service;
-			path = "New Group";
+			path = Service;
 			sourceTree = "<group>";
 		};
 		786F0B30F75E71B9A8439A92 /* Pods */ = {
@@ -561,12 +596,15 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4719CC142698607A00A18DD7 /* SPIAnalyticsService.h in Headers */,
 				279BB733205B581E005ADECB /* tommath_superclass.h in Headers */,
 				279BB730205B581E005ADECB /* tommath_class.h in Headers */,
+				4714156126AEA9A500CDC264 /* SPITerminalHelper.h in Headers */,
 				279BB734205B581E005ADECB /* tommath.h in Headers */,
 				831D3C04214B62F40038B3E3 /* SPIRepeatingTimer.h in Headers */,
 				279BB72D205B581E005ADECB /* JKBigInteger.h in Headers */,
 				27C8E47C20EB4EB400E00EA9 /* SPIPosInfo.h in Headers */,
+				4719CC18269C220D00A18DD7 /* SPITransactionReportHelper.h in Headers */,
 				27C68F4320E32C7100D8268C /* SPIClient.h in Headers */,
 				27C68F4420E32C7500D8268C /* SPIModels.h in Headers */,
 				27599C3320E4A368006619A8 /* SPIClient+Internal.h in Headers */,
@@ -577,6 +615,7 @@
 				27C68F4920E32C9700D8268C /* NSString+Crypto.h in Headers */,
 				27C68F4A20E32C9900D8268C /* NSString+Util.h in Headers */,
 				49024DD5217ED7E300ACD54B /* SPITerminal.h in Headers */,
+				47E2F05A26B2CC1100BD02FE /* SPIDeviceHelper.h in Headers */,
 				27C68F4B20E32C9B00D8268C /* SPICrypto.h in Headers */,
 				27C68F4C20E32C9E00D8268C /* SPIDiffieHellman.h in Headers */,
 				27C68F4D20E32CA200D8268C /* SPICashout.h in Headers */,
@@ -731,7 +770,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "MANIFEST_HEADER_FILE=\"${PROJECT_DIR}/Library/SPIManifest+Internal.h\"\nBUNDLE_VERSION_SHORT=$(/usr/libexec/PlistBuddy -c \"Print CFBundleShortVersionString\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\")\n\ncat > $MANIFEST_HEADER_FILE << EOL\n// DO NOT EDIT!\n// This file is generated by the 'Update Manifest' build phase.\n\n#define BUNDLE_VERSION_SHORT @\"$BUNDLE_VERSION_SHORT\"\nEOL";
+			shellScript = "MANIFEST_HEADER_FILE=\"${PROJECT_DIR}/Library/SPIManifest+Internal.h\"\nBUNDLE_VERSION_SHORT=$(/usr/libexec/PlistBuddy -c \"Print CFBundleShortVersionString\" \"${PROJECT_DIR}/${INFOPLIST_FILE}\")\n\ncat > $MANIFEST_HEADER_FILE << EOL\n// DO NOT EDIT!\n// This file is generated by the 'Update Manifest' build phase.\n\n#define BUNDLE_VERSION_SHORT @\"$BUNDLE_VERSION_SHORT\"\nEOL\n";
 		};
 		C175C2944CEDB6EA6FD46B27 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -770,6 +809,7 @@
 				49024DD4217ED7E300ACD54B /* SPITerminal.m in Sources */,
 				273E9B03205A30F90006ED5C /* SPIMessage.m in Sources */,
 				273E9B13205A30F90006ED5C /* SPISecrets.m in Sources */,
+				47E2F05C26B2CC3000BD02FE /* SPIDeviceHelper.m in Sources */,
 				273E9B1E205A31030006ED5C /* SPIWebSocketConnection.m in Sources */,
 				2986B1C620B117EF0044857A /* SPIPayAtTable.m in Sources */,
 				273E9AB2205A2FDE0006ED5C /* SPIClient.m in Sources */,
@@ -780,6 +820,7 @@
 				273E9B20205A31030006ED5C /* SPIRequestIdHelper.m in Sources */,
 				27C8E48320EC74CC00E00EA9 /* SPIDeviceInfo.m in Sources */,
 				273E9B0D205A30F90006ED5C /* SPIKeyRollingHelper.m in Sources */,
+				4719CC16269C21DA00A18DD7 /* SPITransactionReportHelper.m in Sources */,
 				273E9B09205A30F90006ED5C /* SPIPairing.m in Sources */,
 				49A61854215CBFC50068C537 /* SPIPrinting.m in Sources */,
 				273E9B5C205A34BF0006ED5C /* NSString+Util.m in Sources */,
@@ -787,7 +828,9 @@
 				273E9AEA205A30EC0006ED5C /* SPICrypto.m in Sources */,
 				273E9B10205A30F90006ED5C /* SPITransaction.m in Sources */,
 				273E9AE8205A30EC0006ED5C /* SPIDiffieHellman.m in Sources */,
+				4714155F26AEA98A00CDC264 /* SPITerminalHelper.m in Sources */,
 				273E9B64205A34BF0006ED5C /* NSData+Crypto.m in Sources */,
+				4719CC122698601100A18DD7 /* SPIAnalyticsService.m in Sources */,
 				831D3C05214B62F40038B3E3 /* SPIRepeatingTimer.m in Sources */,
 				273E9B62205A34BF0006ED5C /* NSDateFormatter+Util.m in Sources */,
 				273E9B0B205A30F90006ED5C /* SPISettlement.m in Sources */,
@@ -810,6 +853,7 @@
 				49F3906B229BC6E5000517C8 /* SPIPayAtTableTests.m in Sources */,
 				273E9B37205A315A0006ED5C /* NSDataCryptoTests.m in Sources */,
 				273E9B07205A30F90006ED5C /* SPIPairingHelper.m in Sources */,
+				47F1F782269C3792003CC15F /* SPITransactionReportHelper.m in Sources */,
 				273E9B04205A30F90006ED5C /* SPIMessage.m in Sources */,
 				279BB732205B581E005ADECB /* tommath.c in Sources */,
 				29468C2820D738360095D3EC /* SPIPongHelperTests.m in Sources */,
@@ -840,6 +884,7 @@
 				273E9B5D205A34BF0006ED5C /* NSString+Util.m in Sources */,
 				29468BE620D6BD900095D3EC /* XCTestCase+RNCryptorVectorTests.m in Sources */,
 				273E9B0A205A30F90006ED5C /* SPIPairing.m in Sources */,
+				47C78BA626DC2802005847DD /* SPIDeviceInfoTests.m in Sources */,
 				279BB737205B581E005ADECB /* JKBigInteger.m in Sources */,
 				29468BF320D6BE7C0095D3EC /* JKBigInteger_Tests.m in Sources */,
 				273E9B3D205A31640006ED5C /* SPIDiffieHellmanTest.m in Sources */,
@@ -1032,6 +1077,11 @@
 			baseConfigurationReference = 5A44F061A056AA8B851EA052 /* Pods-Tests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"TEST=1",
+					"COCOAPODS=1",
+				);
 				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.mx51.SPIClient-iOSTests";

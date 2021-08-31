@@ -217,7 +217,9 @@
 }
 
 - (void)pushPayAtTableConfig {
-    [_spi send:[_config toMessage:[SPIRequestIdHelper idForString:@"patconf"]]];
+    if (_spi.state.status == SPIStatusPairedConnected) {
+        [_spi send:[_config toMessage:[SPIRequestIdHelper idForString:@"patconf"]]];
+    }
 }
 
 - (void)handleGetBillDetailsRequest:(SPIMessage *)message {
@@ -294,6 +296,12 @@
 }
 
 - (void)handleBillPaymentFlowEnded:(SPIMessage *)message {
+    // bill payment flow has ended, we need to respond with an ack
+    if (_spi.state.status == SPIStatusPairedConnected) {
+        SPIBillPaymentFlowEndedResponse *response = [[SPIBillPaymentFlowEndedResponse alloc] initWithMessage:message];
+        SPIBillPaymentFlowEndedAckRequest *request = [[SPIBillPaymentFlowEndedAckRequest alloc] initWithBillId:response.billId];
+        [_spi send:[request toMessage]];
+    }
     [_delegate payAtTableBillPaymentFlowEnded:message];
 }
 
@@ -331,6 +339,31 @@
     
     return self;
 }
+
+@end
+
+@implementation SPIBillPaymentFlowEndedAckRequest
+
+- (instancetype)initWithBillId:(NSString *)billId {
+    self = [super init];
+    
+    if (self) {
+        _billId = billId;
+        _Id = @"";
+    }
+    return self;
+}
+
+- (SPIMessage *)toMessage {
+    NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
+    [data setValue:_billId forKey:@"bill_id"];
+    
+    return [[SPIMessage alloc] initWithMessageId:[SPIRequestIdHelper idForString:@"authad"]
+                                       eventName:SPIPayAtTableBillPaymentFlowEndedAckKey
+                                            data:data
+                                 needsEncryption:true];
+}
+
 
 @end
 

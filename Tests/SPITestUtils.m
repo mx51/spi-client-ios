@@ -36,3 +36,47 @@
 }
 
 @end
+
+@implementation SPIDummyDelegate: NSObject
+
+- (void)spi:(SPIClient *)spi statusChanged:(SPIState *)state {
+    
+}
+
+- (void)spi:(SPIClient *)spi pairingFlowStateChanged:(SPIState *)state {
+    
+}
+
+- (void)spi:(SPIClient *)spi transactionFlowStateChanged:(SPIState *)state {
+    
+}
+
+- (void)spi:(SPIClient *)spi secretsChanged:(SPISecrets *)secrets state:(SPIState *)state {
+    
+}
+
+- (void)spi:(SPIClient *)spi deviceAddressChanged:(SPIState *)state {
+    _deviceAddressChangedBlock();
+}
+
+- (void)printingResponse:(SPIMessage *)message {
+    
+}
+
+- (void)terminalStatusResponse:(SPIMessage *)message {
+    
+}
+
+- (void)terminalConfigurationResponse:(SPIMessage *)message {
+    
+}
+
+- (void)batteryLevelChanged:(SPIMessage *)message {
+    
+}
+
+- (void)updateMessageReceived:(SPIMessage *)message {
+    
+}
+
+@end

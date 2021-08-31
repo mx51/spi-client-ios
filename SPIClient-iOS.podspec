@@ -1,8 +1,8 @@
 Pod::Spec.new do |s|
   s.name         = 'SPIClient-iOS'
-  s.version      = '2.6.7'
+  s.version      = '2.9.0'
   s.summary      = 'SPI Client iOS'
-  s.authors      = [ 'Yoo-Jin Lee', 'Mike Gouline', 'Amir Kamali', 'Metin Avci' ]
+  s.authors      = [ 'Yoo-Jin Lee', 'Mike Gouline', 'Amir Kamali', 'Metin Avci' , 'Doniyor Zuparov' ]
   s.license      = { :type => 'Apache License, Version 2.0' }
   s.homepage     = 'https://github.com/mx51/spi-client-ios'
   s.source       = { :git => 'https://github.com/mx51/spi-client-ios.git', :tag => s.version }
