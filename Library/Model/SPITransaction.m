@@ -307,11 +307,11 @@
 }
 
 - (BOOL)isWaitingForSignatureResponse {
-    return [self.message.error hasPrefix:@"OPERATION_IN_PROGRESS_AWAITING_SIGNATURE"];
+    return [self.message.error hasPrefix:@"TRANSACTION_IN_PROGRESS_AWAITING_SIGNATURE"];
 }
 
 - (BOOL)isWaitingForAuthCode {
-    return [self.message.error hasPrefix:@"OPERATION_IN_PROGRESS_AWAITING_PHONE_AUTH_CODE"];
+    return [self.message.error hasPrefix:@"TRANSACTION_IN_PROGRESS_AWAITING_PHONE_AUTH_CODE"];
 }
 
 - (BOOL)isSomethingElseBlocking {
@@ -335,42 +335,31 @@
     return  m;
 }
 
-- (NSInteger)getBankNonCashAmount {
-    return [self.message getDataIntegerValue:@"bank_noncash_amount"];
-}
-
-- (NSString *)getBankDateTimeString {
-    // bank_date":"07092017","bank_time":"152137"
-    NSString *date = [self.message getDataStringValue:@"bank_date"];
-    NSString *time = [self.message getDataStringValue:@"bank_time"];
-    
-    if (!date || !time) return nil;
-    
-    // ddMMyyyyHHmmss
-    return [NSString stringWithFormat:@"%@%@", date, time];
-}
-
-- (NSString *)getResponseText {
-    return [self.message getDataStringValue:@"host_response_text"];
-}
-
-- (NSString *)getResponseCode {
-    return [self.message getDataStringValue:@"host_response_code"];
-}
-
 - (NSString *)getPosRefId {
-    return [self.message getDataStringValue:@"pos_ref_id"];
+    return [self getTxStringValue:@"pos_ref_id"];
 }
 
 - (void)copyMerchantReceiptToCustomerReceipt {
-    NSString *cr = [self.message getDataStringValue:@"customer_receipt"];
-    NSString *mr = [self.message getDataStringValue:@"merchant_receipt"];
+    NSString *cr = [self getTxStringValue:@"customer_receipt"];
+    NSString *mr = [self getTxStringValue:@"merchant_receipt"];
     
     if (cr.length != 0 && mr.length != 0) {
         NSMutableDictionary *data = self.message.data.mutableCopy;
-        data[@"customer_receipt"] = mr;
+        NSMutableDictionary<NSString *, NSObject *> *tx = [[self.message getDataDictionaryValue:@"tx"] mutableCopy];
+        tx[@"customer_receipt"] = mr;
+        data[@"tx"] = tx;
         self.message.data = data.copy;
     }
+}
+
+- (NSString *)getTxStringValue:(NSString *)attribute {
+    NSDictionary<NSString *, NSObject *> *v = [self.message getDataDictionaryValue:@"tx"];
+    
+    NSObject *s = v[attribute];
+    if ([s isKindOfClass:[NSString class]]) {
+        return (NSString *)s;
+    }
+    return @"";
 }
 
 @end

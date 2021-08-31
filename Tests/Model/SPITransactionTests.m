@@ -389,4 +389,126 @@
     XCTAssertEqual([response getSuccessState], SPIMessageSuccessStateFailed);
 }
 
+- (void)testGetLastTransactionRequest_toMessage {
+    SPIMessage *m = [[[SPIGetLastTransactionRequest alloc] init] toMessage];
+    XCTAssertTrue([m.mid containsString:@"glt"]);
+}
+
+- (void)testGetTransactionResponse_initWithMessage {
+    SPIMessage *m = [SPIMessage fromJson:@"{\r\n  \"message\": {\r\n    \"data\": {\r\n      \"error_detail\": \"Payment interface is busy, cannot process operation at this time\",\r\n      \"error_reason\": \"TRANSACTION_IN_PROGRESS_AWAITING_PHONE_AUTH_CODE\",\r\n      \"pos_ref_id\": \"gt-2000-01-01T00:00:00.000Z\",\r\n      \"success\": false\r\n    },\r\n    \"datetime\": \"2000-01-01T00:00:00.000\",\r\n    \"event\": \"get_transaction_response\",\r\n    \"id\": \"gt\"\r\n  }\r\n}" secrets:nil];
+    SPIGetTransactionResponse *gtr = [[SPIGetTransactionResponse alloc]initWithMessage:m];
+    XCTAssertTrue([gtr.message.mid containsString: @"gt"]);
+}
+
+- (void)testGetTransactionResponse_wasRetrievedSuccessfully {
+    SPIMessage *m = [SPIMessage fromJson:@"{\r\n  \"message\": {\r\n    \"data\": {\r\n      \"error_detail\": \"Payment interface is busy, cannot process operation at this time\",\r\n      \"error_reason\": \"TRANSACTION_IN_PROGRESS_AWAITING_PHONE_AUTH_CODE\",\r\n      \"pos_ref_id\": \"gt-2000-01-01T00:00:00.000Z\",\r\n      \"success\": true\r\n    },\r\n    \"datetime\": \"2000-01-01T00:00:00.000\",\r\n    \"event\": \"get_transaction_response\",\r\n    \"id\": \"gt\"\r\n  }\r\n}" secrets:nil];
+    SPIGetTransactionResponse *gtr = [[SPIGetTransactionResponse alloc]initWithMessage:m];
+    XCTAssertTrue([gtr wasRetrievedSuccessfully]);
+}
+
+- (void)testGetTransactionResponse_wasRefIdNotFoundError {
+    SPIMessage *m = [SPIMessage fromJson:@"{\r\n  \"message\": {\r\n    \"data\": {\r\n      \"error_detail\": \"PosRefId not found\",\r\n      \"error_reason\": \"POS_REF_ID_NOT_FOUND\",\r\n      \"pos_ref_id\": \"gt-2000-01-01T00:00:00.000Z\",\r\n      \"success\": false\r\n    },\r\n    \"datetime\": \"2000-01-01T00:00:00.000\",\r\n    \"event\": \"get_transaction_response\",\r\n    \"id\": \"gt\"\r\n  }\r\n}" secrets:nil];
+    SPIGetTransactionResponse *gtr = [[SPIGetTransactionResponse alloc]initWithMessage:m];
+    XCTAssertTrue([gtr wasRefIDNotFoundError]);
+}
+
+- (void)testGetTransactionResponse_isInvalidArgumentsError {
+    SPIMessage *m = [SPIMessage fromJson:@"{\r\n  \"message\": {\r\n    \"data\": {\r\n      \"error_detail\": \"PosRefId not found\",\r\n      \"error_reason\": \"INVALID_ARGUMENTS\",\r\n      \"pos_ref_id\": \"gt-2000-01-01T00:00:00.000Z\",\r\n      \"success\": false\r\n    },\r\n    \"datetime\": \"2000-01-01T00:00:00.000\",\r\n    \"event\": \"get_transaction_response\",\r\n    \"id\": \"gt\"\r\n  }\r\n}" secrets:nil];
+    SPIGetTransactionResponse *gtr = [[SPIGetTransactionResponse alloc]initWithMessage:m];
+    XCTAssertTrue([gtr isInvalidArgumentsError]);
+}
+
+- (void)testGetTransactionResponse_isMissingArgumentsError {
+    SPIMessage *m = [SPIMessage fromJson:@"{\r\n  \"message\": {\r\n    \"data\": {\r\n      \"error_detail\": \"PosRefId not found\",\r\n      \"error_reason\": \"MISSING_ARGUMENTS\",\r\n      \"pos_ref_id\": \"gt-2000-01-01T00:00:00.000Z\",\r\n      \"success\": false\r\n    },\r\n    \"datetime\": \"2000-01-01T00:00:00.000\",\r\n    \"event\": \"get_transaction_response\",\r\n    \"id\": \"gt\"\r\n  }\r\n}" secrets:nil];
+    SPIGetTransactionResponse *gtr = [[SPIGetTransactionResponse alloc]initWithMessage:m];
+    XCTAssertTrue([gtr isMissingArgumentsError]);
+}
+
+- (void)testGetTransactionResponse_wasTransactionInProgressError {
+    SPIMessage *m = [SPIMessage fromJson:@"{\r\n  \"message\": {\r\n    \"data\": {\r\n      \"error_detail\": \"Payment interface is busy, cannot process operation at this time\",\r\n      \"error_reason\": \"TRANSACTION_IN_PROGRESS\",\r\n      \"pos_ref_id\": \"gt-2000-01-01T00:00:00.000Z\",\r\n      \"success\": false\r\n    },\r\n    \"datetime\": \"2000-01-01T00:00:00.000\",\r\n    \"event\": \"get_transaction_response\",\r\n    \"id\": \"gt\"\r\n  }\r\n}" secrets:nil];
+    SPIGetTransactionResponse *gtr = [[SPIGetTransactionResponse alloc]initWithMessage:m];
+    XCTAssertTrue([gtr wasTransactionInProgressError]);
+    XCTAssertTrue([gtr isStillInProgress]);
+}
+
+- (void)testGetTransactionResponse_isWaitingForSignatureResponse {
+    SPIMessage *m = [SPIMessage fromJson:@"{\r\n  \"message\": {\r\n    \"data\": {\r\n      \"error_detail\": \"Payment interface is busy, cannot process operation at this time\",\r\n      \"error_reason\": \"TRANSACTION_IN_PROGRESS_AWAITING_SIGNATURE\",\r\n      \"pos_ref_id\": \"gt-2000-01-01T00:00:00.000Z\",\r\n      \"success\": false\r\n    },\r\n    \"datetime\": \"2000-01-01T00:00:00.000\",\r\n    \"event\": \"get_transaction_response\",\r\n    \"id\": \"gt\"\r\n  }\r\n}" secrets:nil];
+    SPIGetTransactionResponse *gtr = [[SPIGetTransactionResponse alloc]initWithMessage:m];
+    XCTAssertTrue([gtr isWaitingForSignatureResponse]);
+}
+
+- (void)testGetTransactionResponse_isWaitingForAuthCode {
+    SPIMessage *m = [SPIMessage fromJson:@"{\r\n  \"message\": {\r\n    \"data\": {\r\n      \"error_detail\": \"Payment interface is busy, cannot process operation at this time\",\r\n      \"error_reason\": \"TRANSACTION_IN_PROGRESS_AWAITING_PHONE_AUTH_CODE\",\r\n      \"pos_ref_id\": \"gt-2000-01-01T00:00:00.000Z\",\r\n      \"success\": false\r\n    },\r\n    \"datetime\": \"2000-01-01T00:00:00.000\",\r\n    \"event\": \"get_transaction_response\",\r\n    \"id\": \"gt\"\r\n  }\r\n}" secrets:nil];
+    SPIGetTransactionResponse *gtr = [[SPIGetTransactionResponse alloc]initWithMessage:m];
+    XCTAssertTrue([gtr isWaitingForAuthCode]);
+}
+
+- (void)testGetTransactionResponse_isSomethingElseBlocking {
+    SPIMessage *m = [SPIMessage fromJson:@"{\r\n  \"message\": {\r\n    \"data\": {\r\n      \"error_detail\": \"Payment interface is busy, cannot process operation at this time\",\r\n      \"error_reason\": \"OPERATION_IN_PROGRESS\",\r\n      \"pos_ref_id\": \"gt-2000-01-01T00:00:00.000Z\",\r\n      \"success\": false\r\n    },\r\n    \"datetime\": \"2000-01-01T00:00:00.000\",\r\n    \"event\": \"get_transaction_response\",\r\n    \"id\": \"gt\"\r\n  }\r\n}" secrets:nil];
+    SPIGetTransactionResponse *gtr = [[SPIGetTransactionResponse alloc]initWithMessage:m];
+    XCTAssertTrue([gtr isSomethingElseBlocking]);
+}
+
+- (void)testGetTransactionResponse_getSuccessState {
+    SPIMessage *m = [SPIMessage fromJson:@"{\r\n  \"message\": {\r\n    \"data\": {\r\n      \"error_detail\": \"Payment interface is busy, cannot process operation at this time\",\r\n      \"error_reason\": \"OPERATION_IN_PROGRESS\",\r\n      \"pos_ref_id\": \"gt-2000-01-01T00:00:00.000Z\",\r\n      \"success\": false\r\n    },\r\n    \"datetime\": \"2000-01-01T00:00:00.000\",\r\n    \"event\": \"get_transaction_response\",\r\n    \"id\": \"gt\"\r\n  }\r\n}" secrets:nil];
+    SPIGetTransactionResponse *gtr = [[SPIGetTransactionResponse alloc]initWithMessage:m];
+    XCTAssertEqual([gtr getSuccessState], SPIMessageSuccessStateFailed);
+}
+
+- (void)testGetTransactionResponse_wasSuccessfullTx {
+    SPIMessage *m = [SPIMessage fromJson:@"{\r\n  \"message\": {\r\n    \"data\": {\r\n      \"error_detail\": \"Payment interface is busy, cannot process operation at this time\",\r\n      \"error_reason\": \"OPERATION_IN_PROGRESS\",\r\n      \"pos_ref_id\": \"gt-2000-01-01T00:00:00.000Z\",\r\n      \"success\": true\r\n    },\r\n    \"datetime\": \"2000-01-01T00:00:00.000\",\r\n    \"event\": \"get_transaction_response\",\r\n    \"id\": \"gt\"\r\n  }\r\n}" secrets:nil];
+    SPIGetTransactionResponse *gtr = [[SPIGetTransactionResponse alloc]initWithMessage:m];
+    XCTAssertTrue([gtr wasSuccessfulTx]);
+}
+
+- (void)testGetTransactionResponse_getTxMessage {
+    SPIMessage *m = [SPIMessage fromJson:@"{\r\n  \"message\": {\r\n    \"data\": {\r\n      \"error_detail\": \"Payment interface is busy, cannot process operation at this time\",\r\n      \"error_reason\": \"OPERATION_IN_PROGRESS\",\r\n      \"pos_ref_id\": \"gt-2000-01-01T00:00:00.000Z\",\r\n      \"success\": true\r\n    },\r\n    \"datetime\": \"2000-01-01T00:00:00.000\",\r\n    \"event\": \"get_transaction_response\",\r\n    \"id\": \"gt\"\r\n  }\r\n}" secrets:nil];
+    SPIGetTransactionResponse *gtr = [[SPIGetTransactionResponse alloc]initWithMessage:m];
+    XCTAssertNotNil([gtr getTxMessage]);
+}
+
+- (void)testGetTransactionResponse_getPosRefId {
+    SPIMessage *m = [SPIMessage fromJson:@"{\r\n    \"message\": {\r\n        \"data\": {\r\n            \"success\": true,\r\n            \"tx\": {\r\n                \"account_type\": \"CREDIT\",\r\n                \"bank_date\": \"01012000\",\r\n                \"bank_noncash_amount\": 10,\r\n                \"bank_settlement_date\": \"01012000\",\r\n                \"bank_time\": \"100000\",\r\n                \"card_entry\": \"EMV_CTLS\",\r\n                \"currency\": \"AUD\",\r\n                \"customer_receipt\": \"EFTPOS FROM BANK\\r\\nMerchant\\r\\n\\r\\nPURCHASE     AUD0.10\\r\\n\\r\\n   (002) APPROVED\\r\\n\\r\\nPartial Approval\\r\\n\\r\\n*DUPLICATE  RECEIPT*\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\",\r\n                \"customer_receipt_printed\": false,\r\n                \"emv_actioncode\": \"ARQ\",\r\n                \"emv_actioncode_values\": \"9AEC44D34DE93EEA\",\r\n                \"emv_pix\": \"1010\",\r\n                \"emv_rid\": \"A000000004\",\r\n                \"emv_tsi\": \"E800\",\r\n                \"emv_tvr\": \"0000000000\",\r\n                \"expiry_date\": \"0101\",\r\n                \"host_response_code\": \"002\",\r\n                \"host_response_text\": \"APPROVED\",\r\n                \"informative_text\": \"                \",\r\n                \"masked_pan\": \"............1111\",\r\n                \"merchant_acquirer\": \"EFTPOS FROM BANK\",\r\n                \"merchant_addr\": \"201 Kent Street\",\r\n                \"merchant_city\": \"Sydney\",\r\n                \"merchant_country\": \"Australia\",\r\n                \"merchant_id\": \"10000000\",\r\n                \"merchant_name\": \"Merchant\",\r\n                \"merchant_postcode\": \"2000\",\r\n                \"merchant_receipt\": \"EFTPOS FROM BANK\\r\\nMerchant\\r\\n\\r\\nPURCHASE     AUD0.10\\r\\n\\r\\n   (002) APPROVED\\r\\n\\r\\nPartial Approval\\r\\n\\r\\n*DUPLICATE  RECEIPT*\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\",\r\n                \"merchant_receipt_printed\": false,\r\n                \"online_indicator\": \"Y\",\r\n                \"pos_ref_id\": \"purchase-test\",\r\n                \"purchase_amount\": 10,\r\n                \"rrn\": \"100000000000\",\r\n                \"scheme_app_name\": \"MasterCard\",\r\n                \"scheme_name\": \"MasterCard\",\r\n                \"stan\": \"001249\",\r\n                \"success\": true,\r\n                \"terminal_id\": \"100000000000\",\r\n                \"terminal_ref_id\": \"10000000_00000000000000\",\r\n                \"transaction_type\": \"PURCHASE\"\r\n            }\r\n        },\r\n        \"datetime\": \"2000-01-01T00:00:00.000\",\r\n        \"event\": \"get_transaction_response\",\r\n        \"id\": \"gt\"\r\n    }\r\n}" secrets:nil];
+    SPIGetTransactionResponse *gtr = [[SPIGetTransactionResponse alloc]initWithMessage:m];
+    XCTAssertTrue([[gtr getPosRefId] isEqualToString: @"purchase-test"]);
+}
+
+- (void)testGetTransactionResponse_copyMerchantReceiptToCustomerReceipt {
+    SPIMessage *m = [SPIMessage fromJson:@"{\r\n    \"message\": {\r\n        \"data\": {\r\n            \"success\": true,\r\n            \"tx\": {\r\n                \"account_type\": \"CREDIT\",\r\n                \"bank_date\": \"01012000\",\r\n                \"bank_noncash_amount\": 10,\r\n                \"bank_settlement_date\": \"01012000\",\r\n                \"bank_time\": \"100000\",\r\n                \"card_entry\": \"EMV_CTLS\",\r\n                \"currency\": \"AUD\",\r\n                \"customer_receipt\": \"EFTPOS FROM BANK\\r\\nMerchant\\r\\n\\r\\nPURCHASE     AUD0.10\\r\\n\\r\\n   (002) APPROVED\\r\\n\\r\\nPartial Approval\\r\\n\\r\\n*DUPLICATE  RECEIPT*\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\",\r\n                \"customer_receipt_printed\": false,\r\n                \"emv_actioncode\": \"ARQ\",\r\n                \"emv_actioncode_values\": \"9AEC44D34DE93EEA\",\r\n                \"emv_pix\": \"1010\",\r\n                \"emv_rid\": \"A000000004\",\r\n                \"emv_tsi\": \"E800\",\r\n                \"emv_tvr\": \"0000000000\",\r\n                \"expiry_date\": \"0101\",\r\n                \"host_response_code\": \"002\",\r\n                \"host_response_text\": \"APPROVED\",\r\n                \"informative_text\": \"                \",\r\n                \"masked_pan\": \"............1111\",\r\n                \"merchant_acquirer\": \"EFTPOS FROM BANK\",\r\n                \"merchant_addr\": \"201 Kent Street\",\r\n                \"merchant_city\": \"Sydney\",\r\n                \"merchant_country\": \"Australia\",\r\n                \"merchant_id\": \"10000000\",\r\n                \"merchant_name\": \"Merchant\",\r\n                \"merchant_postcode\": \"2000\",\r\n                \"merchant_receipt\": \"EFTPOS FROM BANK\\r\\nMerchant\\r\\n\\r\\nPURCHASE     AUD0.10\\r\\n\\r\\n   (002) APPROVED\\r\\n\\r\\nPartial Approval\\r\\n\\r\\n*DUPLICATE  RECEIPT*\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\",\r\n                \"merchant_receipt_printed\": false,\r\n                \"online_indicator\": \"Y\",\r\n                \"pos_ref_id\": \"purchase-test\",\r\n                \"purchase_amount\": 10,\r\n                \"rrn\": \"100000000000\",\r\n                \"scheme_app_name\": \"MasterCard\",\r\n                \"scheme_name\": \"MasterCard\",\r\n                \"stan\": \"001249\",\r\n                \"success\": true,\r\n                \"terminal_id\": \"100000000000\",\r\n                \"terminal_ref_id\": \"10000000_00000000000000\",\r\n                \"transaction_type\": \"PURCHASE\"\r\n            }\r\n        },\r\n        \"datetime\": \"2000-01-01T00:00:00.000\",\r\n        \"event\": \"get_transaction_response\",\r\n        \"id\": \"gt\"\r\n    }\r\n}" secrets:nil];
+    SPIGetTransactionResponse *gtr = [[SPIGetTransactionResponse alloc]initWithMessage:m];
+    [gtr copyMerchantReceiptToCustomerReceipt];
+
+    XCTAssertTrue([(NSString *) ((NSDictionary<NSString *, NSObject *>*) gtr.message.data[@"tx"])[@"merchant_receipt"] isEqualToString:(NSString *) ((NSDictionary<NSString *, NSObject *>*) gtr.message.data[@"tx"])[@"customer_receipt"]]);
+}
+
+- (void)testSPIGetLastTransaction_getBankNonCashAmount {
+    SPIMessage *m = [SPIMessage fromJson:@"{\r\n    \"message\": {\r\n        \"data\": {\r\n            \"account_type\": \"CREDIT\",\r\n            \"bank_date\": \"01012000\",\r\n            \"bank_noncash_amount\": 10,\r\n            \"bank_settlement_date\": \"01012000\",\r\n            \"bank_time\": \"100000\",\r\n            \"card_entry\": \"EMV_CTLS\",\r\n            \"currency\": \"AUD\",\r\n            \"customer_receipt\": \"EFTPOS FROM BANK\\r\\nMerchant\\r\\n\\r\\nPURCHASE     AUD0.10\\r\\n\\r\\n   (002) APPROVED\\r\\n\\r\\nPartial Approval\\r\\n\\r\\n*DUPLICATE  RECEIPT*\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\",\r\n            \"customer_receipt_printed\": false,\r\n            \"emv_actioncode\": \"ARQ\",\r\n            \"emv_actioncode_values\": \"9AEC44D34DE93EEA\",\r\n            \"emv_pix\": \"1010\",\r\n            \"emv_rid\": \"A000000004\",\r\n            \"emv_tsi\": \"E800\",\r\n            \"emv_tvr\": \"0000000000\",\r\n            \"expiry_date\": \"0101\",\r\n            \"host_response_code\": \"002\",\r\n            \"host_response_text\": \"APPROVED\",\r\n            \"informative_text\": \"                \",\r\n            \"masked_pan\": \"............1111\",\r\n            \"merchant_acquirer\": \"EFTPOS FROM BANK\",\r\n            \"merchant_addr\": \"201 Kent Street\",\r\n            \"merchant_city\": \"Sydney\",\r\n            \"merchant_country\": \"Australia\",\r\n            \"merchant_id\": \"10000000\",\r\n            \"merchant_name\": \"Merchant\",\r\n            \"merchant_postcode\": \"2000\",\r\n            \"merchant_receipt\": \"EFTPOS FROM BANK\\r\\nMerchant\\r\\n\\r\\nPURCHASE     AUD0.10\\r\\n\\r\\n   (002) APPROVED\\r\\n\\r\\nPartial Approval\\r\\n\\r\\n*DUPLICATE  RECEIPT*\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\",\r\n            \"merchant_receipt_printed\": false,\r\n            \"online_indicator\": \"Y\",\r\n            \"pos_ref_id\": \"purchase-2000-01-01T00:00:00.000Z\",\r\n            \"purchase_amount\": 10,\r\n            \"rrn\": \"100000000000\",\r\n            \"scheme_app_name\": \"MasterCard\",\r\n            \"scheme_name\": \"MasterCard\",\r\n            \"stan\": \"001249\",\r\n            \"success\": true,\r\n            \"terminal_id\": \"100000000000\",\r\n            \"terminal_ref_id\": \"10000000_00000000000000\",\r\n            \"transaction_type\": \"PURCHASE\"\r\n        },\r\n        \"datetime\": \"2000-01-01T00:00:00.000\",\r\n        \"event\": \"last_transaction\",\r\n        \"id\": \"glt\"\r\n    }\r\n}" secrets:nil];
+    SPIGetLastTransactionResponse *gltr = [[SPIGetLastTransactionResponse alloc]initWithMessage:m];
+    XCTAssertEqual([gltr getBankNonCashAmount], (NSInteger) 10);
+}
+
+- (void)testSPIGetLastTransaction_copyMerchantReceiptToCustomerReceipt {
+    SPIMessage *m = [SPIMessage fromJson:@"{\r\n    \"message\": {\r\n        \"data\": {\r\n            \"account_type\": \"CREDIT\",\r\n            \"bank_date\": \"01012000\",\r\n            \"bank_noncash_amount\": 10,\r\n            \"bank_settlement_date\": \"01012000\",\r\n            \"bank_time\": \"100000\",\r\n            \"card_entry\": \"EMV_CTLS\",\r\n            \"currency\": \"AUD\",\r\n            \"customer_receipt\": \"EFTPOS FROM BANK\\r\\nMerchant\\r\\n\\r\\nPURCHASE     AUD0.10\\r\\n\\r\\n   (002) APPROVED\\r\\n\\r\\nPartial Approval\\r\\n\\r\\n*DUPLICATE  RECEIPT*\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\",\r\n            \"customer_receipt_printed\": false,\r\n            \"emv_actioncode\": \"ARQ\",\r\n            \"emv_actioncode_values\": \"9AEC44D34DE93EEA\",\r\n            \"emv_pix\": \"1010\",\r\n            \"emv_rid\": \"A000000004\",\r\n            \"emv_tsi\": \"E800\",\r\n            \"emv_tvr\": \"0000000000\",\r\n            \"expiry_date\": \"0101\",\r\n            \"host_response_code\": \"002\",\r\n            \"host_response_text\": \"APPROVED\",\r\n            \"informative_text\": \"                \",\r\n            \"masked_pan\": \"............1111\",\r\n            \"merchant_acquirer\": \"EFTPOS FROM BANK\",\r\n            \"merchant_addr\": \"201 Kent Street\",\r\n            \"merchant_city\": \"Sydney\",\r\n            \"merchant_country\": \"Australia\",\r\n            \"merchant_id\": \"10000000\",\r\n            \"merchant_name\": \"Merchant\",\r\n            \"merchant_postcode\": \"2000\",\r\n            \"merchant_receipt\": \"EFTPOS FROM BANK\\r\\nMerchant\\r\\n\\r\\nPURCHASE     AUD0.10\\r\\n\\r\\n   (002) APPROVED\\r\\n\\r\\nPartial Approval\\r\\n\\r\\n*DUPLICATE  RECEIPT*\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\",\r\n            \"merchant_receipt_printed\": false,\r\n            \"online_indicator\": \"Y\",\r\n            \"pos_ref_id\": \"purchase-2000-01-01T00:00:00.000Z\",\r\n            \"purchase_amount\": 10,\r\n            \"rrn\": \"100000000000\",\r\n            \"scheme_app_name\": \"MasterCard\",\r\n            \"scheme_name\": \"MasterCard\",\r\n            \"stan\": \"001249\",\r\n            \"success\": true,\r\n            \"terminal_id\": \"100000000000\",\r\n            \"terminal_ref_id\": \"10000000_00000000000000\",\r\n            \"transaction_type\": \"PURCHASE\"\r\n        },\r\n        \"datetime\": \"2000-01-01T00:00:00.000\",\r\n        \"event\": \"last_transaction\",\r\n        \"id\": \"glt\"\r\n    }\r\n}" secrets:nil];
+    SPIGetLastTransactionResponse *gltr = [[SPIGetLastTransactionResponse alloc]initWithMessage:m];
+    [gltr copyMerchantReceiptToCustomerReceipt];
+    XCTAssertTrue([(NSString*) gltr.message.data[@"customer_receipt"] isEqualToString:(NSString*) gltr.message.data[@"merchant_receipt"]]);
+}
+
+- (void)testSPIReversalRequest_initWithPosRefId {
+    SPIReversalRequest *req = [[SPIReversalRequest alloc] initWithPosRefId:@"test"];
+    XCTAssertNotNil(req);
+    XCTAssertTrue([req.posRefId isEqualToString:@"test"]);
+}
+
+- (void)testSPIReversalRequest_toMessage {
+    SPIReversalRequest *req = [[SPIReversalRequest alloc] initWithPosRefId:@"test"];
+    XCTAssertNotNil([req toMessage]);
+}
+
+- (void)testSPIReversalResponse_initWithMessage {
+    SPIMessage *m = [SPIMessage fromJson:@"{\r\n  \"message\": {\r\n    \"conn_id\": \"A\",\r\n    \"data\": {\r\n      \"pos_ref_id\": \"rev\",\r\n      \"success\": true\r\n    },\r\n    \"datetime\": \"2000-01-01T00:00:00.000\",\r\n    \"event\": \"reverse_transaction_response\",\r\n    \"id\": \"rev\"\r\n  }\r\n}" secrets:nil];
+    SPIReversalResponse *resp = [[SPIReversalResponse alloc] initWithMessage:m];
+    XCTAssertNotNil(resp);
+}
+
 @end

@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import "SPIConnection.h"
 #import "SPIClient.h"
 
 @interface SPITestUtils : NSObject
