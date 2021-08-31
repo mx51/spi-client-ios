@@ -18,6 +18,11 @@
 
 @implementation SPIPairingHelperTests
 
+- (void)testNewPairRequest {
+    SPIPairingRequest *request = [SPIPairingHelper newPairRequest];
+    XCTAssertNotNil(request);
+}
+
 - (void)testPairingKeyResponse {
     SPISecrets *secrets = nil;
     NSString *incomingMessageJsonStr = [self incomingKeyRequestJson];

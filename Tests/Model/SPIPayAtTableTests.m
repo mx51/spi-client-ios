@@ -147,4 +147,27 @@
     XCTAssertNil(pat.config);
 }
 
+- (void)testSPIBillPayment_initWithMwssage {
+    
+    SPIMessage *m = [SPIMessage fromJson:@"{\r\n    \"message\": {\r\n        \"event\": \"bill_payment\",\r\n        \"datetime\": \"2018-03-12T07:55:24.792\",\r\n        \"id\": \"C1.2\",\r\n        \"data\": {\r\n            \"bill_id\": \"2018-03-12T09:53:49.934\",\r\n            \"operator_id\": \"12345\",\r\n            \"payment_type\": \"card\",\r\n            \"table_id\": \"123456\",\r\n            \"payment_details\": {\r\n                \"account_type\": \"CREDIT\",\r\n                \"auth_code\": \"094224\",\r\n                \"bank_date\": \"12032018\",\r\n                \"bank_noncash_amount\": 2468,\r\n                \"bank_settlement_date\": \"13032018\",\r\n                \"bank_time\": \"075447\",\r\n                \"card_entry\": \"EMV_INSERT\",\r\n                \"currency\": \"AUD\",\r\n                \"customer_receipt\": \"xxx\",\r\n                \"customer_receipt_printed\": false,\r\n                \"emv_actioncode\": \"TC\",\r\n                \"emv_actioncode_values\": \"AE5EC0E2243081BE\",\r\n                \"emv_pix\": \"010402\",\r\n                \"emv_rid\": \"A000000025\",\r\n                \"emv_tsi\": \"F800\",\r\n                \"emv_tvr\": \"0800040040\",\r\n                \"expiry_date\": \"1119\",\r\n                \"host_response_code\": \"000\",\r\n                \"host_response_text\": \"APPROVED\",\r\n                \"informative_text\": \"       \",\r\n                \"masked_pan\": \"............4351\",\r\n                \"merchant_acquirer\": \"ST GEORGE EFTPOS\",\r\n                \"merchant_addr\": \" The Atrium 54 MCKEAN STREET\",\r\n                \"merchant_city\": \"MOOROOPNA\",\r\n                \"merchant_country\": \"Australia\",\r\n                \"merchant_id\": \"20150720\",\r\n                \"merchant_name\": \"TESTCOMPANY5555\",\r\n                \"merchant_postcode\": \"2060\",\r\n                \"merchant_receipt\": \"xxx\",\r\n                \"merchant_receipt_printed\": false,\r\n                \"online_indicator\": \"Y\",\r\n                \"purchase_amount\": 1234,\r\n                \"rrn\": \"180312000379\",\r\n                \"scheme_app_name\": \"American Express\",\r\n                \"scheme_name\": \"Amex\",\r\n                \"stan\": \"000379\",\r\n                \"success\": true,\r\n                \"terminal_id\": \"1004P2015071\",\r\n                \"terminal_ref_id\": \"some string\",\r\n                \"tip_amount\": 1234,\r\n                \"transaction_type\": \"PURCHASE\"\r\n            }\r\n        }\r\n    }\r\n}" secrets:nil];
+    
+    SPIBillPayment *billPayment = [[SPIBillPayment alloc] initWithMessage: m];
+    
+    XCTAssertNotNil(billPayment);
+    
+}
+
+- (void)testSPIBillPayment_paymentTypeString {
+    
+    NSString *cardString = [SPIBillPayment paymentTypeString:SPIPaymentTypeCard];
+    
+    XCTAssertTrue([cardString isEqualToString:@"CARD"]);
+    
+    NSString *cashString = [SPIBillPayment paymentTypeString:SPIPaymentTypeCash];
+    
+    XCTAssertTrue([cashString isEqualToString:@"CASH"]);
+    
+}
+
+
 @end

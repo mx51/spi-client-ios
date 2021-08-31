@@ -164,13 +164,6 @@
 
 - (SPIMessage *)getTxMessage;
 
-- (NSInteger)getBankNonCashAmount;
-
-- (NSString *)getBankDateTimeString;
-
-- (NSString *)getResponseText;
-
-- (NSString *)getResponseCode;
 
 - (void)copyMerchantReceiptToCustomerReceipt;
 

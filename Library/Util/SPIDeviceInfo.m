@@ -14,7 +14,7 @@
 
 + (NSDictionary *)getAppDeviceInfo {
     UIDevice *device = UIDevice.currentDevice;
-    NSDictionary *bundleInfo = NSBundle.mainBundle.infoDictionary;
+    NSDictionary *bundleInfo = [NSBundle bundleForClass:[self class]].infoDictionary;
     
     return @{
              @"device_name": [device name],
