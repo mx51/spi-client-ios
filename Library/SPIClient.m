@@ -203,7 +203,7 @@ static NSInteger retriesBeforePairing = 3; // How many retries before resolving 
     
     // Setup the Connection
     self.connection = [[SPIWebSocketConnection alloc] initWithDelegate:self];
-    [self.connection setUrl:self.eftposAddress];
+    [self.connection setUrl:[self getConnectionAddress:self.eftposAddress tenanCode:self.tenantCode posId:self.posId]];
     
     // Set up a weakly repeating timer that avoids memory leaks and automatically invalidates when dereferenced.
     __weak SPIClient* weakSelf = self;
@@ -1112,8 +1112,8 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     
     _eftposAddress = [url copy];
     NSLog(@"setUrl: %@", _eftposAddress);
-    
-    [self.connection setUrl:url.copy];
+
+    [self.connection setUrl:[self getConnectionAddress:(url) tenanCode:self.tenantCode posId:self.posId]];
 }
 
 - (void)setPosId:(NSString *)posId {
@@ -1301,7 +1301,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         
         // update device and connection address
         self->_eftposAddress = [NSString stringWithFormat:@"ws://%@", addressResponse.address];
-        [self->_connection setUrl:self->_eftposAddress];
+        [self->_connection setUrl:[self getConnectionAddress:self->_eftposAddress tenanCode:self->_tenantCode posId:self->_posId]];
         
         SPILog([NSString stringWithFormat:@"Address resolved to %@", addressResponse.address]);
         
@@ -2379,6 +2379,24 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     } else {
         return false;
     }
+}
+
+- (NSString *)getConnectionAddress:(NSString *)address
+                         tenanCode:(NSString *)tenantCode
+                             posId:(NSString *)posId {
+    if (address.length == 0) {
+        return address;
+    }
+    
+    NSURLComponents *connectionAddress = [[NSURLComponents alloc] initWithString:address];
+    
+    if (tenantCode.length != 0 && ![tenantCode  isEqual: @"wbc"]) {
+        connectionAddress.port = @8080;
+    }
+    
+    connectionAddress.query = [NSString stringWithFormat: @"posId=%@", posId];
+
+    return connectionAddress.string;
 }
 
 #pragma mark - Helpers
