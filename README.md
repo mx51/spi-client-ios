@@ -1,4 +1,4 @@
-# SPI Client iOS [![Build Status](https://travis-ci.org/mx51/spi-client-ios.svg?branch=master)](https://travis-ci.org/mx51/spi-client-ios)
+# SPI Client iOS
 
 This is the iOS client library for mx51 in-store integration.
 
