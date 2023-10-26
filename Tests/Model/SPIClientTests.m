@@ -301,7 +301,7 @@
     client.state.txFlowState.isAwaitingSignatureCheck = YES;
     client.state.txFlowState.isFinished = NO;
     
-    [client acceptSignature:YES];
+    [client acceptSignature:NO];
     NSLog(@"%@", client.state.txFlowState.displayMessage);
     XCTAssertTrue([client.state.txFlowState.displayMessage containsString:@"Declining"]);
     XCTAssertFalse(client.state.txFlowState.isAwaitingSignatureCheck);
