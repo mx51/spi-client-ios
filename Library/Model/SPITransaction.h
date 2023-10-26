@@ -337,8 +337,10 @@
 @interface SPISignatureDecline : NSObject
 
 @property (nonatomic, readonly, copy) NSString *signatureRequiredRequestId;
+@property (nonatomic, readonly, copy) NSString *posRefId;
 
-- (instancetype)initWithSignatureRequiredRequestId:(NSString *)signatureRequiredRequestId;
+- (instancetype)initWithSignatureRequiredRequestId:(NSString *)signatureRequiredRequestId
+                                          posRefId:(NSString *)posRefId;
 
 - (SPIMessage *)toMessage;
 
@@ -347,8 +349,10 @@
 @interface SPISignatureAccept : NSObject
 
 @property (nonatomic, readonly, copy) NSString *signatureRequiredRequestId;
+@property (nonatomic, readonly, copy) NSString *posRefId;
 
-- (instancetype)initWithSignatureRequiredRequestId:(NSString *)signatureRequiredRequestId;
+- (instancetype)initWithSignatureRequiredRequestId:(NSString *)signatureRequiredRequestId
+                                          posRefId:(NSString *)posRefId;
 
 - (SPIMessage *)toMessage;
 

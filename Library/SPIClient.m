@@ -552,9 +552,9 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             NSString *sigReqMsgId = weakSelf.state.txFlowState.signatureRequiredMessage.requestId;
             SPIMessage *msg;
             if (accepted) {
-                msg = [[[SPISignatureAccept alloc] initWithSignatureRequiredRequestId:sigReqMsgId] toMessage];
+                msg = [[[SPISignatureAccept alloc] initWithSignatureRequiredRequestId:sigReqMsgId posRefId:weakSelf.state.txFlowState.posRefId] toMessage];
             } else {
-                msg = [[[SPISignatureDecline alloc] initWithSignatureRequiredRequestId:sigReqMsgId] toMessage];
+                msg = [[[SPISignatureDecline alloc] initWithSignatureRequiredRequestId:sigReqMsgId posRefId:weakSelf.state.txFlowState.posRefId] toMessage];
             }
             
             [weakSelf send:msg];

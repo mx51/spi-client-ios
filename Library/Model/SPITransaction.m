@@ -712,11 +712,13 @@
 
 @implementation SPISignatureDecline : NSObject
 
-- (instancetype)initWithSignatureRequiredRequestId:(NSString *)signatureRequiredRequestId {
+- (instancetype)initWithSignatureRequiredRequestId:(NSString *)signatureRequiredRequestId
+                                          posRefId:(NSString *)posRefId {
     self = [super init];
     
     if (self) {
         _signatureRequiredRequestId = [signatureRequiredRequestId copy];
+        _posRefId = posRefId;
     }
     
     return self;
@@ -733,11 +735,13 @@
 
 @implementation SPISignatureAccept : NSObject
 
-- (instancetype)initWithSignatureRequiredRequestId:(NSString *)signatureRequiredRequestId {
+- (instancetype)initWithSignatureRequiredRequestId:(NSString *)signatureRequiredRequestId
+                                          posRefId:(NSString *)posRefId {
     self = [super init];
     
     if (self) {
         _signatureRequiredRequestId = [signatureRequiredRequestId copy];
+        _posRefId = posRefId;
     }
     
     return self;
