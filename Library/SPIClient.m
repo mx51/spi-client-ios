@@ -560,7 +560,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             [weakSelf send:msg];
         }
         
-        [weakSelf transactionFlowStateChanged];
+        [self transactionFlowStateChanged];
     });
 }
 
