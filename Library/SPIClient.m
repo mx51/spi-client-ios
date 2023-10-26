@@ -535,8 +535,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     });
 }
 
-- (void)acceptSignature:(NSString *)posRefId
-               accepted:(BOOL)accepted {
+- (void)acceptSignature:(BOOL)accepted {
     NSLog(@"acceptSignature");
     
     __weak __typeof(& *self) weakSelf = self;
@@ -553,15 +552,15 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             NSString *sigReqMsgId = weakSelf.state.txFlowState.signatureRequiredMessage.requestId;
             SPIMessage *msg;
             if (accepted) {
-                msg = [[[SPISignatureAccept alloc] initWithSignatureRequiredRequestId:sigReqMsgId posRefId:posRefId] toMessage];
+                msg = [[[SPISignatureAccept alloc] initWithSignatureRequiredRequestId:sigReqMsgId posRefId:weakSelf.state.txFlowState.posRefId] toMessage];
             } else {
-                msg = [[[SPISignatureDecline alloc] initWithSignatureRequiredRequestId:sigReqMsgId posRefId:posRefId] toMessage];
+                msg = [[[SPISignatureDecline alloc] initWithSignatureRequiredRequestId:sigReqMsgId posRefId:weakSelf.state.txFlowState.posRefId] toMessage];
             }
             
             [weakSelf send:msg];
         }
         
-        [self transactionFlowStateChanged];
+        [weakSelf transactionFlowStateChanged];
     });
 }
 

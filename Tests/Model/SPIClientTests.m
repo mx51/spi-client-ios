@@ -288,7 +288,7 @@
     client.state.txFlowState.isAwaitingSignatureCheck = YES;
     client.state.txFlowState.isFinished = NO;
     
-    [client acceptSignature:@"test_test" accepted:YES];
+    [client acceptSignature:YES];
     NSLog(@"%@", client.state.txFlowState.displayMessage);
     XCTAssertTrue([client.state.txFlowState.displayMessage containsString:@"Accepting"]);
     XCTAssertFalse(client.state.txFlowState.isAwaitingSignatureCheck);
@@ -301,7 +301,7 @@
     client.state.txFlowState.isAwaitingSignatureCheck = YES;
     client.state.txFlowState.isFinished = NO;
     
-    [client acceptSignature:@"test_test" accepted:NO];
+    [client acceptSignature:YES];
     NSLog(@"%@", client.state.txFlowState.displayMessage);
     XCTAssertTrue([client.state.txFlowState.displayMessage containsString:@"Declining"]);
     XCTAssertFalse(client.state.txFlowState.isAwaitingSignatureCheck);
@@ -314,7 +314,7 @@
     client.state.txFlowState.isAwaitingSignatureCheck = NO;
     client.state.txFlowState.isFinished = NO;
     
-    [client acceptSignature:@"test_test" accepted:YES];
+    [client acceptSignature:YES];
     
     XCTAssertFalse([client.state.txFlowState.displayMessage containsString:@"Accepting"]);
 }

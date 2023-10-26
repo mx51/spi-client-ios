@@ -443,11 +443,9 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 /**
  Let the EFTPOS know whether merchant accepted or declined the signature.
  
- @param posRefId The unique identifier for the transaction.
  @param accepted YES if merchant accepted the signature from customer or NO otherwise.
  */
-- (void)acceptSignature:(NSString *)posRefId
-               accepted:(BOOL)accepted;
+- (void)acceptSignature:(BOOL)accepted;
 
 /**
  Submit the code obtained by your user when phoning for auth.
