@@ -453,7 +453,7 @@ static NSInteger retriesBeforePairing = 3; // How many retries before resolving 
             NSLog(@"initPurchase txLock exiting");
         }
         
-        [self transactionFlowStateChanged];
+        [weakSelf transactionFlowStateChanged];
         completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Purchase initiated"]);
     });
 }
@@ -530,7 +530,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             }
         }
         
-        [self transactionFlowStateChanged];
+        [weakSelf transactionFlowStateChanged];
         completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Refund initiated"]);
     });
 }
@@ -560,7 +560,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             [weakSelf send:msg];
         }
         
-        [self transactionFlowStateChanged];
+        [weakSelf transactionFlowStateChanged];
     });
 }
 
@@ -622,7 +622,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             
             SPIMessage *cashoutMsg = [cashoutOnlyRequest toMessage];
             
-            self.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId
+            weakSelf.state.txFlowState = [[SPITransactionFlowState alloc] initWithTid:posRefId
                                                                              type:SPITransactionTypeCashoutOnly
                                                                       amountCents:amountCents
                                                                           message:cashoutMsg
@@ -633,7 +633,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             }
         }
         
-        [self transactionFlowStateChanged];
+        [weakSelf transactionFlowStateChanged];
         completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Cashout initiated"]);
     });
 }
@@ -722,7 +722,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             }
         }
         
-        [self transactionFlowStateChanged];
+        [weakSelf transactionFlowStateChanged];
         completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"MOTO initiated"]);
     });
 }
@@ -750,7 +750,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             [weakSelf send:message];
         }
         
-        [self transactionFlowStateChanged];
+        [weakSelf transactionFlowStateChanged];
         completion([[SPISubmitAuthCodeResult alloc] initWithValidFormat:true msg:@"Valid code"]);
     });
 }
@@ -782,9 +782,9 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             NSLog(@"cancelTx txLock exiting");
         }
         
-        [self transactionFlowStateChanged];
+        [weakSelf transactionFlowStateChanged];
         
-        [self sendTransactionReport];
+        [weakSelf sendTransactionReport];
         
     });
 }
@@ -842,7 +842,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             }
         }
         
-        [self transactionFlowStateChanged];
+        [weakSelf transactionFlowStateChanged];
         completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Settle initiated"]);
     });
 }
@@ -1060,7 +1060,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         }
         
         [weakSelf transactionFlowStateChanged];
-        [self sendTransactionReport];
+        [weakSelf sendTransactionReport];
         
         completion([[SPIInitiateTxResult alloc] initWithTxResult:YES message:@"Reversal initiated"]);
     });
@@ -1950,9 +1950,9 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                 break;
                 
             case SPIConnectionStateConnected:
-                self.retriesSinceLastDeviceAddressResolution = 0;
+                weakSelf.retriesSinceLastDeviceAddressResolution = 0;
                 
-                [self.spiMessageStamp resetConnection];
+                [weakSelf.spiMessageStamp resetConnection];
                 
                 if (weakSelf.state.flow == SPIFlowPairing && weakSelf.state.status == SPIStatusUnpaired) {
                     weakSelf.state.pairingFlowState.message = @"Requesting to pair...";
@@ -1996,12 +1996,12 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                         if (weakSelf.connection == nil) return;
                         
-                        if (self.autoAddressResolutionEnable) {
-                            if (self.retriesSinceLastDeviceAddressResolution >= retriesBeforeResolvingDeviceAddress) {
-                                [self autoResolveEftposAddress];
-                                self.retriesSinceLastDeviceAddressResolution = 0;
+                        if (weakSelf.autoAddressResolutionEnable) {
+                            if (weakSelf.retriesSinceLastDeviceAddressResolution >= retriesBeforeResolvingDeviceAddress) {
+                                [weakSelf autoResolveEftposAddress];
+                                weakSelf.retriesSinceLastDeviceAddressResolution = 0;
                             } else {
-                                self.retriesSinceLastDeviceAddressResolution += 1;
+                                weakSelf.retriesSinceLastDeviceAddressResolution += 1;
                             }
                         }
                         
@@ -2016,8 +2016,8 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                         if (weakSelf.state.pairingFlowState.isFinished) return;
                         
-                        if (self.retriesSinceLastPairing >= retriesBeforePairing) {
-                            self.retriesSinceLastPairing = 0;
+                        if (weakSelf.retriesSinceLastPairing >= retriesBeforePairing) {
+                            weakSelf.retriesSinceLastPairing = 0;
                             SPILog(@"Lost connection during pairing.");
                             [weakSelf onPairingFailed];
                             [weakSelf pairingFlowStateChanged];
@@ -2029,7 +2029,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                             if (weakSelf.state.status != SPIStatusPairedConnected) {
                                 [weakSelf.connection connect];
                             }
-                            self.retriesSinceLastPairing += 1;
+                            weakSelf.retriesSinceLastPairing += 1;
                         }
                     });
                 }
@@ -2117,9 +2117,9 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             }
         } else {
             dispatch_async(self.queue, ^{
-                if (!self.hasSetPosInfo) {
+                if (!weakSelf.hasSetPosInfo) {
                     [weakSelf callSetPosInfo];
-                    weakSelf.transactionReport = [SPITransactionReportHelper createTransactionReportEnvelope:weakSelf.posVendorId posVersion:weakSelf.posVersion libraryLanguage:self.libraryLanguage libraryVersion:[SPIClient getVersion] serialNumber:weakSelf.serialNumber];
+                    weakSelf.transactionReport = [SPITransactionReportHelper createTransactionReportEnvelope:weakSelf.posVendorId posVersion:weakSelf.posVersion libraryLanguage:weakSelf.libraryLanguage libraryVersion:[SPIClient getVersion] serialNumber:weakSelf.serialNumber];
                 }
                 
                 if (weakSelf.pairUsingEftposAddress) {
@@ -2232,8 +2232,8 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         
         SPILog(@"Message received: %@", m.decryptedJson);
         
-        if ([self.spiPreauth isPreauthEvent:eventName]) {
-            [self.spiPreauth _handlePreauthMessage:m];
+        if ([weakSelf.spiPreauth isPreauthEvent:eventName]) {
+            [weakSelf.spiPreauth _handlePreauthMessage:m];
             return;
         }
         
