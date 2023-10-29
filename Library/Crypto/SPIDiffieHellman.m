@@ -23,6 +23,10 @@
                     theirPublicKey:(JKBigInteger *)theirPublicKey
                     yourPrivateKey:(JKBigInteger *)yourPrivateKey {
     
+    JKBigInteger *minValue = [[JKBigInteger alloc] initWithString:@"2"];
+    if (theirPublicKey < minValue) {
+        @throw [NSException exceptionWithName:@"Exception" reason:@"theirPublicKey value is less than 2" userInfo:nil];
+    }
     // s = A**b mod p
     return [theirPublicKey pow:yourPrivateKey andMod:primeP];
 }
