@@ -32,7 +32,7 @@
     JKBigInteger *primeG = [[JKBigInteger alloc] initWithString:@"2"];
     
     JKBigInteger *privateKeyA = [SPIDiffieHellman randomPrivateKey:primeP];
-    JKBigInteger *privateKeyB = [SPIDiffieHellman randomPrivateKey:primeG];
+    JKBigInteger *privateKeyB = [SPIDiffieHellman randomPrivateKey:primeP];
     
     JKBigInteger *publicKeyA = [SPIDiffieHellman publicKeyWithPrimeP:primeP
                                                               primeG:primeG
@@ -98,6 +98,30 @@
                                                yourPrivateKey:privateKey];
     
     XCTAssertEqualObjects(secret.stringValue, @"70900735223964890815905879227737819348808518698920446491346508980461201746567735331455825644429877946556431095820785835497384849778344216981228226252639932672153547963980483673419756271345828771971984887453014488572245819864454136618980914729839523581263886740821363010486083940557620831348661126601106717071");
+}
+
+- (void)testTheirPublicKey0NotAllowed {
+    JKBigInteger *primeP = [[JKBigInteger alloc] initWithString:@"23"];
+    JKBigInteger *theirPublicKey = [[JKBigInteger alloc] initWithString:@"0"];
+    JKBigInteger *yourPrivateKey = [[JKBigInteger alloc] initWithString:@"12312312423432"];
+    
+    XCTAssertThrows([SPIDiffieHellman secretWithPrimeP:primeP theirPublicKey:theirPublicKey yourPrivateKey:yourPrivateKey]);
+}
+
+- (void)testTheirPublicKey1NotAllowed {
+    JKBigInteger *primeP = [[JKBigInteger alloc] initWithString:@"23"];
+    JKBigInteger *theirPublicKey = [[JKBigInteger alloc] initWithString:@"1"];
+    JKBigInteger *yourPrivateKey = [[JKBigInteger alloc] initWithString:@"12312312423432"];
+    
+    XCTAssertThrows([SPIDiffieHellman secretWithPrimeP:primeP theirPublicKey:theirPublicKey yourPrivateKey:yourPrivateKey]);
+}
+
+- (void)testTheirPublicKeyAbove2Allowed {
+    JKBigInteger *primeP = [[JKBigInteger alloc] initWithString:@"23"];
+    JKBigInteger *theirPublicKey = [[JKBigInteger alloc] initWithString:@"14324"];
+    JKBigInteger *yourPrivateKey = [[JKBigInteger alloc] initWithString:@"12312312423432"];
+    
+    XCTAssertNoThrow([SPIDiffieHellman secretWithPrimeP:primeP theirPublicKey:theirPublicKey yourPrivateKey:yourPrivateKey]);
 }
 
 @end
