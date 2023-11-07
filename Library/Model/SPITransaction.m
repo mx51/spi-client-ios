@@ -725,9 +725,11 @@
 }
 
 - (SPIMessage *)toMessage {
+    NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
+    [data setValue:_posRefId forKey:@"pos_ref_id"];
     return [[SPIMessage alloc] initWithMessageId:self.signatureRequiredRequestId
                                        eventName:SPISignatureDeclinedKey
-                                            data:nil
+                                            data:data
                                  needsEncryption:true];
 }
 
@@ -748,9 +750,11 @@
 }
 
 - (SPIMessage *)toMessage {
+    NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
+    [data setValue:_posRefId forKey:@"pos_ref_id"];
     return [[SPIMessage alloc] initWithMessageId:self.signatureRequiredRequestId
                                        eventName:SPISignatureAcceptedKey
-                                            data:nil
+                                            data:data
                                  needsEncryption:true];
 }
 
