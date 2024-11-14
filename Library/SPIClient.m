@@ -220,6 +220,7 @@ static NSInteger retriesBeforePairing = 3; // How many retries before resolving 
         NSLog(@"setup with secrets");
         
         self.state.status = SPIStatusPairedConnecting;
+        [self logHmacAndEncKey:@"Init"];
         [self statusChanged];
         [self connect];
         return NO;
@@ -1410,6 +1411,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     self.state.pairingFlowState.isFinished = YES;
     self.state.pairingFlowState.message = @"Pairing successful!";
     self.state.status = SPIStatusPairedConnected;
+    [self logHmacAndEncKey:@"Pairing Success"];
     [self secretsChanged:self.secrets];
     [self pairingFlowStateChanged];
    
@@ -1444,6 +1446,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     self.secrets = krRes.secrets;                // and update our secrets with them
     self.spiMessageStamp.secrets = self.secrets; // and our stamp
     [self send:krRes.keyRollingConfirmation];
+    [self logHmacAndEncKey:@"Key Rolled"];
     [self secretsChanged:self.secrets];
     
     self.mostRecentPingSent = nil;
@@ -1969,6 +1972,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
                 
             case SPIConnectionStateDisconnected:
                 SPILog(@"I'm disconnected from %@", weakSelf.eftposAddress);
+                [self logHmacAndEncKey:@"Disconnected"];
                 // Let's reset some lifecycle related state, ready for next connection
                 weakSelf.mostRecentPingSent = nil;
                 weakSelf.mostRecentPongReceived = nil;
@@ -2427,6 +2431,18 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
             return @"PairedConnecting";
             break;
     }
+}
+
+- (void)logHmacAndEncKey:(NSString *)state {
+    if (self.secrets == nil) {
+        SPILog(@"Secret key tracker - no secrets were found.");
+        return;
+    }
+    
+    NSString *encKey = self.secrets.encKey;
+    NSString *hmacKey = self.secrets.hmacKey;
+
+    SPILog(@"Secret key tracker - %@ : %@-%@-%@", state, encKey, hmacKey);
 }
 
 #pragma mark - Internals for Validations
