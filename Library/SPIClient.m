@@ -2442,12 +2442,12 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     NSString *hmacKey = self.secrets.hmacKey;
     NSString *encKey = self.secrets.encKey;
     
-    if (hmacKey == nil || hmacKey.length >= 4) {
+    if (hmacKey == nil || hmacKey.length <= 4) {
         SPILog(@"Invalid hmacKey");
         return;
     }
     
-    if (encKey == nil || encKey.length >= 4) {
+    if (encKey == nil || encKey.length <= 4) {
         SPILog(@"Invalid encKey");
         return;
     }
