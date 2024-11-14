@@ -2439,10 +2439,23 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         return;
     }
     
-    NSString *encKey = self.secrets.encKey;
     NSString *hmacKey = self.secrets.hmacKey;
-
-    SPILog(@"Secret key tracker - %@ : %@-%@", state, [encKey substringFromIndex:[encKey length] - 4], [hmacKey substringFromIndex:[hmacKey length] - 4]);
+    NSString *encKey = self.secrets.encKey;
+    
+    if (hmacKey == nil || hmacKey.length >= 4) {
+        SPILog(@"Invalid hmacKey");
+        return;
+    }
+    
+    if (encKey == nil || encKey.length >= 4) {
+        SPILog(@"Invalid encKey");
+        return;
+    }
+    
+    NSString *hmacKeyLast4 = [hmacKey substringFromIndex:[hmacKey length] - 4];
+    NSString *encKeyLast4 = [encKey substringFromIndex:[encKey length] - 4];
+ 
+    SPILog(@"Secret key tracker - %@ : %@-%@", state, hmacKeyLast4, encKeyLast4);
 }
 
 #pragma mark - Internals for Validations
