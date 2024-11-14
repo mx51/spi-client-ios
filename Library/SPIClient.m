@@ -2442,7 +2442,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
     NSString *encKey = self.secrets.encKey;
     NSString *hmacKey = self.secrets.hmacKey;
 
-    SPILog(@"Secret key tracker - %@ : %@-%@-%@", state, encKey, hmacKey);
+    SPILog(@"Secret key tracker - %@ : %@-%@", state, [encKey substringFromIndex:[encKey length] - 4], [hmacKey substringFromIndex:[hmacKey length] - 4]);
 }
 
 #pragma mark - Internals for Validations
