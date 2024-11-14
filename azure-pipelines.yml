@@ -25,7 +25,7 @@ variables:
   - name: SDK
     value: iphoneos
   - name: TEST_DEVICE
-    value: iPad (10th generation)
+    value: iPad Pro 13-inch (M4)
   - name: WORKSPACE_PATH
     value: ./SPIClient-iOS.xcworkspace
 
