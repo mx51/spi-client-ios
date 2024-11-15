@@ -23,9 +23,9 @@ variables:
   - name: SCHEME
     value: SPIClient-iOS
   - name: SDK
-    value: iphoneos
+    value: iphonesimulator
   - name: TEST_DEVICE
-    value: iPad Pro 13-inch (M4)
+    value: iPhone 14 Pro
   - name: WORKSPACE_PATH
     value: ./SPIClient-iOS.xcworkspace
 
