@@ -1,4 +1,4 @@
-platform :ios, '8.0'
+platform :ios, '15.6'
 inhibit_all_warnings!
 
 source 'https://github.com/CocoaPods/Specs.git'
