@@ -1,18 +1,8 @@
 pool:
   vmImage: 'macos-latest'
 
-pr:
-  branches:
-    include:
-    - '*'
-
-trigger:
-  branches:
-    include:
-      - '*'
-  tags:
-    include:
-       - '*'
+pr: none
+trigger: none
 
 variables:
   - group: global-variables
