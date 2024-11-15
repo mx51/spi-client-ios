@@ -23,9 +23,9 @@ variables:
   - name: SCHEME
     value: SPIClient-iOS
   - name: SDK
-    value: iphonesimulator
+    value: iphoneos
   - name: TEST_DEVICE
-    value: iPhone 14 Pro
+    value: iPad (10th generation)
   - name: WORKSPACE_PATH
     value: ./SPIClient-iOS.xcworkspace
 
@@ -54,7 +54,6 @@ stages:
         scheme: $(SCHEME)
         sdk: $(SDK)
         xcWorkspacePath: $(WORKSPACE_PATH)
-        destination: 'platform=iOS Simulator,name=iPhone 14 Pro,OS=17.0'
 
     - bash: brew tap snyk/tap && brew install snyk && snyk auth $SNYK_TOKEN && snyk monitor
       condition: and(succeeded(), contains(variables['BRANCH_NAME'], 'refs/heads/master'))
