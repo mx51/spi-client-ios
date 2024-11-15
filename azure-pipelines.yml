@@ -54,6 +54,7 @@ stages:
         scheme: $(SCHEME)
         sdk: $(SDK)
         xcWorkspacePath: $(WORKSPACE_PATH)
+        destination: 'platform=iOS Simulator,name=iPhone 14 Pro,OS=17.0'
 
     - bash: brew tap snyk/tap && brew install snyk && snyk auth $SNYK_TOKEN && snyk monitor
       condition: and(succeeded(), contains(variables['BRANCH_NAME'], 'refs/heads/master'))
