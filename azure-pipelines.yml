@@ -68,7 +68,7 @@ stages:
       runOnce:
         deploy:
           steps:
-            - bash: pod trunk push SPIClient-iOS.podspec --allow-warnings
+            - bash: pod trunk push SPIClient-iOS.podspec --allow-warnings --verbose
               displayName: Publish
               env:
                 COCOAPODS_TRUNK_TOKEN: $(cocoaPodsTrunkToken)
