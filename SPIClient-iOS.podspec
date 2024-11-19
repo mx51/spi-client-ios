@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   s.source       = { :git => 'https://github.com/mx51/spi-client-ios.git', :tag => s.version }
   s.source_files = 'Library/**/*.{h,m,c}'
   s.requires_arc = true
-  s.platform     = :ios, '15.6'
+  s.platform     = :ios, '15.2'
 
   s.dependency 'RNCryptor-objc'
   s.dependency 'SocketRocket'
