@@ -1,4 +1,4 @@
-platform :ios, '15.6'
+platform :ios, '8.0'
 inhibit_all_warnings!
 
 source 'https://github.com/CocoaPods/Specs.git'
@@ -15,12 +15,4 @@ end
 target 'Tests' do
     inherit! :search_paths
     import_pods
-end
-
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    target.build_configurations.each do |config|
-      config.build_settings.delete 'IPHONEOS_DEPLOYMENT_TARGET'
-    end
-  end
 end

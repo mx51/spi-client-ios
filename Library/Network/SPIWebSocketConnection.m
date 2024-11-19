@@ -71,7 +71,7 @@
 }
 
 - (void)sendPing {
-    [self.webSocket sendPing:nil error:nil];
+    [self.webSocket sendPing:nil];
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message {
@@ -84,7 +84,7 @@
 }
 
 - (void)send:(NSString *)msg {
-    [self.webSocket sendString:msg error:nil];
+    [self.webSocket send:msg];
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
