@@ -1,5 +1,5 @@
 pool:
-  vmImage: 'macos-12'
+  vmImage: 'macos-latest'
 
 pr:
   branches:
