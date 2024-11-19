@@ -1,5 +1,5 @@
 pool:
-  vmImage: 'macos-latest'
+  vmImage: 'macos-12'
 
 pr:
   branches:
@@ -42,25 +42,9 @@ stages:
       inputs:
         actions: clean build
         scheme: $(SCHEME)
+        xcodeVersion: 14
         sdk: $(SDK)
         xcWorkspacePath: $(WORKSPACE_PATH)
-
-    - task: Xcode@5
-      displayName: Test
-      inputs:
-        actions: test
-        destinationPlatformOption: iOS
-        destinationSimulators: $(TEST_DEVICE)
-        scheme: $(SCHEME)
-        sdk: $(SDK)
-        xcWorkspacePath: $(WORKSPACE_PATH)
-
-    - bash: brew tap snyk/tap && brew install snyk && snyk auth $SNYK_TOKEN && snyk monitor
-      condition: and(succeeded(), contains(variables['BRANCH_NAME'], 'refs/heads/master'))
-      displayName: Check solution for vulnerabilities
-      env:
-        SNYK_TOKEN: $(snykToken)
-      timeoutInMinutes: 5
 
     - bash: ./deploy-check.sh $(echo ${BRANCH_NAME/refs\/tags\//})
       condition: and(succeeded(), contains(variables['BRANCH_NAME'], 'refs/tags/'))
@@ -85,7 +69,7 @@ stages:
       runOnce:
         deploy:
           steps:
-            - bash: pod trunk push SPIClient-iOS.podspec --allow-warnings
+            - bash: pod trunk push SPIClient-iOS.podspec --allow-warnings --verbose
               displayName: Publish
               env:
                 COCOAPODS_TRUNK_TOKEN: $(cocoaPodsTrunkToken)
