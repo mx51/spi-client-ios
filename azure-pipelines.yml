@@ -42,7 +42,7 @@ stages:
       inputs:
         actions: clean build
         scheme: $(SCHEME)
-        xcodeVersion: 14
+        xcodeVersion: 14.2
         sdk: $(SDK)
         xcWorkspacePath: $(WORKSPACE_PATH)
 
