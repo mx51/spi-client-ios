@@ -222,7 +222,7 @@ NSString *const SPITransactionUpdateKey = @"txn_update_message";
     
     SPILog(@"Sending message - encKey: %@", stamp.secrets.encKey);
     SPILog(@"Sending message - encKeyData: %@", stamp.secrets.encKeyData);
-    SPILog(@"Sending message - hmacKeyData: %@", stamp.secrets.hmacKey);
+    SPILog(@"Sending message - hmacKey: %@", stamp.secrets.hmacKey);
     SPILog(@"Sending message - hmacKeyData: %@", stamp.secrets.hmacKeyData);
 
     NSString *encMsg = [SPICrypto aesEncryptMessage:messageEnvelopeString key:stamp.secrets.encKeyData];
@@ -231,7 +231,6 @@ NSString *const SPITransactionUpdateKey = @"txn_update_message";
     SPILog(@"Sending message - encMsg: %@", encMsg);
     SPILog(@"Sending message - hmacSig: %@", hmacSig);
 
-    
     SPIMessageEnvelope *encrMessageEnvelope = [[SPIMessageEnvelope alloc] initWithEnc:encMsg hmac:hmacSig posId:stamp.posId];
     NSDictionary *encrMessageEnvelopeJson = [encrMessageEnvelope toJson];
     
