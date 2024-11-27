@@ -1164,6 +1164,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 - (BOOL)send:(SPIMessage *)message {
     NSString *json = [message toJson:self.spiMessageStamp];
     
+    [self logHmacAndEncKey:@"sending message"];
     if (self.connection.isConnected) {
         SPILog(@"Sending message: %@", message.decryptedJson);
         [self.connection send:json];
@@ -2452,10 +2453,12 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         return;
     }
     
-    NSString *hmacKeyLast4 = [hmacKey substringFromIndex:[hmacKey length] - 4];
-    NSString *encKeyLast4 = [encKey substringFromIndex:[encKey length] - 4];
+//    NSString *hmacKeyLast4 = [hmacKey substringFromIndex:[hmacKey length] - 4];
+//    NSString *encKeyLast4 = [encKey substringFromIndex:[encKey length] - 4];
  
-    SPILog(@"Secret key tracker - %@ : %@-%@", state, hmacKeyLast4, encKeyLast4);
+    SPILog(@"Secret key tracker - state : %@", state);
+    SPILog(@"Secret key tracker - hmacKey : %@", hmacKey);
+    SPILog(@"Secret key tracker - encKey : %@", encKey);
 }
 
 #pragma mark - Internals for Validations
