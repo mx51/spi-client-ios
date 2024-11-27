@@ -14,6 +14,7 @@
 
 #import "NSString+Crypto.h"
 #import "NSData+Crypto.h"
+#import "SPILogger.h"
 
 static unsigned char AesIV [] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
@@ -39,7 +40,22 @@ static unsigned char AesIV [] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     
     unsigned char cHMAC[CC_SHA256_DIGEST_LENGTH];
     
-    CCHmac(kCCHmacAlgSHA256, cKey, keyData.length, cData, strlen(cData), cHMAC);
+    CCHmac(kCCHmacAlgSHA256, cKey, keyData.length, cData, strlen(cData), cHMAC); // TODO: Strlen is potentially an issue.
+    
+    NSData *d = [[NSData alloc] initWithBytes:cHMAC length:sizeof(cHMAC)];
+    
+    return [d hexString];
+}
+
++ (NSString *)hmacSignatureMessage2:(NSString *)message key:(NSData *)key {
+    NSData *data = [message dataUsingEncoding:NSUTF8StringEncoding];
+    if (data == nil) {
+        SPILog(@"hmacSignatureMessage2: dataUsingEncoding returned nil");
+    }
+    
+    unsigned char cHMAC[CC_SHA256_DIGEST_LENGTH];
+    
+    CCHmac(kCCHmacAlgSHA256, key.bytes, key.length, data.bytes, data.length, cHMAC);
     
     NSData *d = [[NSData alloc] initWithBytes:cHMAC length:sizeof(cHMAC)];
     
