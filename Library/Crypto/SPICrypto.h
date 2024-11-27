@@ -36,5 +36,6 @@
  * @return NSString
  */
 + (NSString *)hmacSignatureMessage:(NSString *)message key:(NSData *)key;
++ (NSString *)hmacSignatureMessage2:(NSString *)message key:(NSData *)key;
 
 @end
