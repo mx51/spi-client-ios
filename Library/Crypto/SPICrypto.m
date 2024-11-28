@@ -21,7 +21,7 @@ static unsigned char AesIV [] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 
 + (NSString *)aesEncryptMessage:(NSString *)message key:(NSData *)key {
     NSData *data = [[message dataUsingEncoding:NSUTF8StringEncoding] encryptForKey:key iv:AesIV];
-    return [data hexString];
+    return [data convertToHexString];
 }
 
 + (NSString *)aesDecryptEncMessage:(NSString *)enc key:(NSData *)key {
@@ -43,7 +43,7 @@ static unsigned char AesIV [] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     
     NSData *d = [[NSData alloc] initWithBytes:cHMAC length:sizeof(cHMAC)];
     
-    return [d hexString];
+    return [d convertToHexString];
 }
 
 @end

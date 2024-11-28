@@ -66,7 +66,7 @@
     return result;
 }
 
-- (NSString *)hexString {
+- (NSString *)convertToHexString {
     NSUInteger length = self.length;
     unichar *hexChars = (unichar *)malloc(sizeof(unichar) * (length * 2));
     unsigned char *bytes = (unsigned char *)self.bytes;
