@@ -48,7 +48,8 @@
     NSString *bhmac = hmacPubAndSec.myPublicKey;
     NSString *shmac = hmacPubAndSec.sharedSecretKey;
     
-    SPISecrets *secrets = [[SPISecrets alloc] initWithEncKey:senc hmacKey:shmac];
+    SPISecrets *secrets = [[SPISecrets alloc] initWithEncKeyData:senc.dataFromHexEncoding
+                                                         hmacKey:shmac.dataFromHexEncoding];
     SPIKeyResponse *keyResponse = [[SPIKeyResponse alloc] initWithRequestId:keyRequest.requestId
                                                                        benc:benc
                                                                       bhmac:bhmac];

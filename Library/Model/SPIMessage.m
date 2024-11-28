@@ -220,9 +220,7 @@ NSString *const SPITransactionUpdateKey = @"txn_update_message";
         return messageEnvelopeString;
     }
     
-    SPILog(@"Sending message - encKey: %@", stamp.secrets.encKey);
     SPILog(@"Sending message - encKeyData: %@", stamp.secrets.encKeyData);
-    SPILog(@"Sending message - hmacKey: %@", stamp.secrets.hmacKey);
     SPILog(@"Sending message - hmacKeyData: %@", stamp.secrets.hmacKeyData);
 
     NSString *encMsg = [SPICrypto aesEncryptMessage:messageEnvelopeString key:stamp.secrets.encKeyData];

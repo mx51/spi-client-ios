@@ -183,7 +183,7 @@ Subscribe to this event to receive update messages
  @param encKey Encryption key.
  @param hmacKey HMAC key.
  */
-- (void)setSecretEncKey:(NSString *)encKey hmacKey:(NSString *)hmacKey;
+- (void)setSecretEncKey:(NSData *)encKey hmacKey:(NSData *)hmacKey;
 
 /**
  Call this one when a flow is finished and you want to go back to idle state.

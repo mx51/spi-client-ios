@@ -9,6 +9,7 @@
 #import <XCTest/XCTest.h>
 #import "SPIClient.h"
 #import "SPITestUtils.h"
+#import "NSString+Crypto.h"
 
 @interface SPIClient (Testing)
 
@@ -202,7 +203,7 @@
 - (void)testUnpair_OnValid_IsSet {
     //Initiate Client and set status
     SPIClient *client = [[SPIClient alloc] init];
-    [client setSecretEncKey:@"1" hmacKey:@"2"];
+    [client setSecretEncKey:@"11".dataFromHexEncoding hmacKey:@"22".dataFromHexEncoding];
     client.state.status = SPIStatusPairedConnected;
     SPIDummyDelegate *delegate = [SPIDummyDelegate new];
     client.delegate = delegate;
