@@ -8,6 +8,7 @@
 
 #import "NSObject+Util.h"
 #import "NSString+Util.h"
+#import "NSData+Crypto.h"
 #import "NSDate+Util.h"
 #import "NSDateFormatter+Util.h"
 #import "SPICashout.h"
@@ -38,7 +39,6 @@
 #import "SPITenantsService.h"
 #import "SPITerminalHelper.h"
 #import "SPIDeviceHelper.h"
-
 
 @interface SPIClient () <SPIConnectionDelegate>
 
@@ -237,8 +237,8 @@ static NSInteger retriesBeforePairing = 3; // How many retries before resolving 
     return BUNDLE_VERSION_SHORT;
 }
 
-- (void)setSecretEncKey:(NSString *)encKey hmacKey:(NSString *)hmacKey {
-    self.secrets = [[SPISecrets alloc] initWithEncKey:encKey hmacKey:hmacKey];
+- (void)setSecretEncKey:(NSData *)encKey hmacKey:(NSData *)hmacKey {
+    self.secrets = [[SPISecrets alloc] initWithEncKeyData:encKey hmacKey:hmacKey];
 }
 
 #pragma mark - Flow management
@@ -1164,6 +1164,7 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
 - (BOOL)send:(SPIMessage *)message {
     NSString *json = [message toJson:self.spiMessageStamp];
     
+    [self logHmacAndEncKey:@"sending message"];
     if (self.connection.isConnected) {
         SPILog(@"Sending message: %@", message.decryptedJson);
         [self.connection send:json];
@@ -2439,8 +2440,8 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         return;
     }
     
-    NSString *hmacKey = self.secrets.hmacKey;
-    NSString *encKey = self.secrets.encKey;
+    NSString *hmacKey = self.secrets.hmacKeyData.hexString;
+    NSString *encKey = self.secrets.encKeyData.hexString;
     
     if (hmacKey == nil || hmacKey.length <= 4) {
         SPILog(@"Invalid hmacKey");
@@ -2452,10 +2453,12 @@ suppressMerchantPassword:(BOOL)suppressMerchantPassword
         return;
     }
     
-    NSString *hmacKeyLast4 = [hmacKey substringFromIndex:[hmacKey length] - 4];
-    NSString *encKeyLast4 = [encKey substringFromIndex:[encKey length] - 4];
+//    NSString *hmacKeyLast4 = [hmacKey substringFromIndex:[hmacKey length] - 4];
+//    NSString *encKeyLast4 = [encKey substringFromIndex:[encKey length] - 4];
  
-    SPILog(@"Secret key tracker - %@ : %@-%@", state, hmacKeyLast4, encKeyLast4);
+    SPILog(@"Secret key tracker - state : %@", state);
+    SPILog(@"Secret key tracker - hmacKey : %@", hmacKey);
+    SPILog(@"Secret key tracker - encKey : %@", encKey);
 }
 
 #pragma mark - Internals for Validations

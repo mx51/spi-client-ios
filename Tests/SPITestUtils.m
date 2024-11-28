@@ -9,6 +9,7 @@
 #import <XCTest/XCTest.h>
 #import "SPITestUtils.h"
 #import "SPIClient+Internal.h"
+#import "NSString+Crypto.h"
 
 @implementation SPITestUtils
 
@@ -16,17 +17,19 @@
     NSString *encKey = @"81CF9E6A14CDAF244A30B298D4CECB505C730CE352C6AF6E1DE61B3232E24D3F";
     NSString *hmacKey = @"D35060723C9EECDB8AEA019581381CB08F64469FC61A5A04FE553EBDB5CD55B9";
     SPIClient *client = [[SPIClient alloc] init];
-    [client setSecretEncKey:encKey hmacKey:hmacKey];
+    [client setSecretEncKey:encKey.dataFromHexEncoding hmacKey:hmacKey.dataFromHexEncoding];
     return client;
 }
 
 + (SPISecrets *)setTestSecrets:(NSString *)encKey hmacKey:(NSString *)hmacKey {
-    if ([encKey  isEqual: @""] & [hmacKey  isEqual: @""]) {
+    if (encKey == nil || [encKey isEqualToString:@""]) {
         encKey = @"81CF9E6A14CDAF244A30B298D4CECB505C730CE352C6AF6E1DE61B3232E24D3F";
+    }
+    if (hmacKey == nil || [hmacKey isEqualToString:@""]) {
         hmacKey = @"D35060723C9EECDB8AEA019581381CB08F64469FC61A5A04FE553EBDB5CD55B9";
     }
-    
-    return [[SPISecrets alloc] initWithEncKey:encKey hmacKey:hmacKey];
+    return [[SPISecrets alloc] initWithEncKeyData:encKey.dataFromHexEncoding
+                                          hmacKey:hmacKey.dataFromHexEncoding];
 }
 
 + (void)waitForAsync:(NSTimeInterval)seconds {
