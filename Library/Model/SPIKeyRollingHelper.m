@@ -39,8 +39,8 @@
                                                 eventName:SPIKeyRollResponseKey
                                                      data:@{@"status" : @"confirmed"}
                                           needsEncryption:YES];
-    SPISecrets *newSecrets = [[SPISecrets alloc] initWithEncKey:[[[currentSecrets.encKey dataFromHexEncoding] SHA256] hexString]
-                                                        hmacKey:[[[currentSecrets.hmacKey dataFromHexEncoding] SHA256] hexString]];
+    SPISecrets *newSecrets = [[SPISecrets alloc] initWithEncKey:[[[currentSecrets.encKey dataFromHexEncoding] SHA256] convertToHexString]
+                                                        hmacKey:[[[currentSecrets.hmacKey dataFromHexEncoding] SHA256] convertToHexString]];
     
     return [[SPIKeyRollingResult alloc] initWithKeyRollingConfirmation:m secrets:newSecrets];
 }

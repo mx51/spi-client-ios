@@ -16,6 +16,6 @@
 
 - (NSData *)SHA256;
 
-- (NSString *)hexString;
+- (NSString *)convertToHexString;
 
 @end

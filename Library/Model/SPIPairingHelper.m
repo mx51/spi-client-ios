@@ -107,7 +107,7 @@
         mySecretHex = [NSString stringWithFormat:@"%@%@", padding, mySecretHex];
     }
     
-    return [[[mySecretHex dataFromHexEncoding] SHA256] hexString];
+    return [[[mySecretHex dataFromHexEncoding] SHA256] convertToHexString];
 }
 
 @end
